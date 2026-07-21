@@ -1,10 +1,7 @@
 from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from django.db import transaction
-from .models import (
-    Utilisateur, PrestataireProfile, Assignment, 
-    Subscription, Notes, RoleChoices
-)
+from .models import Utilisateur, PrestataireProfile, Assignment, Subscription, Notes, RoleChoices
 
 
 # --- UTILISATEURS ---
