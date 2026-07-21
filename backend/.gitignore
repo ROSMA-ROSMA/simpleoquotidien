@@ -4,3 +4,5 @@ db.sqlite3
 media/
 .env
 Prestataire/
+.DS_Store
+**/.DS_Store
