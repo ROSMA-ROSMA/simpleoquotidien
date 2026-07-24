@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from users.views import CustomActivationView, LogoutView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -14,6 +15,8 @@ urlpatterns = [
     # Endpoints Métier (Users & Commandes)
     path('Info_utilisateurs/', include('users.urls')),
     path('Commandes/', include('commandes.urls')),
+    path('auth/jwt/logout/', LogoutView.as_view(), name='jwt-logout'),
+    path('api/auth/users/activation/', CustomActivationView.as_view(), name='custom-activation'),
     
     # Authentification Djoser / JWT
     path('api/auth/', include('djoser.urls')),

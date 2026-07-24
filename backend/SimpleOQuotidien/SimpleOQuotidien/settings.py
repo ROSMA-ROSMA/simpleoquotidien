@@ -71,7 +71,7 @@ ROOT_URLCONF = "SimpleOQuotidien.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -147,13 +147,26 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE': True,
     'USER_ID_FIELD': 'id',
-    'SEND_ACTIVATION_EMAIL': False,
+    'SEND_ACTIVATION_EMAIL': True,
+    'SEND_CONFIRMATION_EMAIL': False,
+    'ACTIVATION_URL': 'activate/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
+    'DOMAIN': 'localhost:3000',
+    'site_name': 'SimpleOQuotidien',
+    
+    # 🎨 Association des templates d'e-mail personnalisés
+    'EMAIL': {
+        'activation': 'users.email.ActivationEmail',
+        'password_reset': 'users.email.PasswordResetEmail',
+    },
+    
     'SERIALIZERS': {
-        'user_create': 'users.serializers.UtilisateurCreateSerializer',
+        'user_create_password_retype': 'users.serializers.UtilisateurCreateSerializer',
         'user': 'users.serializers.UtilisateurSerializer',
         'current_user': 'users.serializers.UtilisateurSerializer',
     },
 }
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -179,6 +192,24 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Configuration SMTP Brevo pour Django
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False  # Impératif pour le port 587
+
+# Vos identifiants exacts transmis par Brevo :
+EMAIL_HOST_USER = 'b303d7001@smtp-brevo.com'
+EMAIL_HOST_PASSWORD = 'bskdtaTmZPjBexV'  # Collez la clé/mot de passe affiché sur Brevo
+
+# L'adresse expéditeur (doit être un e-mail validé dans votre compte Brevo)
+DEFAULT_FROM_EMAIL = 'SimpleOQuotidien <kamta.mariane1@icloud.com>'
+# PASSWORD_RESET_TIMEOUT = 3600
+# 86400 secondes = 24 heures
+PASSWORD_RESET_TIMEOUT = 86400
+
 
 UNFOLD = {
     "SITE_TITLE": "SimpleÔQuotidien",

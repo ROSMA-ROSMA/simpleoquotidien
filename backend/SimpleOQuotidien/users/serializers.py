@@ -1,49 +1,98 @@
 from rest_framework import serializers
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import UserCreatePasswordRetypeSerializer, UserSerializer
 from django.db import transaction
 from .models import Utilisateur, PrestataireProfile, Assignment, Subscription, Notes, RoleChoices
+from djoser.conf import settings as djoser_settings
+# Import de ta classe d'email personnalisée d'activation
+from .email import ActivationEmail
 
-
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(
+        required=True,
+        help_text="Le refresh token à invalider (blacklist)."
+    )
 # --- UTILISATEURS ---
 
-class UtilisateurCreateSerializer(UserCreateSerializer):
-    class Meta(UserCreateSerializer.Meta):
+
+class UtilisateurCreateSerializer(UserCreatePasswordRetypeSerializer):
+    re_password = serializers.CharField(
+        style={'input_type': 'password'}, write_only=True
+    )
+    is_active = serializers.BooleanField(read_only=True)
+    class Meta(UserCreatePasswordRetypeSerializer.Meta):
         model = Utilisateur
-        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'role', 'pays', 'password']
+        fields = [
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'role',
+            'pays',
+            'is_active',
+            'password',
+            're_password',  # Valide maintenant sans erreur de modèle
+        ]
+        read_only_fields = ['is_active']
 
 
 class UtilisateurSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
         model = Utilisateur
-        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'role', 'pays']
+        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'role', 'pays', 'is_active']
 
 
 # --- PRESTATAIRE ---
 
-# Serializer d'inscription spécifique au Prestataire
+
 class PrestataireCreateSerializer(serializers.ModelSerializer):
     user = UtilisateurCreateSerializer()
 
     class Meta:
         model = PrestataireProfile
         fields = [
-            'user', 'company_name', 'services', 'zones_couvertes', 
-            'langue', 'tarif', 'cni_passeport', 'justificatif', 'photo'
+            'user',
+            'company_name',
+            'services',
+            'zones_couvertes',
+            'langue',
+            'tarif',
+            'cni_passeport',
+            'justificatif',
+            'photo',
         ]
 
     @transaction.atomic
     def create(self, validated_data):
         user_data = validated_data.pop('user')
-        # Forcer le rôle à PRESTATAIRE
         user_data['role'] = RoleChoices.PRESTATAIRE
-        
-        # Création sécurisée de l'Utilisateur avec mot de passe haché
-        user_serializer = UtilisateurCreateSerializer(data=user_data)
+
+        # Sécurité pour re_password
+        if 're_password' not in user_data and 'password' in user_data:
+            user_data['re_password'] = user_data['password']
+
+        # 1. Validation de l'utilisateur
+        user_serializer = UtilisateurCreateSerializer(
+            data=user_data, context=self.context
+        )
         user_serializer.is_valid(raise_exception=True)
+
+        # 2. Création de l'utilisateur
         user = user_serializer.save()
 
-        # Création du profil Prestataire associé
-        prestataire_profile = PrestataireProfile.objects.create(user=user, **validated_data)
+        # 3. Forcer le compte à inactif avant confirmation par mail (si SEND_ACTIVATION_EMAIL est True)
+        if djoser_settings.SEND_ACTIVATION_EMAIL:
+            user.is_active = False
+            user.save()
+
+            # 4. Envoi explicite du mail d'activation personnalisé !
+            request = self.context.get('request')
+            ActivationEmail(request, context={'user': user}).send([user.email])
+
+        # 5. Création du profil Prestataire associé
+        prestataire_profile = PrestataireProfile.objects.create(
+            user=user, **validated_data
+        )
         return prestataire_profile
 
 

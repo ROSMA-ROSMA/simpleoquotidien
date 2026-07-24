@@ -32,7 +32,7 @@ class Order(models.Model):
     description = models.TextField()
     localisation = models.CharField(max_length=255)
     date = models.DateTimeField()
-    budget = models.FloatField()
+    budget = models.DecimalField(max_digits=10, decimal_places=2)
     images = models.ImageField(upload_to='orders/', blank=True, null=True)
     date_creation = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     date_modification = models.DateTimeField(auto_now=True, blank=True, null=True)

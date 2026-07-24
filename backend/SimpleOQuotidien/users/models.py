@@ -80,7 +80,14 @@ class Assignment(models.Model):
     def __str__(self):
         return f"Assignment #{self.id} - Order {self.order_id}"
 
-
+class Payment(models.Model):
+    order = models.OneToOneField('commandes.Order', on_delete=models.CASCADE, related_name='payment')
+    montant = models.DecimalField(max_digits=10, decimal_places=2)
+    statut = models.CharField(max_length=50)  # Ex: PAYE, EN_ATTENTE, ECHOUE
+    transaction_id = models.CharField(max_length=100, unique=True)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    
+    
 class Subscription(models.Model):
     plan = models.IntegerField()
     statut = models.CharField(max_length=100)
