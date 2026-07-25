@@ -78,7 +78,11 @@ class Assignment(models.Model):
     date_modification = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Assignment #{self.id} - Order {self.order_id}"
+        # Si la commande a un attribut uuid
+        if hasattr(self.order, 'uuid'):
+            return f'Assignment #{self.id} - Commande {self.order.uuid}'
+        # Alternative simple avec l'ID de la commande
+        return f'Assignment #{self.id} - Commande #{self.order.id}'
 
 class Payment(models.Model):
     order = models.OneToOneField('commandes.Order', on_delete=models.CASCADE, related_name='payment')

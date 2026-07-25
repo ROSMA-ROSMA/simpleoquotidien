@@ -15,8 +15,34 @@ from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from djoser.serializers import ActivationSerializer
-from djoser.email import ConfirmationEmail
 
+from notifications.services import (
+    notifier_assignation_prestataire,
+    notifier_attribution_client,
+)
+
+
+class AssignmentViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet pour gérer l'assignation d'un Prestataire à une Commande.
+    Accessible principalement par les AGENTS et ADMINS.
+    """
+
+    queryset = Assignment.objects.all().select_related(
+        'order', 'prestataire__user'
+    )
+    serializer_class = AssignmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # 1. Sauvegarde de l'assignation en associant l'agent connecté (qualifier)
+        assignment = serializer.save(qualifier=self.request.user)
+
+        # 2. Notification In-App + E-mail au Prestataire (avec le template provider_assignment.html)
+        notifier_assignation_prestataire(assignment)
+
+        # 3. Notification In-App + E-mail au Client (avec le template general_notification.html)
+        notifier_attribution_client(assignment)
 
 class CustomActivationView(GenericAPIView):
     serializer_class = ActivationSerializer
@@ -112,12 +138,6 @@ class PrestataireProfileViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return [AllowAny()]
         return [IsAuthenticated()]
-
-
-class AssignmentViewSet(viewsets.ModelViewSet):
-    queryset = Assignment.objects.all()
-    serializer_class = AssignmentSerializer
-    permission_classes = [IsAuthenticated]
 
 
 class SubscriptionViewSet(viewsets.ModelViewSet):

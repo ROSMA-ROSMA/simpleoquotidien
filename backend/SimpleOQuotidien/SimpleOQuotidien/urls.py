@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from users.views import CustomActivationView, LogoutView
+from commandes.views import DirectQuoteActionView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -26,6 +27,12 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    
+    path(
+        'quote-action/<str:token>/',
+        DirectQuoteActionView.as_view(),
+        name='direct-quote-action',
+    ),
 ]
 
 # Gestion du stockage des fichiers uploadés (images, CNI, etc.) en mode Développement

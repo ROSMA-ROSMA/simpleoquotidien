@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'commandes',
     'rest_framework',
     'corsheaders',
+    'notifications',
     
     'djoser',
     'rest_framework_simplejwt',

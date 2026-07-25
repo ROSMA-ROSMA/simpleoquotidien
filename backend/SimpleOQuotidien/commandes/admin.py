@@ -37,7 +37,7 @@ class CategoryAdmin(ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(ModelAdmin):
     list_display = (
-        'id', 'client', 'category', 'status_badge',
+        'uuid', 'client', 'category', 'status_badge',
         'localisation', 'date', 'budget',
     )
     list_filter = ('status', 'category', 'date')

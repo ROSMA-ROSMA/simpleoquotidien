@@ -1,5 +1,5 @@
 from django.db import models
-
+import uuid
 
 
 class OrderStatusChoices(models.TextChoices):
@@ -24,10 +24,15 @@ class Category(models.Model):
     description = models.TextField()
     date_creation = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     date_modification = models.DateTimeField(auto_now=True, blank=True, null=True)
+    
+    class Meta:
+        ordering = ['nom']
+        
     def __str__(self):
         return self.nom
     
 class Order(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     status = models.CharField(max_length=50, choices=OrderStatusChoices.choices, default=OrderStatusChoices.CREEE)
     description = models.TextField()
     localisation = models.CharField(max_length=255)
@@ -38,9 +43,12 @@ class Order(models.Model):
     date_modification = models.DateTimeField(auto_now=True, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='orders')
     client = models.ForeignKey('users.Utilisateur', on_delete=models.CASCADE, related_name='orders')
-
+    
+    class Meta:
+        ordering = ['-date_creation']
+    
     def __str__(self):
-        return f"Order #{self.id} - {self.localisation}"
+        return f"Numero: {self.uuid}"
 
 
 class Quote(models.Model):
@@ -48,6 +56,12 @@ class Quote(models.Model):
         max_length=20, 
         choices=QuoteStatusChoices.choices, 
         default=QuoteStatusChoices.ENVOYE
+    )
+    description = models.TextField(
+        blank=True, null=True
+    )  # 👈 Description du devis
+    pdf_file = models.FileField(
+        upload_to='devis_pdf/', blank=True, null=True
     )
     price = models.CharField(max_length=100)
     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='quote')
