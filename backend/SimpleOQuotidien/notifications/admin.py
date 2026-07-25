@@ -6,7 +6,7 @@ from .models import Notification
 
 
 @admin.register(Notification)
-class AssignmentAdmin(ModelAdmin):
+class NotificationAdmin(ModelAdmin):
     list_display = ('id', 'destinataire', 'titre', 'type_notification', 'order', 'date_creation')
     
     
