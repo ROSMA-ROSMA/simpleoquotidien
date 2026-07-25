@@ -3,7 +3,7 @@ Une Application Digiscia
 
 # Système de notifications
 
-flowchart TD
+
     A[1. Client crée une commande<br><b>Status: CREEE</b>] --> B[2. Agent assigne un Prestataire via Assignment]
     
     B -->|📩 Email + 🔔 In-App| B1[<b>Prestataire:</b> Vous avez un devis à faire]
