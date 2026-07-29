@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Validation devis · SimpleÔQuotidien Agent</title>
+<link rel="stylesheet" href="../assets/styles.css"/>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar"><div class="brand"><div class="brand-mark"><svg viewBox="0 0 512 512" fill="none"><path d="M112 280V368C112 394.507 133.493 416 160 416H296" stroke="white" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/><path d="M112 280L256 136L400 280V320" stroke="white" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/><circle cx="336" cy="352" r="64" fill="#FF7043"/><path d="M410 160L440 130" stroke="#FF7043" stroke-width="32" stroke-linecap="round"/></svg></div><div><div class="brand-name">SimpleÔQuotidien</div><div class="brand-sub">Espace Agent</div></div></div><div class="nav-section">Principal</div><a class="nav-link" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Tableau de bord</span></a><a class="nav-link" href="commandes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg><span>Commandes</span><span class="badge badge-coral">12</span></a><a class="nav-link" href="assignations.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg><span>Historique assignations</span></a><a class="nav-link" href="reassignations.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg><span>À réassigner</span><span class="badge badge-coral">3</span></a><div class="nav-section">Prestataires</div><a class="nav-link" href="recherche.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Rechercher</span></a><a class="nav-link" href="comparaison.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg><span>Comparer</span></a><div class="nav-section">Gestion</div><a class="nav-link active" href="devis.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg><span>Validation des devis</span><span class="badge badge-coral">5</span></a><a class="nav-link" href="notifications.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span>Notifications</span><span class="badge badge-coral">8</span></a><a class="nav-link" href="parametres.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>Paramètres</span></a><div class="sidebar-footer"><div class="avatar">AK</div><div style="flex:1;min-width:0"><div class="name">Aïcha Koné</div><div class="role">Agent · Ouagadougou</div></div><a href="parametres.html" class="icon-btn" style="width:34px;height:34px;background:transparent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg></a></div></aside>
+  <main class="main">
+    <header class="topbar">
+      <div><div class="page-title">Validation des devis</div><div class="page-sub">Vérifiez et approuvez les propositions</div></div>
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="Rechercher une commande, un client, un prestataire…"/><span class="kbd">⌘K</span></div>
+      <a href="notifications.html" class="icon-btn" title="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot"></span></a>
+      <a href="parametres.html" class="icon-btn" title="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></a>
+    </header>
+    <section class="content">
+      
+    <div class="tabs">
+      <a class="tab active">En attente · 5</a>
+      <a class="tab">Validés · 128</a>
+      <a class="tab">Refusés · 12</a>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr">
+      
+        <div class="card card-pad" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center">
+          <div>
+            <div class="flex gap-12" style="align-items:center;margin-bottom:12px">
+              <span class="badge badge-teal">#DV-4821</span>
+              <span class="muted tiny">Soumis le 15 juil. 2026</span>
+            </div>
+            <div class="h3">Ménage complet 3 pièces + fenêtres</div>
+            <div class="muted" style="margin-top:4px">Client · <strong>Marie Kaboré</strong> · Prestataire · <strong>Fatimata Ouédraogo</strong></div>
+            <div class="grid grid-3" style="margin-top:18px">
+              <div><div class="tiny">Budget client</div><div style="font-weight:700;font-size:18px">12 500 F</div></div>
+              <div><div class="tiny">Devis prestataire</div><div style="font-weight:700;font-size:18px;color:var(--brand-teal)">14 000 F</div></div>
+              <div><div class="tiny">Écart</div><div style="font-weight:700;font-size:18px;color:var(--brand-coral)">+ 1 500 F</div></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:180px">
+            <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Valider</button>
+            <button class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Voir détail</button>
+            <button class="btn btn-ghost" style="color:#B91C1C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Refuser</button>
+          </div>
+        </div>
+      
+        <div class="card card-pad" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center">
+          <div>
+            <div class="flex gap-12" style="align-items:center;margin-bottom:12px">
+              <span class="badge badge-teal">#DV-4820</span>
+              <span class="muted tiny">Soumis le 15 juil. 2026</span>
+            </div>
+            <div class="h3">Réparation fuite chaudière + robinetterie</div>
+            <div class="muted" style="margin-top:4px">Client · <strong>Jean Ouédraogo</strong> · Prestataire · <strong>Boureima Zongo</strong></div>
+            <div class="grid grid-3" style="margin-top:18px">
+              <div><div class="tiny">Budget client</div><div style="font-weight:700;font-size:18px">28 000 F</div></div>
+              <div><div class="tiny">Devis prestataire</div><div style="font-weight:700;font-size:18px;color:var(--brand-teal)">26 500 F</div></div>
+              <div><div class="tiny">Écart</div><div style="font-weight:700;font-size:18px;color:var(--brand-teal)">- 1 500 F</div></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:180px">
+            <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Valider</button>
+            <button class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Voir détail</button>
+            <button class="btn btn-ghost" style="color:#B91C1C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Refuser</button>
+          </div>
+        </div>
+      
+        <div class="card card-pad" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center">
+          <div>
+            <div class="flex gap-12" style="align-items:center;margin-bottom:12px">
+              <span class="badge badge-teal">#DV-4819</span>
+              <span class="muted tiny">Soumis le 14 juil. 2026</span>
+            </div>
+            <div class="h3">Entretien jardin + taille de haies (200 m²)</div>
+            <div class="muted" style="margin-top:4px">Client · <strong>Fatou Sawadogo</strong> · Prestataire · <strong>Karim Sanogo</strong></div>
+            <div class="grid grid-3" style="margin-top:18px">
+              <div><div class="tiny">Budget client</div><div style="font-weight:700;font-size:18px">18 500 F</div></div>
+              <div><div class="tiny">Devis prestataire</div><div style="font-weight:700;font-size:18px;color:var(--brand-teal)">19 000 F</div></div>
+              <div><div class="tiny">Écart</div><div style="font-weight:700;font-size:18px;color:var(--brand-coral)">+ 500 F</div></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:180px">
+            <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Valider</button>
+            <button class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Voir détail</button>
+            <button class="btn btn-ghost" style="color:#B91C1C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Refuser</button>
+          </div>
+        </div>
+      
+        <div class="card card-pad" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center">
+          <div>
+            <div class="flex gap-12" style="align-items:center;margin-bottom:12px">
+              <span class="badge badge-teal">#DV-4818</span>
+              <span class="muted tiny">Soumis le 14 juil. 2026</span>
+            </div>
+            <div class="h3">Déménagement studio + transport 12 km</div>
+            <div class="muted" style="margin-top:4px">Client · <strong>Sara Nikièma</strong> · Prestataire · <strong>Ismaël Sawadogo</strong></div>
+            <div class="grid grid-3" style="margin-top:18px">
+              <div><div class="tiny">Budget client</div><div style="font-weight:700;font-size:18px">75 000 F</div></div>
+              <div><div class="tiny">Devis prestataire</div><div style="font-weight:700;font-size:18px;color:var(--brand-teal)">72 000 F</div></div>
+              <div><div class="tiny">Écart</div><div style="font-weight:700;font-size:18px;color:var(--brand-teal)">- 3 000 F</div></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:180px">
+            <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Valider</button>
+            <button class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Voir détail</button>
+            <button class="btn btn-ghost" style="color:#B91C1C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Refuser</button>
+          </div>
+        </div>
+      
+        <div class="card card-pad" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center">
+          <div>
+            <div class="flex gap-12" style="align-items:center;margin-bottom:12px">
+              <span class="badge badge-teal">#DV-4817</span>
+              <span class="muted tiny">Soumis le 12 juil. 2026</span>
+            </div>
+            <div class="h3">Pose étagères murales + peinture retouche</div>
+            <div class="muted" style="margin-top:4px">Client · <strong>Boureima Kaboré</strong> · Prestataire · <strong>Souleymane Ki</strong></div>
+            <div class="grid grid-3" style="margin-top:18px">
+              <div><div class="tiny">Budget client</div><div style="font-weight:700;font-size:18px">22 500 F</div></div>
+              <div><div class="tiny">Devis prestataire</div><div style="font-weight:700;font-size:18px;color:var(--brand-teal)">24 000 F</div></div>
+              <div><div class="tiny">Écart</div><div style="font-weight:700;font-size:18px;color:var(--brand-coral)">+ 1 500 F</div></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:180px">
+            <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Valider</button>
+            <button class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Voir détail</button>
+            <button class="btn btn-ghost" style="color:#B91C1C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Refuser</button>
+          </div>
+        </div>
+    </div>
+    
+    </section>
+  </main>
+</div>
+</body></html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Détail commande · SimpleÔQuotidien Agent</title>
+<link rel="stylesheet" href="../assets/styles.css"/>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar"><div class="brand"><div class="brand-mark"><svg viewBox="0 0 512 512" fill="none"><path d="M112 280V368C112 394.507 133.493 416 160 416H296" stroke="white" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/><path d="M112 280L256 136L400 280V320" stroke="white" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/><circle cx="336" cy="352" r="64" fill="#FF7043"/><path d="M410 160L440 130" stroke="#FF7043" stroke-width="32" stroke-linecap="round"/></svg></div><div><div class="brand-name">SimpleÔQuotidien</div><div class="brand-sub">Espace Agent</div></div></div><div class="nav-section">Principal</div><a class="nav-link" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Tableau de bord</span></a><a class="nav-link active" href="commandes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg><span>Commandes</span><span class="badge badge-coral">12</span></a><a class="nav-link" href="assignations.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg><span>Historique assignations</span></a><a class="nav-link" href="reassignations.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg><span>À réassigner</span><span class="badge badge-coral">3</span></a><div class="nav-section">Prestataires</div><a class="nav-link" href="recherche.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Rechercher</span></a><a class="nav-link" href="comparaison.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg><span>Comparer</span></a><div class="nav-section">Gestion</div><a class="nav-link" href="devis.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg><span>Validation des devis</span><span class="badge badge-coral">5</span></a><a class="nav-link" href="notifications.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span>Notifications</span><span class="badge badge-coral">8</span></a><a class="nav-link" href="parametres.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>Paramètres</span></a><div class="sidebar-footer"><div class="avatar">AK</div><div style="flex:1;min-width:0"><div class="name">Aïcha Koné</div><div class="role">Agent · Ouagadougou</div></div><a href="parametres.html" class="icon-btn" style="width:34px;height:34px;background:transparent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg></a></div></aside>
+  <main class="main">
+    <header class="topbar">
+      <div><div class="page-title">Commande #SQ-2841</div><div class="page-sub">Détails et actions</div></div>
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="Rechercher une commande, un client, un prestataire…"/><span class="kbd">⌘K</span></div>
+      <a href="notifications.html" class="icon-btn" title="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot"></span></a>
+      <a href="parametres.html" class="icon-btn" title="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></a>
+    </header>
+    <section class="content">
+      
+    <div style="display:flex;align-items:center;gap:14px">
+      <a href="commandes.html" class="btn btn-ghost btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" x2="5" y1="12" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Retour aux commandes</a>
+      <span class="badge badge-yellow badge-dot">À assigner</span>
+      <span class="tiny">Créée le 15 juillet 2026 à 09:24</span>
+    </div>
+
+    <div class="flex between">
+      <div><div class="h1">Commande #SQ-2841</div><div class="muted" style="margin-top:4px">Ménage à domicile · Service standard</div></div>
+      <div class="flex gap-12">
+        <a href="#" class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/></svg>Contacter le client</a>
+        <a href="assignation.html" class="btn btn-coral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>Assigner un prestataire</a>
+      </div>
+    </div>
+
+    <div class="grid grid-12">
+      <div class="card card-pad">
+        <div class="h3">Informations client</div>
+        <div style="display:flex;align-items:center;gap:16px;margin:18px 0">
+          <div class="avatar-sm" style="width:60px;height:60px;font-size:20px;background:var(--brand-teal);color:white">MK</div>
+          <div>
+            <div style="font-weight:700;font-size:17px">Marie Kaboré</div>
+            <div class="muted tiny" style="font-size:13px">Cliente vérifiée · 12 commandes</div>
+          </div>
+        </div>
+        <div class="info-row"><span class="k">Téléphone</span><span class="v">+226 70 12 34 56</span></div>
+        <div class="info-row"><span class="k">Email</span><span class="v">marie.kabore@email.com</span></div>
+        <div class="info-row"><span class="k">Adresse</span><span class="v">Rue 12.34, Ouaga 2000</span></div>
+        <div class="info-row"><span class="k">Ville</span><span class="v">Ouagadougou</span></div>
+        <div class="info-row"><span class="k">Repère</span><span class="v">Face à la pharmacie Bendogo</span></div>
+
+        <div class="h3" style="margin-top:24px">Détails du service</div>
+        <div class="info-row"><span class="k">Catégorie</span><span class="v">Ménage à domicile</span></div>
+        <div class="info-row"><span class="k">Prestation</span><span class="v">Nettoyage complet (3 pièces)</span></div>
+        <div class="info-row"><span class="k">Date souhaitée</span><span class="v">17 juillet 2026 · 09:00</span></div>
+        <div class="info-row"><span class="k">Budget indicatif</span><span class="v" style="color:var(--brand-teal)">12 500 F CFA</span></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="card card-pad">
+          <div class="h3">Localisation</div>
+          <div class="map mt-16"><div class="pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div></div>
+          <div class="muted tiny mt-8">Ouaga 2000 · Secteur 15 · 12°21′36″N 1°32′08″W</div>
+        </div>
+        <div class="card card-pad">
+          <div class="h3">Prestataire assigné</div>
+          <div style="text-align:center;padding:20px 0;color:var(--ink-400)">
+            <div style="width:72px;height:72px;border-radius:50%;background:var(--ink-50);display:grid;place-items:center;margin:0 auto 12px;color:var(--ink-300)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></div>
+            <div style="font-weight:600;color:var(--ink-700)">Aucun prestataire assigné</div>
+            <div class="tiny" style="margin-top:4px">Utilisez la recherche pour trouver le meilleur profil</div>
+            <a href="assignation.html" class="btn btn-primary" style="margin-top:16px">Assigner maintenant</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    </section>
+  </main>
+</div>
+</body></html>
