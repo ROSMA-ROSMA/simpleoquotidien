@@ -1,8 +1,0 @@
-__pycache__/
-*.pyc
-db.sqlite3
-media/
-.env
-Prestataire/
-.DS_Store
-**/.DS_Store

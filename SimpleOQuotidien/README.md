@@ -1,3 +1,0 @@
-# SimpleOQuotidien
-Application digiscia
-# SimpleOQuotidien
