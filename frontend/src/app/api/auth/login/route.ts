@@ -44,11 +44,14 @@ export async function POST(request: NextRequest) {
                 : '';
             const isInactive = detail.toLowerCase().includes('no active account')
                 || detail.toLowerCase().includes('aucun compte actif');
+            // is_active=False ne signifie qu'une seule chose côté backend : l'email
+            // n'a pas encore été confirmé (la validation admin d'un prestataire ne
+            // touche jamais is_active, voir PrestataireProfile.verification_status).
             const message = isInactive
-                ? 'Votre compte est en attente de validation par un administrateur.'
+                ? "Confirmez votre adresse e-mail pour activer votre compte. Vérifiez votre boîte de réception (et vos spams)."
                 : extractErrorMessage(err.body, err.message);
             return NextResponse.json(
-                { error: message },
+                { error: message, code: isInactive ? 'EMAIL_NOT_CONFIRMED' : undefined },
                 { status: err.status },
             );
         }

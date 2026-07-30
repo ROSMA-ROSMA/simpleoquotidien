@@ -23,7 +23,7 @@ async function refreshAccessToken(): Promise<string | null> {
     const refresh = await getRefreshToken();
     if (!refresh) return null;
 
-    const res = await fetch(`${BACKEND_URL}/auth/jwt/refresh/`, {
+    const res = await fetch(`${BACKEND_URL}/api/auth/jwt/refresh/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh }),
@@ -93,7 +93,7 @@ export async function backendJson<T>(
 
 /** Login direct backend (sans cookie existant). */
 export async function backendLogin(email: string, password: string): Promise<JwtPair> {
-    const res = await fetch(`${BACKEND_URL}/auth/jwt/create/`, {
+    const res = await fetch(`${BACKEND_URL}/api/auth/jwt/create/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -108,6 +108,43 @@ export async function backendLogin(email: string, password: string): Promise<Jwt
         );
     }
     return body as JwtPair;
+}
+
+/** Active le compte (uid/token issus du lien reçu par e-mail) et renvoie
+ * directement des tokens JWT + l'utilisateur, sans étape de login séparée. */
+export async function backendActivate(
+    uid: string,
+    token: string,
+): Promise<JwtPair & { user: import('@/types/backend').BackendUser; detail: string }> {
+    const res = await fetch(`${BACKEND_URL}/api/auth/users/activation/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid, token }),
+    });
+
+    const body = await res.json().catch(() => null);
+    if (!res.ok) {
+        throw new BackendError(
+            extractErrorMessage(body, "Lien d'activation invalide ou expiré."),
+            res.status,
+            body,
+        );
+    }
+    return body;
+}
+
+/** Redemande un e-mail d'activation (utile si le lien a expiré — validité 24h). */
+export async function backendResendActivation(email: string): Promise<void> {
+    const res = await fetch(`${BACKEND_URL}/api/auth/users/resend_activation/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+    });
+    // Djoser renvoie 204 même si l'email n'existe pas (anti-énumération) — on ne lève
+    // une erreur que sur une vraie panne serveur/réseau.
+    if (!res.ok && res.status !== 400) {
+        throw new BackendError("Impossible de renvoyer l'e-mail pour le moment.", res.status);
+    }
 }
 
 export function getRedirectPathForRole(role: string): string {

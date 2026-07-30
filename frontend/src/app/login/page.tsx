@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { authService } from '@/services/auth.service';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { UserRole } from '@/types';
@@ -27,13 +28,17 @@ function LoginForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [errorCode, setErrorCode] = useState<string | undefined>();
     const [submitting, setSubmitting] = useState(false);
+    const [resendState, setResendState] = useState<'idle' | 'sending' | 'sent'>('idle');
     const registered = searchParams.get('registered') === 'true';
     const redirect = searchParams.get('redirect');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setErrorCode(undefined);
+        setResendState('idle');
         setSubmitting(true);
         const result = await login(email, password);
         setSubmitting(false);
@@ -44,7 +49,15 @@ function LoginForm() {
             router.push(target);
         } else {
             setError(result.error || 'Erreur de connexion');
+            setErrorCode(result.errorCode);
         }
+    };
+
+    const handleResend = async () => {
+        if (!email.trim()) return;
+        setResendState('sending');
+        await authService.resendActivation(email.trim());
+        setResendState('sent');
     };
 
     return (
@@ -63,13 +76,29 @@ function LoginForm() {
 
                     {registered && (
                         <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl mb-6 text-sm">
-                            Inscription réussie. Connectez-vous avec vos identifiants.
+                            Inscription réussie ! Un e-mail de confirmation vient de vous être envoyé — cliquez sur le lien qu&apos;il contient pour activer votre compte, puis connectez-vous.
                         </div>
                     )}
 
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl mb-6 text-sm">
-                            {error}
+                            <p>{error}</p>
+                            {errorCode === 'EMAIL_NOT_CONFIRMED' && (
+                                resendState === 'sent' ? (
+                                    <p className="mt-2 text-green-700 font-medium">
+                                        E-mail de confirmation renvoyé — vérifiez votre boîte de réception.
+                                    </p>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={handleResend}
+                                        disabled={resendState === 'sending' || !email.trim()}
+                                        className="mt-2 font-bold text-red-900 underline underline-offset-2 hover:text-red-700 disabled:opacity-50"
+                                    >
+                                        {resendState === 'sending' ? 'Envoi…' : "Renvoyer l'e-mail de confirmation"}
+                                    </button>
+                                )
+                            )}
                         </div>
                     )}
 

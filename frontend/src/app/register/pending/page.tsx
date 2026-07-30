@@ -28,7 +28,7 @@ export default function RegisterPendingPage() {
 
                     <p className="text-slate-500 mb-6 leading-relaxed">
                         Votre candidature en tant que prestataire a été soumise avec succès.
-                        Notre équipe va examiner vos documents et valider votre profil.
+                        Un e-mail de confirmation vient de vous être envoyé.
                     </p>
 
                     <div className="bg-brand-tealLight/30 rounded-xl border border-brand-teal/10 p-4 mb-8">
@@ -37,9 +37,10 @@ export default function RegisterPendingPage() {
                             <div className="text-sm text-slate-600">
                                 <p className="font-semibold text-brand-teal mb-1">Prochaines étapes :</p>
                                 <ul className="space-y-1 list-disc list-inside text-slate-500">
-                                    <li>Vérification de votre pièce d&apos;identité</li>
-                                    <li>Validation de votre profil par un administrateur</li>
-                                    <li>Notification par email une fois votre compte activé</li>
+                                    <li>Cliquez sur le lien reçu par e-mail pour activer votre compte</li>
+                                    <li>Connectez-vous : votre espace prestataire est accessible immédiatement</li>
+                                    <li>Notre équipe vérifie vos documents (pièce d&apos;identité, justificatif)</li>
+                                    <li>Une fois validé, votre profil devient visible des clients</li>
                                 </ul>
                             </div>
                         </div>

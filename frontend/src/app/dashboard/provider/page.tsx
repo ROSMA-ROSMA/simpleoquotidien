@@ -14,7 +14,7 @@ import { providerService } from '@/services/provider.service';
 import { BookingStatus, Provider } from '@/types';
 import { formatPrice, getInitials } from '@/lib/utils';
 import { useEffect, useState } from 'react';
-import { IconCurrencyDollar, IconCalendar, IconCircleCheck, IconClock, IconPlus, IconBriefcase, IconShieldCheck, IconMessage } from '@tabler/icons-react';
+import { IconCurrencyDollar, IconCalendar, IconCircleCheck, IconClock, IconPlus, IconBriefcase, IconShieldCheck, IconMessage, IconAlertTriangle, IconHourglass } from '@tabler/icons-react';
 
 export default function ProviderDashboardPage() {
     const { currentUser } = useAuth();
@@ -82,6 +82,33 @@ export default function ProviderDashboardPage() {
                             </Link>
                         </div>
                     </div>
+
+                    {profile?.verification_status === 'EN_ATTENTE' && (
+                        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-8">
+                            <IconHourglass className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-sm font-bold text-amber-800">Profil en cours de vérification</p>
+                                <p className="text-[11px] text-amber-700 mt-0.5">
+                                    Votre compte est actif, mais nos équipes valident encore vos documents
+                                    (pièce d&apos;identité, justificatif). Vous ne recevrez de demandes de
+                                    clients qu&apos;une fois votre profil validé — généralement sous 24 à 48h.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {profile?.verification_status === 'SUSPENDU' && (
+                        <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-2xl p-4 mb-8">
+                            <IconAlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-sm font-bold text-red-800">Profil suspendu</p>
+                                <p className="text-[11px] text-red-700 mt-0.5">
+                                    Votre profil prestataire a été suspendu par notre équipe et n&apos;est
+                                    plus visible des clients. Contactez le support pour en savoir plus.
+                                </p>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                         <StatCard label="Revenus" value={`${formatPrice(revenue)} F`} icon={<IconCurrencyDollar className="w-6 h-6" />} color="emerald" />
