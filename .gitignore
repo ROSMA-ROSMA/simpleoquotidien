@@ -1,0 +1,24 @@
+# Python
+SimpleOQuotidien/venv/
+SimpleOQuotidien/.venv/
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Variables d'environnement
+.env
+
+# Node.js
+node_modules/
+
+# Logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+
+# Système
+.DS_Store
+Thumbs.db
