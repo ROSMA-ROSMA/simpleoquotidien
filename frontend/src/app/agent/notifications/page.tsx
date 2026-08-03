@@ -6,7 +6,7 @@ import AgentLayout from '@/components/layout/AgentLayout';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
 import { notificationService } from '@/services/notification.service';
-import { AppNotification } from '@/types';
+import { AppNotification, UserRole } from '@/types';
 import { timeAgo } from '@/lib/utils';
 import { IconBellRinging, IconCircleCheck } from '@tabler/icons-react';
 
@@ -16,7 +16,7 @@ export default function AgentNotificationsPage() {
 
     const load = useCallback(async () => {
         try {
-            const res = await notificationService.getAll();
+            const res = await notificationService.getAll(UserRole.AGENT);
             setNotifications(res.data);
         } catch { setNotifications([]); }
         finally { setLoading(false); }
@@ -61,14 +61,14 @@ export default function AgentNotificationsPage() {
                                 <IconBellRinging className="w-5 h-5" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-[11px] font-bold text-brand-dark">{n.title}</p>
-                                <p className="text-[11px] text-slate-500">{n.message}</p>
-                                {n.link && <Link href={n.link} className="text-[11px] font-bold text-brand-teal hover:text-brand-tealDark">Voir →</Link>}
+                                <p className="text-sm font-bold text-brand-dark">{n.title}</p>
+                                <p className="text-sm text-slate-500">{n.message}</p>
+                                {n.link && <Link href={n.link} className="text-sm font-bold text-brand-teal hover:text-brand-tealDark">Voir →</Link>}
                             </div>
                             <div className="flex flex-col items-end gap-2 shrink-0">
-                                <span className="text-[11px] text-slate-400 whitespace-nowrap">{timeAgo(n.created_at)}</span>
+                                <span className="text-sm text-slate-400 whitespace-nowrap">{timeAgo(n.created_at)}</span>
                                 {!n.is_read && (
-                                    <button onClick={() => handleMarkRead(n.id)} className="text-[11px] font-bold text-brand-teal hover:text-brand-tealDark">Marquer comme lu</button>
+                                    <button onClick={() => handleMarkRead(n.id)} className="text-sm font-bold text-brand-teal hover:text-brand-tealDark">Marquer comme lu</button>
                                 )}
                             </div>
                         </div>

@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { IconMenu2, IconX, IconSearch, IconCalendar, IconGrid3x3, IconLogout } from '@tabler/icons-react';
+import { useProviderProfile } from '@/hooks/useProviderProfile';
+import { IconMenu2, IconX, IconSearch, IconCalendar, IconGrid3x3, IconLogout, IconBellRinging } from '@tabler/icons-react';
 
 interface NavbarProps {
     activeTab?: string;
@@ -11,12 +12,14 @@ interface NavbarProps {
 
 export default function Navbar({ activeTab }: NavbarProps) {
     const { currentUser, logout } = useAuth();
+    const { profile } = useProviderProfile();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     if (!currentUser) return null;
 
     const isClient = currentUser.role === 'client';
     const isProvider = currentUser.role === 'provider';
+    const avatarPhoto = isProvider ? profile?.photo : undefined;
 
     const clientLinks = [
         { href: '/dashboard/client', label: 'Tableau de bord', icon: IconGrid3x3, id: 'dashboard' },
@@ -28,6 +31,7 @@ export default function Navbar({ activeTab }: NavbarProps) {
         { href: '/dashboard/provider', label: 'Dashboard', icon: IconGrid3x3, id: 'dashboard' },
         { href: '/dashboard/provider/bookings', label: 'Réservations', icon: IconCalendar, id: 'bookings' },
         { href: '/dashboard/provider/services', label: 'Services', icon: IconSearch, id: 'services' },
+        { href: '/dashboard/provider/notifications', label: 'Notifications', icon: IconBellRinging, id: 'notifications' },
     ];
 
     const links = isClient ? clientLinks : isProvider ? providerLinks : [];
@@ -85,9 +89,13 @@ export default function Navbar({ activeTab }: NavbarProps) {
                     <div className="hidden md:flex items-center gap-4">
                         <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
                             <span className="text-base font-semibold text-slate-700">{currentUser.first_name}</span>
-                            <div className="w-8 h-8 rounded-full bg-brand-tealLight text-brand-teal flex items-center justify-center font-bold text-sm ring-2 ring-white">
-                                {currentUser.first_name[0]}
-                            </div>
+                            {avatarPhoto ? (
+                                <img src={avatarPhoto} alt={currentUser.first_name} className="w-8 h-8 rounded-full object-cover ring-2 ring-white" />
+                            ) : (
+                                <div className="w-8 h-8 rounded-full bg-brand-tealLight text-brand-teal flex items-center justify-center font-bold text-sm ring-2 ring-white">
+                                    {currentUser.first_name[0]}
+                                </div>
+                            )}
                         </div>
                         <button
                             onClick={logout}
@@ -129,9 +137,13 @@ export default function Navbar({ activeTab }: NavbarProps) {
                         <div className="border-t border-slate-100 my-2" />
                         <div className="flex items-center justify-between p-3">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-brand-tealLight text-brand-teal flex items-center justify-center font-bold text-sm ring-2 ring-white">
-                                    {currentUser.first_name[0]}
-                                </div>
+                                {avatarPhoto ? (
+                                    <img src={avatarPhoto} alt={currentUser.first_name} className="w-8 h-8 rounded-full object-cover ring-2 ring-white" />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-full bg-brand-tealLight text-brand-teal flex items-center justify-center font-bold text-sm ring-2 ring-white">
+                                        {currentUser.first_name[0]}
+                                    </div>
+                                )}
                                 <span className="text-base font-semibold text-slate-700">{currentUser.first_name}</span>
                             </div>
                             <button

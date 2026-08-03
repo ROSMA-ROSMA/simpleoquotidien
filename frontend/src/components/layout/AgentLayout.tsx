@@ -29,14 +29,14 @@ export default function AgentLayout({ title, subtitle, children }: { title: stri
 
     useEffect(() => {
         if (!currentUser) return;
-        notificationService.getAll()
+        notificationService.getAll(UserRole.AGENT)
             .then(res => setUnreadNotifs(res.data.filter(n => !n.is_read).length))
             .catch(() => setUnreadNotifs(0));
     }, [currentUser, pathname]);
 
     const toAssign = bookings.filter(b => [BookingStatus.PENDING, BookingStatus.PROCESSING].includes(b.status)).length;
     const toReassign = bookings.filter(b => b.status === BookingStatus.REASSIGNMENT_NEEDED).length;
-    const toQuote = bookings.filter(b => b.status === BookingStatus.ASSIGNED || b.status === BookingStatus.CONFIRMED).length;
+    const toQuote = bookings.filter(b => b.status === BookingStatus.ASSIGNED && b.quote_id === undefined).length;
 
     const sections: { label: string; items: NavItem[] }[] = [
         {

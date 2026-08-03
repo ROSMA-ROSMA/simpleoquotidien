@@ -5,21 +5,29 @@ import { useRouter } from 'next/navigation';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { categoryService } from '@/services/category.service';
-import { IconArrowLeft } from '@tabler/icons-react';
+import { IconArrowLeft, IconPhoto } from '@tabler/icons-react';
 import Link from 'next/link';
 
 export default function AdminCreateCategoryPage() {
     const router = useRouter();
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [form, setForm] = useState({ name: '', description: '', icon: '' });
+    const [form, setForm] = useState({ name: '', description: '' });
+    const [image, setImage] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] ?? null;
+        setImage(file);
+        setPreview(file ? URL.createObjectURL(file) : null);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
         setError(null);
         try {
-            await categoryService.create({ name: form.name, description: form.description });
+            await categoryService.create({ name: form.name, description: form.description, image: image ?? undefined });
             router.push('/dashboard/admin');
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Erreur lors de la création');
@@ -39,7 +47,17 @@ export default function AdminCreateCategoryPage() {
                             <label className="block text-base font-semibold text-slate-700 mb-1.5">Description</label>
                             <textarea placeholder="Décrivez la catégorie..." rows={3} value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-base focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal outline-none resize-none" required />
                         </div>
-                        <Input label="Icône" placeholder="Ex: heart, tool, home-heart" value={form.icon} onChange={(e) => setForm(f => ({ ...f, icon: e.target.value }))} />
+                        <div>
+                            <label className="block text-base font-semibold text-slate-700 mb-1.5">Image de la catégorie</label>
+                            {preview && (
+                                <img src={preview} alt="Aperçu" className="w-full h-40 object-cover rounded-xl mb-3 border border-slate-200" />
+                            )}
+                            <label className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-base font-semibold text-slate-500 cursor-pointer hover:border-brand-teal hover:text-brand-teal transition-colors">
+                                <IconPhoto className="w-5 h-5" />
+                                {image ? image.name : 'Choisir une image…'}
+                                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                            </label>
+                        </div>
                         <div className="flex gap-3 pt-2">
                             <Button type="submit" fullWidth disabled={saving}>{saving ? 'Création…' : 'Créer'}</Button>
                             <Link href="/dashboard/admin" className="w-full"><Button variant="secondary" fullWidth>Annuler</Button></Link>

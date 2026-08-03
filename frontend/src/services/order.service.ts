@@ -13,16 +13,16 @@ export type { ApiResponse } from './apiClient';
 interface OrderAssignmentInfo {
     assignmentId: number;
     providerId: number;
-    status: 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE';
+    status: 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE' | 'EXPIREE';
 }
 
-async function fetchAssignmentsByOrder(): Promise<Map<number, OrderAssignmentInfo>> {
+async function fetchAssignmentsByOrder(): Promise<Map<string, OrderAssignmentInfo>> {
     try {
         const raw = await apiFetch<BackendAssignment[] | { results: BackendAssignment[] }>(
-            'api/utilisateurs/assignments/',
+            'Info_utilisateurs/assignments/',
         );
         const list = unwrapList(raw);
-        const map = new Map<number, OrderAssignmentInfo>();
+        const map = new Map<string, OrderAssignmentInfo>();
         for (const a of list) {
             // Le backend trie par date décroissante : la première assignation
             // rencontrée pour une commande donnée est donc la plus récente.
@@ -46,7 +46,7 @@ function toMapperExtras(info?: OrderAssignmentInfo) {
 
 async function mapOrdersList(orders: BackendOrder[]): Promise<Booking[]> {
     const assignments = await fetchAssignmentsByOrder();
-    return orders.map(o => mapOrderFromBackend(o, toMapperExtras(assignments.get(o.id))));
+    return orders.map(o => mapOrderFromBackend(o, toMapperExtras(assignments.get(o.uuid))));
 }
 
 export interface CreateOrderInput {
@@ -63,7 +63,7 @@ export const orderService = {
         client_id?: number;
         provider_id?: number;
     }): Promise<LegacyApiResponse<Booking[]>> {
-        const raw = await apiFetch<BackendOrder[] | { results: BackendOrder[] }>('api/commandes/orders/');
+        const raw = await apiFetch<BackendOrder[] | { results: BackendOrder[] }>('Commandes/orders/');
         let items = await mapOrdersList(unwrapList(raw));
         if (filters?.status) items = items.filter(b => b.status === filters.status);
         if (filters?.client_id) items = items.filter(b => b.client_id === filters.client_id);
@@ -74,10 +74,10 @@ export const orderService = {
         return { data: items, meta: { total: items.length } };
     },
 
-    async getById(id: number): Promise<LegacyApiResponse<Booking>> {
-        const raw = await apiFetch<BackendOrder>(`api/commandes/orders/${id}/`);
+    async getById(uuid: string): Promise<LegacyApiResponse<Booking>> {
+        const raw = await apiFetch<BackendOrder>(`Commandes/orders/${uuid}/`);
         const assignments = await fetchAssignmentsByOrder();
-        const booking = mapOrderFromBackend(raw, toMapperExtras(assignments.get(raw.id)));
+        const booking = mapOrderFromBackend(raw, toMapperExtras(assignments.get(raw.uuid)));
         return { data: booking };
     },
 
@@ -89,14 +89,14 @@ export const orderService = {
             description: payload.message?.trim() || 'Demande de service',
             budget: payload.budget,
         };
-        const raw = await apiFetch<BackendOrder>('api/commandes/orders/', {
+        const raw = await apiFetch<BackendOrder>('Commandes/orders/', {
             method: 'POST',
             body: JSON.stringify(body),
         });
         return { data: mapOrderFromBackend(raw) };
     },
 
-    async update(id: number, patch: Partial<{ address: string; message: string; scheduled_datetime: string; budget: number; status: BookingStatus }>): Promise<LegacyApiResponse<Booking>> {
+    async update(uuid: string, patch: Partial<{ address: string; message: string; scheduled_datetime: string; budget: number; status: BookingStatus }>): Promise<LegacyApiResponse<Booking>> {
         const body: Record<string, unknown> = {};
         if (patch.address !== undefined) body.localisation = patch.address;
         if (patch.message !== undefined) body.description = patch.message;
@@ -106,107 +106,111 @@ export const orderService = {
             const backendStatus = BOOKING_STATUS_TO_ORDER[patch.status];
             if (backendStatus) body.status = backendStatus;
         }
-        const raw = await apiFetch<BackendOrder>(`api/commandes/orders/${id}/`, {
+        const raw = await apiFetch<BackendOrder>(`Commandes/orders/${uuid}/`, {
             method: 'PATCH',
             body: JSON.stringify(body),
         });
         const assignments = await fetchAssignmentsByOrder();
         return {
-            data: mapOrderFromBackend(raw, toMapperExtras(assignments.get(raw.id))),
+            data: mapOrderFromBackend(raw, toMapperExtras(assignments.get(raw.uuid))),
         };
     },
 
-    async assignProvider(bookingId: number, providerId: number, agentId: number) {
-        await apiFetch('api/utilisateurs/assignments/', {
+    async assignProvider(order: { id: number; uuid: string }, providerId: number, agentId: number) {
+        await apiFetch('Info_utilisateurs/assignments/', {
             method: 'POST',
             body: JSON.stringify({
                 methode: 'MANUEL',
-                order: bookingId,
+                order: order.uuid,
                 prestataire: providerId,
                 qualifier: agentId,
             }),
         });
-        await orderService.update(bookingId, { status: BookingStatus.ASSIGNED });
-        return orderService.getById(bookingId);
+        await orderService.update(order.uuid, { status: BookingStatus.ASSIGNED });
+        return orderService.getById(order.uuid);
     },
 
     async accept(assignmentId: number) {
-        await apiFetch(`api/utilisateurs/assignments/${assignmentId}/accept/`, { method: 'POST' });
+        await apiFetch(`Info_utilisateurs/assignments/${assignmentId}/accept/`, { method: 'POST' });
     },
 
     async refuse(assignmentId: number, reason?: string) {
-        await apiFetch(`api/utilisateurs/assignments/${assignmentId}/refuse/`, {
+        await apiFetch(`Info_utilisateurs/assignments/${assignmentId}/refuse/`, {
             method: 'POST',
             body: JSON.stringify({ reason: reason ?? '' }),
         });
     },
 
-    async postpone(bookingId: number, _reason?: string) {
-        return orderService.update(bookingId, { status: BookingStatus.POSTPONED });
+    async postpone(uuid: string, _reason?: string) {
+        return orderService.update(uuid, { status: BookingStatus.POSTPONED });
     },
 
-    async contactClient(bookingId: number, message: string, subject?: string) {
-        return apiFetch<{ sent: boolean }>(`api/commandes/orders/${bookingId}/contact-client/`, {
+    async contactClient(uuid: string, message: string, subject?: string) {
+        return apiFetch<{ sent: boolean }>(`Commandes/orders/${uuid}/contact-client/`, {
             method: 'POST',
             body: JSON.stringify({ message, subject }),
         });
     },
 
-    async sendQuote(bookingId: number, amount: number, _note?: string) {
-        const existing = await apiFetch<BackendOrder>(`api/commandes/orders/${bookingId}/`);
-        if (existing.quote?.id) {
-            await apiFetch<BackendQuote>(`api/commandes/quotes/${existing.quote.id}/`, {
-                method: 'PATCH',
-                body: JSON.stringify({ price: String(amount), status: 'ENVOYE' }),
-            });
-        } else {
-            await apiFetch<BackendQuote>('api/commandes/quotes/', {
-                method: 'POST',
-                body: JSON.stringify({ order: bookingId, price: String(amount), status: 'ENVOYE' }),
-            });
-        }
-        return orderService.getById(bookingId);
+    async submitQuote(uuid: string, amount: number, description?: string) {
+        await apiFetch<BackendQuote>('Commandes/quotes/', {
+            method: 'POST',
+            body: JSON.stringify({ order: uuid, price: String(amount), description: description ?? '' }),
+        });
+        return orderService.getById(uuid);
     },
 
-    async validateQuote(bookingId: number) {
-        const existing = await apiFetch<BackendOrder>(`api/commandes/orders/${bookingId}/`);
+    async validateQuote(uuid: string) {
+        const existing = await apiFetch<BackendOrder>(`Commandes/orders/${uuid}/`);
         if (!existing.quote?.id) {
             throw new ApiError('Aucun devis à valider', 400);
         }
-        await apiFetch(`api/commandes/quotes/${existing.quote.id}/`, {
+        await apiFetch(`Commandes/quotes/${existing.quote.id}/`, {
             method: 'PATCH',
             body: JSON.stringify({ status: mapQuoteStatusToBackend('accept') }),
         });
-        return orderService.getById(bookingId);
+        return orderService.getById(uuid);
     },
 
-    async contactProvider(_bookingId: number) {
+    async refuseQuote(uuid: string) {
+        const existing = await apiFetch<BackendOrder>(`Commandes/orders/${uuid}/`);
+        if (!existing.quote?.id) {
+            throw new ApiError('Aucun devis à refuser', 400);
+        }
+        await apiFetch(`Commandes/quotes/${existing.quote.id}/`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status: mapQuoteStatusToBackend('reject') }),
+        });
+        return orderService.getById(uuid);
+    },
+
+    async contactProvider(_uuid: string) {
         return { data: { ok: true } };
     },
 
-    async startExecution(bookingId: number) {
-        return orderService.update(bookingId, { status: BookingStatus.IN_PROGRESS });
+    async startExecution(uuid: string) {
+        return orderService.update(uuid, { status: BookingStatus.IN_PROGRESS });
     },
 
-    async complete(bookingId: number) {
-        return orderService.update(bookingId, { status: BookingStatus.COMPLETED });
+    async complete(uuid: string) {
+        return orderService.update(uuid, { status: BookingStatus.COMPLETED });
     },
 
-    async close(bookingId: number) {
-        return orderService.update(bookingId, { status: BookingStatus.COMPLETED });
+    async close(uuid: string) {
+        return orderService.update(uuid, { status: BookingStatus.COMPLETED });
     },
 
-    async cancel(bookingId: number, _reason?: string) {
-        return orderService.update(bookingId, { status: BookingStatus.CANCELLED });
+    async cancel(uuid: string, _reason?: string) {
+        return orderService.update(uuid, { status: BookingStatus.CANCELLED });
     },
 
-    async pay(_bookingId: number, _method: PaymentMethod) {
+    async pay(_uuid: string, _method: PaymentMethod) {
         throw new ApiError('Paiement en ligne non connecté au backend.', 501);
     },
 
-    async review(_bookingId: number, rating: number, comment?: string, providerId?: number) {
+    async review(_uuid: string, rating: number, comment?: string, providerId?: number) {
         if (!providerId) throw new ApiError('Prestataire inconnu pour cette commande.', 400);
-        await apiFetch('api/utilisateurs/notes/', {
+        await apiFetch('Info_utilisateurs/notes/', {
             method: 'POST',
             body: JSON.stringify({
                 etoile: rating,
@@ -217,7 +221,7 @@ export const orderService = {
         return { data: { ok: true } };
     },
 
-    async findAvailableProviders(_bookingId: number) {
+    async findAvailableProviders(_uuid: string) {
         const { providerService } = await import('./provider.service');
         return providerService.getAll();
     },

@@ -33,7 +33,7 @@ class AssignmentInline(TabularInline):
     model = Assignment
     fk_name = 'prestataire'
     extra = 0
-    fields = ('order', 'methode', 'qualifier', 'date_creation')
+    fields = ('order', 'methode', 'qualifier', 'status', 'date_creation')
     readonly_fields = ('date_creation',)
     autocomplete_fields = ('qualifier',)
     tab = True
@@ -137,8 +137,8 @@ class PrestataireProfileAdmin(ModelAdmin):
 
 @admin.register(Assignment)
 class AssignmentAdmin(ModelAdmin):
-    list_display = ('id', 'order', 'prestataire', 'qualifier', 'methode', 'date_creation')
-    list_filter = ('methode',)
+    list_display = ('id', 'order', 'prestataire', 'qualifier', 'methode', 'status', 'date_creation')
+    list_filter = ('methode', 'status')
     search_fields = ('order__id', 'prestataire__company_name', 'qualifier__email')
     autocomplete_fields = ('prestataire', 'qualifier')
 

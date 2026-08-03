@@ -1,0 +1,12 @@
+cd /home/megane/Téléchargements/simpleoquotidien-final/backend/SimpleOQuotidien && docker compose up -d 2>&1 | tail -5
+source .venv/bin/activate
+nohup python manage.py runserver 0.0.0.0:8000 > /tmp/claude-1000/-home-megane-T-l-chargements-simpleoquotidien-final/2defae41-0f12-4dc5-9d18-34f219a3a1aa/scratchpad/django.log 2>&1 &
+disown
+nohup celery -A SimpleOQuotidien worker -l info --pool solo > /tmp/claude-1000/-home-megane-T-l-chargements-simpleoquotidien-final/2defae41-0f12-4dc5-9d18-34f219a3a1aa/scratchpad/celery.log 2>&1 &
+disown
+sleep 3
+echo "--- django ---"; curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8000/api/schema/
+echo "--- celery log tail ---"; tail -5 /tmp/claude-1000/-home-megane-T-l-chargements-simpleoquotidien-final/2defae41-0f12-4dc5-9d18-34f219a3a1aa/scratchpad/celery.logcd /home/megane/Téléchargements/simpleoquotidien-final/frontend
+nohup npm run dev > /tmp/claude-1000/-home-megane-T-l-chargements-simpleoquotidien-final/2defae41-0f12-4dc5-9d18-34f219a3a1aa/scratchpad/next.log 2>&1 &
+disown
+sleep 5

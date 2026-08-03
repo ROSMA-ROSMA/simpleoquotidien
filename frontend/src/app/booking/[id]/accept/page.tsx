@@ -1,36 +1,26 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
-import { useAuth } from '@/context/AuthContext';
 import { useBooking } from '@/hooks/useOrders';
 import { orderService } from '@/services/order.service';
 import { getBookingTitle } from '@/lib/utils';
-import { IconCircleCheck, IconArrowLeft, IconMail } from '@tabler/icons-react';
+import { IconCircleCheck, IconArrowLeft, IconSend } from '@tabler/icons-react';
 
 interface Props { params: Promise<{ id: string }>; }
 
-export default function AcceptBookingPage({ params }: Props) {
+export default function SubmitQuotePage({ params }: Props) {
     const { id } = use(params);
-    const bookingId = parseInt(id, 10);
-    const { currentUser } = useAuth();
-    const { booking, loading } = useBooking(bookingId);
-    const [message, setMessage] = useState('');
-    const [sending, setSending] = useState(false);
-    const [sent, setSent] = useState(false);
+    const router = useRouter();
+    const { booking, loading } = useBooking(id);
+    const [amount, setAmount] = useState('');
+    const [description, setDescription] = useState('');
+    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (!booking) return;
-        const clientName = booking.client?.first_name ?? 'client';
-        const providerName = currentUser?.first_name ?? '';
-        setMessage(
-            `Bonjour ${clientName},\n\nJ'ai bien reçu votre demande pour "${getBookingTitle(booking)}" et je m'en occupe. Je vous contacterai prochainement pour organiser l'intervention.\n\nÀ bientôt,\n${providerName}`,
-        );
-    }, [booking, currentUser]);
 
     if (loading) {
         return (
@@ -51,16 +41,16 @@ export default function AcceptBookingPage({ params }: Props) {
         );
     }
 
-    const handleSend = async () => {
-        setSending(true);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
         setError(null);
         try {
-            await orderService.contactClient(booking.id, message);
-            setSent(true);
-        } catch (e) {
-            setError(e instanceof Error ? e.message : 'Erreur lors de l’envoi');
-        } finally {
-            setSending(false);
+            await orderService.submitQuote(id, Number(amount), description || undefined);
+            router.push('/dashboard/provider/bookings');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Erreur lors de l'envoi du devis");
+            setSubmitting(false);
         }
     };
 
@@ -78,31 +68,41 @@ export default function AcceptBookingPage({ params }: Props) {
                             <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3">
                                 <IconCircleCheck className="w-7 h-7 text-emerald-500" />
                             </div>
-                            <h1 className="text-2xl font-extrabold text-brand-dark">Commande acceptée</h1>
+                            <h1 className="text-2xl font-extrabold text-brand-dark">Établir votre devis</h1>
                             <p className="text-slate-500 text-sm mt-1">{getBookingTitle(booking)}</p>
+                            <p className="text-slate-400 text-xs mt-2">Mission acceptée — soumettez immédiatement votre devis pour que le client puisse le consulter.</p>
                         </div>
 
-                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">Message au client (modifiable)</label>
-                        <textarea
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            rows={7}
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal outline-none transition-all resize-none mb-4"
-                        />
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Montant (FCFA)</label>
+                                <input
+                                    type="number"
+                                    min={0}
+                                    value={amount}
+                                    onChange={(e) => setAmount(e.target.value)}
+                                    placeholder="15000"
+                                    required
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal outline-none transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Détails du devis</label>
+                                <textarea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    rows={6}
+                                    placeholder="Détail des prestations, matériel, délai d'intervention…"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal outline-none transition-all resize-none"
+                                />
+                            </div>
 
-                        {error && <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3 mb-4">{error}</p>}
-                        {sent && (
-                            <p className="text-sm text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 mb-4 flex items-center gap-2">
-                                <IconCircleCheck className="w-4 h-4" /> Message envoyé au client par email.
-                            </p>
-                        )}
+                            {error && <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">{error}</p>}
 
-                        <div className="flex gap-3">
-                            <Button fullWidth icon={<IconMail className="w-4 h-4" />} disabled={sending || !message.trim()} onClick={handleSend}>
-                                {sending ? 'Envoi…' : sent ? 'Renvoyer au client' : 'Contacter le client'}
+                            <Button type="submit" fullWidth icon={<IconSend className="w-4 h-4" />} disabled={submitting || !amount}>
+                                {submitting ? 'Envoi…' : 'Envoyer le devis au client'}
                             </Button>
-                            <Link href="/dashboard/provider/bookings" className="w-full"><Button variant="secondary" fullWidth>Terminer</Button></Link>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </main>

@@ -11,7 +11,7 @@ import { ApiResponse } from './apiClient';
 export const userService = {
     async getAll(filters?: { role?: UserRole }): Promise<ApiResponse<User[]>> {
         const raw = await apiFetch<BackendUser[] | { results: BackendUser[] }>(
-            'api/utilisateurs/utilisateurs/',
+            'Info_utilisateurs/utilisateurs/',
         );
         let list = unwrapList(raw).map(mapUserFromBackend);
         if (filters?.role) {
@@ -21,7 +21,7 @@ export const userService = {
     },
 
     async getById(id: number): Promise<ApiResponse<User>> {
-        const raw = await apiFetch<BackendUser>(`api/utilisateurs/utilisateurs/${id}/`);
+        const raw = await apiFetch<BackendUser>(`Info_utilisateurs/utilisateurs/${id}/`);
         return { data: mapUserFromBackend(raw) };
     },
 

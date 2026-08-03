@@ -1,26 +1,25 @@
 import { apiFetch, unwrapList, ApiResponse } from '@/lib/api/client';
 import { mapNotificationFromBackend } from '@/lib/mappers/backend';
 import { BackendNotification } from '@/types/backend';
-import { AppNotification } from '@/types';
+import { AppNotification, UserRole } from '@/types';
 
 export const notificationService = {
-    async getAll(): Promise<ApiResponse<AppNotification[]>> {
+    async getAll(viewerRole: UserRole): Promise<ApiResponse<AppNotification[]>> {
         const raw = await apiFetch<BackendNotification[] | { results: BackendNotification[] }>(
-            'api/utilisateurs/notifications/',
+            'Notifications/notifications/',
         );
-        const list = unwrapList(raw).map(mapNotificationFromBackend);
+        const list = unwrapList(raw).map(n => mapNotificationFromBackend(n, viewerRole));
         list.sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
         return { data: list, meta: { total: list.length } };
     },
 
     async markRead(id: number): Promise<void> {
-        await apiFetch(`api/utilisateurs/notifications/${id}/`, {
+        await apiFetch(`Notifications/notifications/${id}/marquer-lu/`, {
             method: 'PATCH',
-            body: JSON.stringify({ is_read: true }),
         });
     },
 
     async markAllRead(): Promise<void> {
-        await apiFetch('api/utilisateurs/notifications/mark-all-read/', { method: 'POST' });
+        await apiFetch('Notifications/notifications/marquer-tout-lu/', { method: 'PATCH' });
     },
 };

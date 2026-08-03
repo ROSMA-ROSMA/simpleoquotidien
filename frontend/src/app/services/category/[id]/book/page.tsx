@@ -51,7 +51,7 @@ export default function BookCategoryPage({ params }: Props) {
                 message: form.message.trim() || undefined,
                 budget: Number(form.budget) || 0,
             });
-            router.push(`/booking/${res.data.id}?booking_success=true`);
+            router.push(`/booking/${res.data.uuid}?booking_success=true`);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Impossible de créer la commande');
             setSubmitting(false);

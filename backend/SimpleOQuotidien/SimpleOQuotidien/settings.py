@@ -13,9 +13,17 @@ from django.templatetags.static import static
 from datetime import timedelta
 import os
 from pathlib import Path
+from urllib.parse import urlsplit
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# URL de l'application front-end (Next.js) — utilisée pour construire les liens
+# envoyés par e-mail (activation, assignation, devis, notifications). L'app tourne
+# en local pour l'instant, d'où le défaut localhost ; à surcharger en production
+# via la variable d'environnement FRONTEND_URL.
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+_frontend_url_parts = urlsplit(FRONTEND_URL)
 
 
 # Quick-start development settings - unsuitable for production
@@ -152,8 +160,13 @@ DJOSER = {
     'SEND_CONFIRMATION_EMAIL': False,
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
-    'DOMAIN': 'localhost:3000',
-    'site_name': 'SimpleOQuotidien',
+    # Djoser 2.x lit ces 3 clés (et non 'DOMAIN'/'site_name', qui sont ignorées en
+    # silence) pour construire le lien envoyé par e-mail — d'où le lien qui pointait
+    # vers le backend (localhost:8000) au lieu du frontend. On les dérive de
+    # FRONTEND_URL pour rester cohérent avec le reste des e-mails (devis, assignation).
+    'EMAIL_FRONTEND_PROTOCOL': _frontend_url_parts.scheme,
+    'EMAIL_FRONTEND_DOMAIN': _frontend_url_parts.netloc,
+    'EMAIL_FRONTEND_SITE_NAME': 'SimpleOQuotidien',
     
     # 🎨 Association des templates d'e-mail personnalisés
     'EMAIL': {
@@ -193,6 +206,12 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Celery / Redis
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6380/0')
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TIMEZONE = TIME_ZONE
 
 # Configuration SMTP Brevo pour Django
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

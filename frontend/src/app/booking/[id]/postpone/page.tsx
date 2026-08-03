@@ -18,8 +18,7 @@ interface Props { params: Promise<{ id: string }>; }
 export default function PostponeBookingPage({ params }: Props) {
     const { id } = use(params);
     const router = useRouter();
-    const bookingId = parseInt(id, 10);
-    const { booking, loading } = useBooking(bookingId);
+    const { booking, loading } = useBooking(id);
     const [reason, setReason] = useState('');
     const [newDate, setNewDate] = useState('');
     const [newTime, setNewTime] = useState('');
@@ -49,12 +48,12 @@ export default function PostponeBookingPage({ params }: Props) {
         setSubmitting(true);
         try {
             const note = reason.trim() || 'Report demandé';
-            await orderService.update(booking.id, {
+            await orderService.update(id, {
                 scheduled_datetime: `${newDate}T${newTime}:00`,
                 message: booking.message ? `${booking.message}\n[Report] ${note}` : `[Report] ${note}`,
                 status: BookingStatus.POSTPONED,
             });
-            router.push(`/booking/${booking.id}?postponed=true`);
+            router.push(`/booking/${id}?postponed=true`);
         } catch {
             setSubmitting(false);
         }
@@ -65,7 +64,7 @@ export default function PostponeBookingPage({ params }: Props) {
             <LandingNavbar />
             <main className="flex-1 pt-28 pb-16">
                 <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <Link href={`/booking/${booking.id}`} className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-teal font-medium mb-6 transition-colors">
+                    <Link href={`/booking/${id}`} className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-teal font-medium mb-6 transition-colors">
                         <IconArrowLeft className="w-4 h-4" /> Retour
                     </Link>
 
@@ -89,7 +88,7 @@ export default function PostponeBookingPage({ params }: Props) {
                             </div>
                             <div className="flex gap-3 pt-2">
                                 <Button type="submit" fullWidth variant="coral" disabled={submitting}>Confirmer le report</Button>
-                                <Link href={`/booking/${booking.id}`} className="w-full"><Button variant="secondary" fullWidth>Annuler</Button></Link>
+                                <Link href={`/booking/${id}`} className="w-full"><Button variant="secondary" fullWidth>Annuler</Button></Link>
                             </div>
                         </form>
                     </div>

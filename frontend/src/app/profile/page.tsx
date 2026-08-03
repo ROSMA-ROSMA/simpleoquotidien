@@ -9,15 +9,19 @@ import Button from '@/components/ui/Button';
 import Alert from '@/components/ui/Alert';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/auth.service';
+import { providerService } from '@/services/provider.service';
+import { useProviderProfile } from '@/hooks/useProviderProfile';
 import { getInitials } from '@/lib/utils';
 import { UserRole } from '@/types';
-import { IconUser, IconMail, IconPhone, IconLock, IconGlobe, IconMapPin } from '@tabler/icons-react';
+import { IconUser, IconMail, IconPhone, IconLock, IconGlobe, IconMapPin, IconCamera } from '@tabler/icons-react';
 
 export default function ProfilePage() {
     const { currentUser, refreshUser } = useAuth();
+    const { profile: providerProfile, loading: providerProfileLoading, reload: reloadProviderProfile } = useProviderProfile();
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [uploadingPhoto, setUploadingPhoto] = useState(false);
     const [form, setForm] = useState({
         first_name: '',
         last_name: '',
@@ -42,6 +46,21 @@ export default function ProfilePage() {
     if (!currentUser) {
         return <div className="min-h-screen flex items-center justify-center"><Link href="/login" className="text-brand-teal font-bold">Se connecter →</Link></div>;
     }
+
+    const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !providerProfile) return;
+        setUploadingPhoto(true);
+        setError('');
+        try {
+            await providerService.updatePhoto(providerProfile.id, file);
+            await reloadProviderProfile();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Impossible de mettre à jour la photo');
+        } finally {
+            setUploadingPhoto(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -75,8 +94,24 @@ export default function ProfilePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div className="bg-white rounded-2xl p-6 shadow-card border border-slate-100 text-center">
-                            <div className="w-24 h-24 rounded-full bg-brand-tealLight text-brand-teal flex items-center justify-center text-3xl font-bold mx-auto ring-4 ring-brand-tealLight mb-4">
-                                {getInitials(currentUser.first_name, currentUser.last_name)}
+                            <div className="relative w-24 h-24 mx-auto mb-4">
+                                {providerProfile?.photo ? (
+                                    <img src={providerProfile.photo} alt={currentUser.first_name} className="w-24 h-24 rounded-full object-cover ring-4 ring-brand-tealLight" />
+                                ) : (
+                                    <div className="w-24 h-24 rounded-full bg-brand-tealLight text-brand-teal flex items-center justify-center text-3xl font-bold ring-4 ring-brand-tealLight">
+                                        {getInitials(currentUser.first_name, currentUser.last_name)}
+                                    </div>
+                                )}
+                                {currentUser.role === UserRole.PROVIDER && !providerProfileLoading && providerProfile && (
+                                    <label className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-brand-teal text-white flex items-center justify-center cursor-pointer border-2 border-white hover:bg-brand-tealDark transition-colors" title="Changer la photo">
+                                        {uploadingPhoto ? (
+                                            <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        ) : (
+                                            <IconCamera className="w-4 h-4" />
+                                        )}
+                                        <input type="file" accept="image/*" onChange={handlePhotoChange} disabled={uploadingPhoto} className="hidden" />
+                                    </label>
+                                )}
                             </div>
                             <h3 className="font-bold text-brand-dark text-lg">{currentUser.first_name} {currentUser.last_name}</h3>
                             <p className="text-slate-500 text-sm capitalize">{currentUser.role}</p>

@@ -32,14 +32,15 @@ def notifier_assignation_prestataire(assignment):
         titre='Nouvelle assignation de mission',
         message=(
             f'Vous avez été assigné à la commande {order.uuid}'
-            f' ({order.localisation}). Veuillez établir un devis.'
+            f' ({order.localisation}). Merci de consulter la demande et de répondre'
+            ' sous 30 minutes.'
         ),
         type_notif=NotificationType.NEW_ASSIGNMENT,
         order=order,
     )
 
     if destinataire.email:
-        provider_dashboard_url = f"{getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')}/provider/orders/{order.uuid}"
+        provider_dashboard_url = f"{settings.FRONTEND_URL}/booking/{order.uuid}"
         context = {
             'prestataire': prestataire,
             'order': order,
@@ -119,7 +120,19 @@ def envoyer_notification_devis_client(request, quote):
     refuse_url = (
         f"{domain}{reverse('direct-quote-action', kwargs={'token': token_refuse})}"
     )
-    order_detail_url = f"{getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')}/commandes/{order.uuid}"
+    order_detail_url = f"{settings.FRONTEND_URL}/booking/{order.uuid}"
+
+    creer_notification_inapp(
+        destinataire=client,
+        titre='Votre commande a été acceptée — devis reçu',
+        message=(
+            f'Le prestataire a accepté votre commande {order.uuid} et propose un'
+            f' devis de {quote.price} FCFA. Consultez et validez-le depuis votre'
+            ' espace.'
+        ),
+        type_notif=NotificationType.NEW_QUOTE_RECEIVED,
+        order=order,
+    )
 
     context = {
         'destinataire': client,
@@ -208,6 +221,103 @@ def notifier_refus_devis_agents(quote):
             titre=titre,
             message=message,
             type_notif=NotificationType.QUOTE_REFUSED,
+            order=order,
+        )
+
+        if agent.email:
+            context = {
+                'destinataire': agent,
+                'order': order,
+                'quote': quote,
+                'titre': titre,
+                'message': message,
+            }
+            html_content = render_to_string(
+                'email/general_notification.html', context
+            )
+
+            msg = EmailMultiAlternatives(
+                subject=titre,
+                body=message,
+                from_email=getattr(
+                    settings, 'DEFAULT_FROM_EMAIL', 'kamta.mariane1@icloud.com'
+                ),
+                to=[agent.email],
+            )
+            msg.attach_alternative(html_content, 'text/html')
+            msg.send(fail_silently=False)
+
+
+def notifier_reassignation_necessaire(assignment, motif='refus'):
+    """Notifie les agents/admins qu'une commande doit être réassignée
+    (refus explicite du prestataire ou non-réponse sous 30 minutes)."""
+    order = assignment.order
+    agents = User.objects.filter(role__in=['AGENT', 'ADMIN'])
+
+    if motif == 'timeout':
+        titre = f'Délai dépassé - Commande {order.uuid} à réassigner'
+        message = (
+            f"Le prestataire {assignment.prestataire.company_name} n'a pas répondu"
+            ' dans le délai de 30 minutes. Merci de réassigner un nouveau'
+            ' prestataire.'
+        )
+    else:
+        raison = f' Motif : {assignment.motif_refus}' if assignment.motif_refus else ''
+        titre = f'Prestataire refusé - Commande {order.uuid} à réassigner'
+        message = (
+            f'Le prestataire {assignment.prestataire.company_name} a refusé la'
+            f' mission.{raison} Merci de réassigner un nouveau prestataire.'
+        )
+
+    for agent in agents:
+        creer_notification_inapp(
+            destinataire=agent,
+            titre=titre,
+            message=message,
+            type_notif=NotificationType.REASSIGNMENT_NEEDED,
+            order=order,
+        )
+
+        if agent.email:
+            context = {
+                'destinataire': agent,
+                'order': order,
+                'titre': titre,
+                'message': message,
+            }
+            html_content = render_to_string(
+                'email/general_notification.html', context
+            )
+
+            msg = EmailMultiAlternatives(
+                subject=titre,
+                body=message,
+                from_email=getattr(
+                    settings, 'DEFAULT_FROM_EMAIL', 'kamta.mariane1@icloud.com'
+                ),
+                to=[agent.email],
+            )
+            msg.attach_alternative(html_content, 'text/html')
+            msg.send(fail_silently=False)
+
+
+def notifier_validation_devis_agent(quote):
+    """Notifie les agents/admins que le client a validé le devis proposé."""
+    order = quote.order
+    agents = User.objects.filter(role__in=['AGENT', 'ADMIN'])
+
+    titre = f'Devis validé par le client - Commande {order.uuid}'
+    message = (
+        f'Le client {order.client.email} a validé le devis de {quote.price} FCFA.'
+        ' Le prestataire va prendre contact avec lui.'
+    )
+
+    for agent in agents:
+        creer_notification_inapp(
+            destinataire=agent,
+            titre=titre,
+            message=message,
+            type_notif=NotificationType.QUOTE_ACCEPTED,
             order=order,
         )
 

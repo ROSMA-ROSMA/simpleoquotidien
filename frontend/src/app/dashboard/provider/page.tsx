@@ -7,19 +7,20 @@ import BookingCard from '@/components/bookings/BookingCard';
 import StatCard from '@/components/ui/StatCard';
 import EmptyState from '@/components/ui/EmptyState';
 import Button from '@/components/ui/Button';
-import FeatureBanner from '@/components/ui/FeatureBanner';
 import { useAuth } from '@/context/AuthContext';
 import { useBookings } from '@/hooks/useOrders';
 import { providerService } from '@/services/provider.service';
-import { BookingStatus, Provider } from '@/types';
+import { serviceService } from '@/services/service.service';
+import { BookingStatus, Provider, ProviderService } from '@/types';
 import { formatPrice, getInitials } from '@/lib/utils';
 import { useEffect, useState } from 'react';
-import { IconCurrencyDollar, IconCalendar, IconCircleCheck, IconClock, IconPlus, IconBriefcase, IconShieldCheck, IconMessage, IconAlertTriangle, IconHourglass } from '@tabler/icons-react';
+import { IconCurrencyDollar, IconCalendar, IconCircleCheck, IconClock, IconPlus, IconBriefcase, IconShieldCheck, IconMessage, IconAlertTriangle, IconHourglass, IconMapPin } from '@tabler/icons-react';
 
 export default function ProviderDashboardPage() {
     const { currentUser } = useAuth();
     const [profile, setProfile] = useState<Provider | null>(null);
     const [profileLoaded, setProfileLoaded] = useState(false);
+    const [services, setServices] = useState<ProviderService[]>([]);
 
     useEffect(() => {
         if (!currentUser) return;
@@ -28,6 +29,13 @@ export default function ProviderDashboardPage() {
             .catch(() => setProfile(null))
             .finally(() => setProfileLoaded(true));
     }, [currentUser]);
+
+    useEffect(() => {
+        if (!profile) { setServices([]); return; }
+        serviceService.getAll({ prestataire_id: profile.id })
+            .then(res => setServices(res.data))
+            .catch(() => setServices([]));
+    }, [profile]);
 
     const { bookings, loading } = useBookings(
         profile ? { provider_id: profile.id } : undefined,
@@ -139,20 +147,38 @@ export default function ProviderDashboardPage() {
                             </div>
 
                             <div>
-                                <h2 className="text-xl font-bold text-brand-dark mb-4">Mes prestations</h2>
-                                <FeatureBanner
-                                    title="Catalogue services"
-                                    message="Le backend ne gère pas encore de catalogue « service par service ». Vos prestations sont décrites dans votre profil prestataire."
-                                />
-                                {profile?.services ? (
-                                    <div className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm">
-                                        <p className="text-[11px] text-slate-600 whitespace-pre-wrap">{profile.services}</p>
-                                        {profile.tarif && (
-                                            <p className="text-brand-teal font-extrabold text-[11px] mt-3">Tarif : {profile.tarif}</p>
-                                        )}
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-xl font-bold text-brand-dark">Mes services</h2>
+                                    <Link href="/dashboard/provider/services" className="text-[11px] font-bold text-brand-teal hover:text-brand-tealDark">
+                                        {services.length > 0 ? 'Voir tout →' : 'Créer un service →'}
+                                    </Link>
+                                </div>
+                                {services.length > 0 ? (
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        {services.slice(0, 3).map(service => (
+                                            <div key={service.id} className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+                                                {service.image ? (
+                                                    <img src={service.image} alt={service.category_name ?? 'Service'} className="w-full h-24 object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-24 bg-brand-tealLight flex items-center justify-center">
+                                                        <IconBriefcase className="w-6 h-6 text-brand-teal/50" />
+                                                    </div>
+                                                )}
+                                                <div className="p-4">
+                                                    <p className="text-[11px] font-bold uppercase tracking-wide text-brand-teal mb-1">{service.category_name ?? 'Catégorie'}</p>
+                                                    <p className="font-extrabold text-brand-dark text-[11px] mb-1">{formatPrice(service.price)} FCFA</p>
+                                                    <p className="text-[11px] text-slate-400 flex items-center gap-1"><IconMapPin className="w-3 h-3" /> {service.city}</p>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 ) : (
-                                    <p className="text-[11px] text-slate-500">Aucune description de prestations renseignée.</p>
+                                    <EmptyState
+                                        icon={<IconBriefcase className="w-8 h-8" />}
+                                        title="Aucun service publié"
+                                        description="Créez votre premier service pour apparaître dans le catalogue des clients."
+                                        action={<Link href="/dashboard/provider/services/create" className="text-brand-teal font-bold text-[11px] hover:text-brand-tealDark">Créer un service →</Link>}
+                                    />
                                 )}
                             </div>
                         </div>
@@ -178,9 +204,13 @@ export default function ProviderDashboardPage() {
 
                             <div className="profile-section rounded-2xl p-6 shadow-card">
                                 <div className="text-center">
-                                    <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-xl font-bold text-white mx-auto ring-4 ring-white/20 mb-3">
-                                        {getInitials(currentUser.first_name, currentUser.last_name)}
-                                    </div>
+                                    {profile?.photo ? (
+                                        <img src={profile.photo} alt={currentUser.first_name} className="w-16 h-16 rounded-full object-cover mx-auto ring-4 ring-white/20 mb-3" />
+                                    ) : (
+                                        <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-xl font-bold text-white mx-auto ring-4 ring-white/20 mb-3">
+                                            {getInitials(currentUser.first_name, currentUser.last_name)}
+                                        </div>
+                                    )}
                                     <h3 className="font-bold text-white">{currentUser.first_name} {currentUser.last_name}</h3>
                                     <p className="text-brand-tealLight/70 text-[11px]">{currentUser.email}</p>
                                 </div>

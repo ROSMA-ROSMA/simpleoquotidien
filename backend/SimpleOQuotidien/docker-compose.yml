@@ -1,0 +1,12 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: simpleoquotidien-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - simpleoquotidien-redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  simpleoquotidien-redis-data:

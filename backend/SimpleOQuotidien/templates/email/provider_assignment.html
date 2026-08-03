@@ -37,14 +37,18 @@
                     <td><strong>{{ order.localisation }}</strong></td>
                 </tr>
                 <tr>
+                    <td class="label">Délai souhaité :</td>
+                    <td>{{ order.date }}</td>
+                </tr>
+                <tr>
                     <td class="label">Description :</td>
                     <td>{{ order.description|default:"Aucune précision supplémentaire." }}</td>
                 </tr>
             </table>
 
             <div style="text-align: center; margin-top: 25px;">
-                <p style="margin: 0 0 10px 0; color: #475569;">Merci d'analyser la demande et d'émettre votre devis au plus vite :</p>
-                <a href="{{ provider_dashboard_url }}" class="btn-action">Soumettre un devis</a>
+                <p style="margin: 0 0 10px 0; color: #475569;">Merci de consulter la demande et de répondre (accepter ou refuser) sous 30 minutes :</p>
+                <a href="{{ provider_dashboard_url }}" class="btn-action">Voir la demande</a>
             </div>
         </div>
         <div class="footer">

@@ -43,13 +43,13 @@ export function useBookings(
     return { bookings, loading, error, reload };
 }
 
-export function useBooking(id: number | null) {
+export function useBooking(uuid: string | null) {
     const [booking, setBooking] = useState<Booking | null>(null);
-    const [loading, setLoading] = useState(Boolean(id));
+    const [loading, setLoading] = useState(Boolean(uuid));
     const [error, setError] = useState<string | null>(null);
 
     const reload = useCallback(async () => {
-        if (!id) {
+        if (!uuid) {
             setBooking(null);
             setLoading(false);
             return;
@@ -57,7 +57,7 @@ export function useBooking(id: number | null) {
         setLoading(true);
         setError(null);
         try {
-            const res = await orderService.getById(id);
+            const res = await orderService.getById(uuid);
             setBooking(res.data);
         } catch (e) {
             setError(e instanceof Error ? e.message : 'Commande introuvable');
@@ -65,7 +65,7 @@ export function useBooking(id: number | null) {
         } finally {
             setLoading(false);
         }
-    }, [id]);
+    }, [uuid]);
 
     useEffect(() => {
         reload();

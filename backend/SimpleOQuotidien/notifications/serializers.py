@@ -7,6 +7,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     type_notification_display = serializers.CharField(
         source='get_type_notification_display', read_only=True
     )
+    order = serializers.SlugRelatedField(slug_field='uuid', read_only=True)
 
     class Meta:
         model = Notification

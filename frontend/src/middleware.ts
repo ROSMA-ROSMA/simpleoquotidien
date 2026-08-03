@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
     const hasAccess = request.cookies.has('soq_access') || request.cookies.has('soq_refresh');
 
     const isProtected = PROTECTED_PREFIXES.some(p => pathname.startsWith(p))
-        || /^\/booking\/\d+\/(edit|rate|postpone)/.test(pathname)
+        || /^\/booking\/[^/]+\/(edit|rate|postpone|accept|reject)/.test(pathname)
         || /^\/services\/category\/\d+\/book/.test(pathname);
 
     if (isProtected && !hasAccess) {

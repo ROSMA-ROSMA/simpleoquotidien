@@ -8,6 +8,7 @@ export interface CreateProviderServiceInput {
     price: number;
     city: string;
     description?: string;
+    image?: File;
 }
 
 export const serviceService = {
@@ -18,26 +19,27 @@ export const serviceService = {
         if (filters?.city) params.set('city', filters.city);
         const qs = params.toString();
         const raw = await apiFetch<BackendService[] | { results: BackendService[] }>(
-            `api/commandes/services/${qs ? `?${qs}` : ''}`,
+            `Commandes/services/${qs ? `?${qs}` : ''}`,
         );
         const list = unwrapList(raw).map(mapServiceFromBackend);
         return { data: list, meta: { total: list.length } };
     },
 
     async create(payload: CreateProviderServiceInput): Promise<ApiResponse<ProviderService>> {
-        const raw = await apiFetch<BackendService>('api/commandes/services/', {
+        const form = new FormData();
+        form.set('category', String(payload.category_id));
+        form.set('price', String(payload.price));
+        form.set('city', payload.city);
+        form.set('description', payload.description ?? '');
+        if (payload.image) form.set('image', payload.image);
+        const raw = await apiFetch<BackendService>('Commandes/services/', {
             method: 'POST',
-            body: JSON.stringify({
-                category: payload.category_id,
-                price: payload.price,
-                city: payload.city,
-                description: payload.description ?? '',
-            }),
+            body: form,
         });
         return { data: mapServiceFromBackend(raw) };
     },
 
     async delete(id: number): Promise<void> {
-        await apiFetch(`api/commandes/services/${id}/`, { method: 'DELETE' });
+        await apiFetch(`Commandes/services/${id}/`, { method: 'DELETE' });
     },
 };

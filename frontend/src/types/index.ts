@@ -143,16 +143,20 @@ export interface Service {
 export interface ProviderService {
     id: number;
     prestataire_id: number;
+    prestataire_name?: string;
     category_id: number;
     category_name?: string;
     price: number;
     city: string;
     description?: string;
+    image?: string;
     created_at?: string;
 }
 
 export interface Booking {
     id: number;
+    /** uuid Order backend — présent pour toute commande réelle (absent seulement sur les données mock legacy). */
+    uuid?: string;
     client_id: number;
     client?: User;
     /** Catégorie de la commande (modèle backend). */
@@ -174,14 +178,12 @@ export interface Booking {
     assigned_provider_id?: number;
     assigned_provider?: Provider;
     assignment_id?: number;
-    assignment_status?: 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE';
+    assignment_status?: 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE' | 'EXPIREE';
     intervention_city?: string;
     quote_id?: number;
     quote_status?: string;
     quote_amount?: number;
-    quote_note?: string;
-    reassignment_reason?: string;
-    provider_contacted?: boolean;
+    quote_description?: string;
     history?: BookingHistoryEntry[];
     created_at?: string;
 }

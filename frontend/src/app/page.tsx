@@ -1,19 +1,31 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
-import ServiceCard from '@/components/services/ServiceCard';
+import RealServiceCard from '@/components/services/RealServiceCard';
+import EmptyState from '@/components/ui/EmptyState';
 import { useAppStore } from '@/store/useAppStore';
 import { useCategories } from '@/hooks/useCategories';
-import { IconArrowRight, IconShieldCheck, IconClock, IconStar, IconSearch, IconSparkles } from '@tabler/icons-react';
+import { serviceService } from '@/services/service.service';
+import { ProviderService } from '@/types';
+import { IconArrowRight, IconShieldCheck, IconClock, IconStar, IconSearch, IconSparkles, IconBriefcase } from '@tabler/icons-react';
 
 export default function HomePage() {
-  const services = useAppStore(s => s.services);
   const { categories: allCategories } = useCategories();
   const reviews = useAppStore(s => s.reviews);
-  const featuredServices = services.slice(0, 6);
-  const categories = allCategories.slice(0, 4);
+  const categories = allCategories.slice(0, 8);
+
+  const [featuredServices, setFeaturedServices] = useState<ProviderService[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+
+  useEffect(() => {
+    serviceService.getAll()
+      .then(res => setFeaturedServices(res.data.slice(0, 6)))
+      .catch(() => setFeaturedServices([]))
+      .finally(() => setServicesLoading(false));
+  }, []);
 
   return (
     <div className="min-h-screen bg-brand-surface flex flex-col">
@@ -42,13 +54,13 @@ export default function HomePage() {
               Trouvez en quelques clics les meilleurs prestataires près de chez vous. Ménage, plomberie, coiffure, et bien plus.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+            <div className="flex flex-col sm:flex-row items-start gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
               <Link
                 href="/services"
-                className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-teal text-white rounded-full text-base font-bold hover:bg-brand-tealDark transition-all shadow-xl shadow-brand-teal/25 hover:shadow-brand-teal/35 hover:-translate-y-0.5"
+                className="group inline-flex items-center justify-center gap-3 px-10 py-5 bg-brand-coral text-white rounded-full text-lg font-extrabold hover:bg-brand-coralHover transition-all shadow-xl shadow-brand-coral/30 hover:shadow-brand-coral/40 hover:-translate-y-0.5"
               >
-                <IconSearch className="w-5 h-5" />
-                Trouver un service
+                <IconSearch className="w-6 h-6" />
+                Demander une réservation
               </Link>
               <Link
                 href="/register"
@@ -124,11 +136,21 @@ export default function HomePage() {
             <p className="text-slate-500 text-lg max-w-2xl mx-auto">Les prestataires les mieux notés de la plateforme.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredServices.map(service => (
-              <ServiceCard key={service.id} service={service} />
-            ))}
-          </div>
+          {servicesLoading ? (
+            <p className="text-center text-slate-400">Chargement des services…</p>
+          ) : featuredServices.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredServices.map(service => (
+                <RealServiceCard key={service.id} service={service} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={<IconBriefcase className="w-8 h-8" />}
+              title="Pas encore de service publié"
+              description="Les prestataires n'ont pas encore ajouté de services à leur catalogue."
+            />
+          )}
 
           <div className="text-center mt-10">
             <Link href="/services" className="inline-flex items-center gap-2 px-8 py-3 bg-brand-teal text-white rounded-full font-bold hover:bg-brand-tealDark transition-all shadow-lg shadow-brand-teal/20 hover:-translate-y-0.5">

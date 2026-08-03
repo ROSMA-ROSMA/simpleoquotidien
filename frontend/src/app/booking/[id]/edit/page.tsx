@@ -17,8 +17,7 @@ interface Props { params: Promise<{ id: string }>; }
 export default function EditBookingPage({ params }: Props) {
     const { id } = use(params);
     const router = useRouter();
-    const bookingId = parseInt(id, 10);
-    const { booking, loading } = useBooking(bookingId);
+    const { booking, loading } = useBooking(id);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [form, setForm] = useState({ date: '', time: '', address: '', message: '' });
@@ -58,12 +57,12 @@ export default function EditBookingPage({ params }: Props) {
         setSubmitting(true);
         setError('');
         try {
-            await orderService.update(booking.id, {
+            await orderService.update(id, {
                 scheduled_datetime: `${form.date}T${form.time}:00`,
                 address: form.address,
                 message: form.message || undefined,
             });
-            router.push(`/booking/${booking.id}?updated=true`);
+            router.push(`/booking/${id}?updated=true`);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Impossible de modifier la commande');
             setSubmitting(false);
@@ -75,7 +74,7 @@ export default function EditBookingPage({ params }: Props) {
             <LandingNavbar />
             <main className="flex-1 pt-28 pb-16">
                 <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <Link href={`/booking/${booking.id}`} className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-teal font-medium mb-6 transition-colors">
+                    <Link href={`/booking/${id}`} className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-teal font-medium mb-6 transition-colors">
                         <IconArrowLeft className="w-4 h-4" /> Retour
                     </Link>
 
@@ -97,7 +96,7 @@ export default function EditBookingPage({ params }: Props) {
                             </div>
                             <div className="flex gap-3 pt-2">
                                 <Button type="submit" fullWidth disabled={submitting}>{submitting ? 'Enregistrement…' : 'Enregistrer'}</Button>
-                                <Link href={`/booking/${booking.id}`} className="w-full"><Button variant="secondary" fullWidth>Annuler</Button></Link>
+                                <Link href={`/booking/${id}`} className="w-full"><Button variant="secondary" fullWidth>Annuler</Button></Link>
                             </div>
                         </form>
                     </div>

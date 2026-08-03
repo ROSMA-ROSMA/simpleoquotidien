@@ -6,6 +6,7 @@ class NotificationType(models.TextChoices):
     # Pour l'Agent
     QUOTE_REFUSED = 'QUOTE_REFUSED', 'Devis refusé - Réassignation requise'
     NEW_ORDER_CREATED = 'NEW_ORDER_CREATED', 'Nouvelle commande créée'
+    REASSIGNMENT_NEEDED = 'REASSIGNMENT_NEEDED', 'Réassignation nécessaire'
 
     # Pour le Prestataire
     NEW_ASSIGNMENT = 'NEW_ASSIGNMENT', 'Nouvelle mission attribuée'

@@ -12,7 +12,7 @@ import { orderService } from '@/services/order.service';
 import { providerService } from '@/services/provider.service';
 import { formatPrice, formatDateTime, getBookingTitle } from '@/lib/utils';
 import { BookingStatus, BOOKING_STATUS_LABELS, User } from '@/types';
-import { IconCalendar, IconMapPin, IconUser, IconArrowLeft, IconCreditCard, IconEdit, IconClockPause, IconStar, IconMessage, IconCircleCheck } from '@tabler/icons-react';
+import { IconCalendar, IconMapPin, IconUser, IconArrowLeft, IconCreditCard, IconEdit, IconClockPause, IconStar, IconMessage, IconCircleCheck, IconX } from '@tabler/icons-react';
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -20,8 +20,7 @@ interface Props {
 
 export default function BookingDetailPage({ params }: Props) {
     const { id } = use(params);
-    const bookingId = parseInt(id, 10);
-    const { booking, loading, reload } = useBooking(bookingId);
+    const { booking, loading, reload } = useBooking(id);
     const [provider, setProvider] = useState<User | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
     const [contacted, setContacted] = useState(false);
@@ -84,7 +83,17 @@ export default function BookingDetailPage({ params }: Props) {
     const handleValidateQuote = async () => {
         setActionLoading(true);
         try {
-            await orderService.validateQuote(bookingId);
+            await orderService.validateQuote(id);
+            await reload();
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleRefuseQuote = async () => {
+        setActionLoading(true);
+        try {
+            await orderService.refuseQuote(id);
             await reload();
         } finally {
             setActionLoading(false);
@@ -92,14 +101,14 @@ export default function BookingDetailPage({ params }: Props) {
     };
 
     const handleContactProvider = async () => {
-        await orderService.contactProvider(bookingId);
+        await orderService.contactProvider(id);
         setContacted(true);
     };
 
     const handleMarkCompleted = async () => {
         setActionLoading(true);
         try {
-            await orderService.complete(bookingId);
+            await orderService.complete(id);
             await reload();
         } finally {
             setActionLoading(false);
@@ -149,8 +158,11 @@ export default function BookingDetailPage({ params }: Props) {
                                 <p className="text-sm text-slate-500 italic mt-3 pt-3 border-t border-slate-200">&ldquo;{booking.message}&rdquo;</p>
                             )}
                             {booking.status === BookingStatus.QUOTE_SENT && booking.quote_amount && (
-                                <div className="mt-3 pt-3 border-t border-slate-200 flex items-center justify-between">
+                                <div className="mt-3 pt-3 border-t border-slate-200">
                                     <span className="text-sm text-slate-600">Devis proposé : <strong className="text-brand-teal">{formatPrice(booking.quote_amount)} FCFA</strong></span>
+                                    {booking.quote_description && (
+                                        <p className="text-sm text-slate-500 italic mt-2">&ldquo;{booking.quote_description}&rdquo;</p>
+                                    )}
                                 </div>
                             )}
                             {contacted && (
@@ -179,9 +191,14 @@ export default function BookingDetailPage({ params }: Props) {
                                 </Link>
                             )}
                             {canValidateQuote && (
-                                <Button variant="primary" icon={<IconCircleCheck className="w-4 h-4" />} disabled={actionLoading} onClick={handleValidateQuote}>
-                                    Valider le devis
-                                </Button>
+                                <>
+                                    <Button variant="primary" icon={<IconCircleCheck className="w-4 h-4" />} disabled={actionLoading} onClick={handleValidateQuote}>
+                                        Valider le devis
+                                    </Button>
+                                    <Button variant="danger" icon={<IconX className="w-4 h-4" />} disabled={actionLoading} onClick={handleRefuseQuote}>
+                                        Refuser le devis
+                                    </Button>
+                                </>
                             )}
                             {canContactProvider && (
                                 <Button variant="secondary" icon={<IconMessage className="w-4 h-4" />} onClick={handleContactProvider}>
@@ -190,16 +207,16 @@ export default function BookingDetailPage({ params }: Props) {
                             )}
                             {canModify && (
                                 <>
-                                    <Link href={`/booking/${booking.id}/edit`}>
+                                    <Link href={`/booking/${id}/edit`}>
                                         <Button variant="secondary" icon={<IconEdit className="w-4 h-4" />}>Modifier</Button>
                                     </Link>
-                                    <Link href={`/booking/${booking.id}/postpone`}>
+                                    <Link href={`/booking/${id}/postpone`}>
                                         <Button variant="ghost" icon={<IconClockPause className="w-4 h-4" />}>Reporter</Button>
                                     </Link>
                                 </>
                             )}
                             {canRate && (
-                                <Link href={`/booking/${booking.id}/rate`}>
+                                <Link href={`/booking/${id}/rate`}>
                                     <Button variant="primary" icon={<IconStar className="w-4 h-4" />}>Évaluer</Button>
                                 </Link>
                             )}

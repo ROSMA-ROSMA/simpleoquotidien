@@ -16,6 +16,7 @@ urlpatterns = [
     # Endpoints Métier (Users & Commandes)
     path('Info_utilisateurs/', include('users.urls')),
     path('Commandes/', include('commandes.urls')),
+    path('Notifications/', include('notifications.urls')),
     path('auth/jwt/logout/', LogoutView.as_view(), name='jwt-logout'),
     path('api/auth/users/activation/', CustomActivationView.as_view(), name='custom-activation'),
     

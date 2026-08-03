@@ -31,7 +31,7 @@ export default function AgentComparaisonPage() {
     return (
         <AgentLayout title="Comparer les prestataires" subtitle="Sélectionnez jusqu'à 3 prestataires à comparer">
             {loading ? (
-                <p className="text-slate-400 text-[11px] text-center py-10">Chargement…</p>
+                <p className="text-slate-400 text-sm text-center py-10">Chargement…</p>
             ) : (
                 <>
                     <div className="flex flex-wrap gap-2 mb-6">
@@ -39,10 +39,10 @@ export default function AgentComparaisonPage() {
                             <button
                                 key={p.id}
                                 onClick={() => toggle(p.id)}
-                                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-semibold border transition-all ${selected.includes(p.id) ? 'bg-brand-teal text-white border-brand-teal' : 'bg-white text-slate-600 border-slate-200 hover:border-brand-teal/40'
+                                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${selected.includes(p.id) ? 'bg-brand-teal text-white border-brand-teal' : 'bg-white text-slate-600 border-slate-200 hover:border-brand-teal/40'
                                     }`}
                             >
-                                <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[11px] font-bold">{getInitials(p.first_name, p.last_name)}</span>
+                                <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold">{getInitials(p.first_name, p.last_name)}</span>
                                 {p.first_name} {p.last_name}
                             </button>
                         ))}
@@ -57,12 +57,12 @@ export default function AgentComparaisonPage() {
                                             {getInitials(p.first_name, p.last_name)}
                                         </div>
                                         <p className="font-bold text-brand-dark">{p.first_name} {p.last_name}</p>
-                                        <p className="text-[11px] text-slate-400">{p.intervention_city ?? 'Ville non renseignée'}</p>
+                                        <p className="text-sm text-slate-400">{p.intervention_city ?? 'Ville non renseignée'}</p>
                                     </div>
-                                    <div className="space-y-3 text-[11px]">
+                                    <div className="space-y-3 text-sm">
                                         <div className="flex justify-between border-b border-slate-50 pb-2">
                                             <span className="text-slate-400">Email</span>
-                                            <span className="font-bold text-brand-dark text-[11px] truncate max-w-[160px]">{p.email}</span>
+                                            <span className="font-bold text-brand-dark text-sm truncate max-w-[160px]">{p.email}</span>
                                         </div>
                                         <div className="flex justify-between border-b border-slate-50 pb-2">
                                             <span className="text-slate-400">Vérifié</span>
@@ -77,7 +77,7 @@ export default function AgentComparaisonPage() {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-slate-400 text-[11px] text-center py-10">Sélectionnez au moins un prestataire ci-dessus pour voir la comparaison.</p>
+                        <p className="text-slate-400 text-sm text-center py-10">Sélectionnez au moins un prestataire ci-dessus pour voir la comparaison.</p>
                     )}
                 </>
             )}

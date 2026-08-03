@@ -50,7 +50,7 @@ export default function AgentParametresPage() {
                     </div>
                     <Input label="Téléphone" type="tel" value={form.phone_number} onChange={(e) => setForm(f => ({ ...f, phone_number: e.target.value }))} icon={<IconPhone className="w-5 h-5" />} disabled />
                     <Input label="Zone d'intervention" value={form.intervention_city} onChange={(e) => setForm(f => ({ ...f, intervention_city: e.target.value }))} icon={<IconMapPin className="w-5 h-5" />} disabled />
-                    <p className="text-[11px] text-slate-400">Le téléphone et la zone d&apos;intervention ne sont modifiables que via l&apos;admin Django.</p>
+                    <p className="text-sm text-slate-400">Le téléphone et la zone d&apos;intervention ne sont modifiables que via l&apos;admin Django.</p>
                     <Button type="submit" fullWidth size="lg" disabled={saving}>{saving ? 'Enregistrement…' : 'Enregistrer'}</Button>
                 </form>
             </div>

@@ -1,15 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import AgentLayout from '@/components/layout/AgentLayout';
 import StatCard from '@/components/ui/StatCard';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { useAuth } from '@/context/AuthContext';
-import { useAppStore } from '@/store/useAppStore';
 import { useBookings } from '@/hooks/useOrders';
+import { notificationService } from '@/services/notification.service';
 import { getInitials, timeAgo, getBookingTitle } from '@/lib/utils';
-import { BookingStatus, BOOKING_STATUS_LABELS } from '@/types';
+import { AppNotification, BookingStatus, BOOKING_STATUS_LABELS, UserRole } from '@/types';
 import { IconPackage, IconClockHour4, IconUserCheck, IconCircleCheck, IconArrowRight, IconBellRinging } from '@tabler/icons-react';
 
 function statusBadgeVariant(status: BookingStatus) {
@@ -31,13 +32,19 @@ function statusBadgeVariant(status: BookingStatus) {
 export default function AgentDashboardPage() {
     const { currentUser } = useAuth();
     const { bookings, loading } = useBookings();
-    const notifications = useAppStore(s => s.notifications);
+    const [notifications, setNotifications] = useState<AppNotification[]>([]);
+
+    useEffect(() => {
+        notificationService.getAll(UserRole.AGENT)
+            .then(res => setNotifications(res.data))
+            .catch(() => setNotifications([]));
+    }, []);
 
     const toAssign = bookings.filter(b => [BookingStatus.PENDING, BookingStatus.PROCESSING].includes(b.status));
     const assigned = bookings.filter(b => [BookingStatus.ASSIGNED, BookingStatus.QUOTE_SENT, BookingStatus.CONFIRMED, BookingStatus.IN_PROGRESS].includes(b.status));
     const completedThisMonth = bookings.filter(b => b.status === BookingStatus.COMPLETED || b.status === BookingStatus.CLOSED);
     const recent = [...bookings].sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? '')).slice(0, 5);
-    const myNotifs = currentUser ? notifications.filter(n => n.user_id === currentUser.id).slice(0, 4) : [];
+    const myNotifs = notifications.slice(0, 4);
 
     return (
         <AgentLayout title="Tableau de bord" subtitle="Vue d'ensemble de votre activité">
@@ -87,7 +94,7 @@ export default function AgentDashboardPage() {
                                     <td className="py-3 px-5 text-slate-500">{getBookingTitle(b)}</td>
                                     <td className="py-3 px-5"><Badge variant={statusBadgeVariant(b.status)}>{BOOKING_STATUS_LABELS[b.status]}</Badge></td>
                                     <td className="py-3 px-5 text-right">
-                                        <Link href={`/agent/commandes/${b.id}`} className="text-sm font-bold text-brand-teal hover:text-brand-tealDark">Voir →</Link>
+                                        <Link href={`/agent/commandes/${b.uuid}`} className="text-sm font-bold text-brand-teal hover:text-brand-tealDark">Voir →</Link>
                                     </td>
                                 </tr>
                             ))}

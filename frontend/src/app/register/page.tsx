@@ -81,7 +81,7 @@ export default function RegisterPage() {
                 fd.append('justificatif', cniFile); // use same doc as justificatif
                 fd.append('photo', photoFile);
 
-                const res = await fetch('/api/backend/api/utilisateurs/prestataires', {
+                const res = await fetch('/api/backend/Info_utilisateurs/prestataires/', {
                     method: 'POST',
                     body: fd,
                     credentials: 'same-origin',

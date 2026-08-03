@@ -2,6 +2,7 @@ from rest_framework import serializers
 from djoser.serializers import UserCreatePasswordRetypeSerializer, UserSerializer
 from django.db import transaction
 from .models import Utilisateur, PrestataireProfile, Assignment, Subscription, Notes, RoleChoices
+from commandes.models import Order
 from djoser.conf import settings as djoser_settings
 # Import de ta classe d'email personnalisée d'activation
 from .email import ActivationEmail
@@ -113,10 +114,15 @@ class PrestataireProfileSerializer(serializers.ModelSerializer):
 # --- AUTRES SÉRIALIZERS ---
 
 class AssignmentSerializer(serializers.ModelSerializer):
+    order = serializers.SlugRelatedField(slug_field='uuid', queryset=Order.objects.all())
+
     class Meta:
         model = Assignment
-        fields = ['id', 'methode', 'order', 'prestataire', 'qualifier', 'date_creation']
-        read_only_fields = ['id', 'date_creation']
+        fields = [
+            'id', 'methode', 'order', 'prestataire', 'qualifier',
+            'status', 'motif_refus', 'date_reponse', 'date_creation',
+        ]
+        read_only_fields = ['id', 'status', 'motif_refus', 'date_reponse', 'date_creation']
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):

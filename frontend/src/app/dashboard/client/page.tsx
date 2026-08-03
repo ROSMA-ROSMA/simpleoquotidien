@@ -62,9 +62,9 @@ export default function ClientDashboardPage() {
                         <p className="text-brand-tealLight/80 text-[11px]">
                             Bienvenue sur votre espace personnel. Gérez vos réservations et découvrez de nouveaux services.
                         </p>
-                        <div className="mt-6 flex flex-wrap gap-3">
-                            <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-xl text-[11px] font-bold hover:bg-white/20 transition-all border border-white/20">
-                                <IconSearch className="w-4 h-4" /> Réserver un service
+                        <div className="mt-6 flex flex-wrap items-center gap-4">
+                            <Link href="/services" className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-brand-coral text-white rounded-full text-base font-extrabold hover:bg-brand-coralHover transition-all shadow-xl shadow-brand-coral/30 hover:-translate-y-0.5">
+                                <IconSearch className="w-5 h-5" /> Demander une réservation
                             </Link>
                             <Link href="/messages" className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-xl text-[11px] font-bold hover:bg-white/20 transition-all border border-white/20">
                                 <IconMessage className="w-4 h-4" /> Messages

@@ -35,7 +35,7 @@ export default function BookingCard({ booking, showPayButton = false, showAction
                         <h3 className="font-bold text-lg text-brand-dark group-hover:text-brand-teal transition-colors">
                             {getBookingTitle(booking)}
                         </h3>
-                        <Badge variant={statusVariant()}>{BOOKING_STATUS_LABELS[booking.status]}</Badge>
+                        {role !== 'client' && <Badge variant={statusVariant()}>{BOOKING_STATUS_LABELS[booking.status]}</Badge>}
                     </div>
 
                     <div className="flex flex-wrap gap-4 text-sm text-slate-500">
@@ -92,11 +92,11 @@ export default function BookingCard({ booking, showPayButton = false, showAction
                     {/* Actions */}
                     {showActions && (
                         <div className="flex gap-3 text-xs font-bold">
-                            <Link href={`/booking/${booking.id}`} className="text-slate-500 hover:text-brand-teal transition-colors">
+                            <Link href={`/booking/${booking.uuid ?? booking.id}`} className="text-slate-500 hover:text-brand-teal transition-colors">
                                 Détails
                             </Link>
                             {(booking.status === BookingStatus.PENDING || booking.status === BookingStatus.CONFIRMED) && (
-                                <Link href={`/booking/${booking.id}`} className="text-slate-400 hover:text-brand-coral transition-colors">
+                                <Link href={`/booking/${booking.uuid ?? booking.id}`} className="text-slate-400 hover:text-brand-coral transition-colors">
                                     Annuler
                                 </Link>
                             )}

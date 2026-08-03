@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useCategories } from '@/hooks/useCategories';
 import { serviceService } from '@/services/service.service';
 import { providerService } from '@/services/provider.service';
-import { IconArrowLeft } from '@tabler/icons-react';
+import { IconArrowLeft, IconPhoto } from '@tabler/icons-react';
 
 export default function ProviderCreateServicePage() {
     const router = useRouter();
@@ -19,6 +19,14 @@ export default function ProviderCreateServicePage() {
     const [error, setError] = useState<string | null>(null);
 
     const [form, setForm] = useState({ category_id: 0, price: '', city: '', description: '' });
+    const [image, setImage] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] ?? null;
+        setImage(file);
+        setPreview(file ? URL.createObjectURL(file) : null);
+    };
 
     if (!currentUser) {
         return <div className="min-h-screen flex items-center justify-center"><Link href="/login" className="text-brand-teal font-bold">Se connecter →</Link></div>;
@@ -45,6 +53,7 @@ export default function ProviderCreateServicePage() {
                 price: Number(form.price),
                 city: form.city,
                 description: form.description || undefined,
+                image: image ?? undefined,
             });
             router.push('/dashboard/provider/services');
         } catch (e) {
@@ -82,6 +91,17 @@ export default function ProviderCreateServicePage() {
                         <div>
                             <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">Description (optionnel)</label>
                             <textarea placeholder="Décrivez votre service…" rows={4} value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-[11px] focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal outline-none resize-none" />
+                        </div>
+                        <div>
+                            <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">Photo du service (optionnel)</label>
+                            {preview && (
+                                <img src={preview} alt="Aperçu" className="w-full h-36 object-cover rounded-xl mb-3 border border-slate-200" />
+                            )}
+                            <label className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-[11px] font-semibold text-slate-500 cursor-pointer hover:border-brand-teal hover:text-brand-teal transition-colors">
+                                <IconPhoto className="w-4 h-4" />
+                                {image ? image.name : 'Choisir une image…'}
+                                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                            </label>
                         </div>
                         <div className="flex gap-3 pt-2">
                             <Button type="submit" fullWidth disabled={submitting}>{submitting ? 'Création…' : 'Créer'}</Button>

@@ -59,13 +59,13 @@ export default function AgentCommandesPage() {
                         value={query}
                         onChange={(e) => { setQuery(e.target.value); setPage(1); }}
                         placeholder="Rechercher une commande, un service…"
-                        className="flex-1 outline-none text-[11px] bg-transparent"
+                        className="flex-1 outline-none text-sm bg-transparent"
                     />
                 </div>
                 <select
                     value={statusFilter}
                     onChange={(e) => { setStatusFilter(e.target.value as BookingStatus | 'all'); setPage(1); }}
-                    className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-[11px] font-semibold text-slate-600 outline-none focus:border-brand-teal"
+                    className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 outline-none focus:border-brand-teal"
                 >
                     <option value="all">Tous les statuts</option>
                     {Object.values(BookingStatus).map(s => (
@@ -75,19 +75,19 @@ export default function AgentCommandesPage() {
             </div>
 
             <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
-                <table className="w-full text-[11px]">
+                <table className="w-full text-sm">
                     <thead className="bg-slate-50/60">
                         <tr>
-                            <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-[11px]">Réf.</th>
-                            <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-[11px]">Service</th>
-                            <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-[11px]">Ville</th>
-                            <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-[11px]">Statut</th>
+                            <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-sm">Réf.</th>
+                            <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-sm">Service</th>
+                            <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-sm">Ville</th>
+                            <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-sm">Statut</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan={5} className="py-10 text-center text-slate-400 text-[11px]">Chargement des commandes…</td></tr>
+                            <tr><td colSpan={5} className="py-10 text-center text-slate-400 text-sm">Chargement des commandes…</td></tr>
                         ) : pageItems.map(b => (
                             <tr key={b.id} className="border-t border-slate-50 hover:bg-slate-50/50">
                                 <td className="py-3 px-5 font-bold text-brand-dark">#SQ-{b.id}</td>
@@ -95,21 +95,21 @@ export default function AgentCommandesPage() {
                                 <td className="py-3 px-5 text-slate-500">{b.intervention_city ?? b.address}</td>
                                 <td className="py-3 px-5"><Badge variant={statusBadgeVariant(b.status)}>{BOOKING_STATUS_LABELS[b.status]}</Badge></td>
                                 <td className="py-3 px-5 text-right">
-                                    <Link href={`/agent/commandes/${b.id}`} className="text-[11px] font-bold text-brand-teal hover:text-brand-tealDark">Voir →</Link>
+                                    <Link href={`/agent/commandes/${b.uuid}`} className="text-sm font-bold text-brand-teal hover:text-brand-tealDark">Voir →</Link>
                                 </td>
                             </tr>
                         ))}
                         {!loading && pageItems.length === 0 && (
-                            <tr><td colSpan={5} className="py-10 text-center text-slate-400 text-[11px]">Aucune commande ne correspond à ces critères.</td></tr>
+                            <tr><td colSpan={5} className="py-10 text-center text-slate-400 text-sm">Aucune commande ne correspond à ces critères.</td></tr>
                         )}
                     </tbody>
                 </table>
                 {totalPages > 1 && (
                     <div className="flex items-center justify-between px-5 py-3.5 border-t border-slate-50">
-                        <span className="text-[11px] text-slate-400">Page {page} / {totalPages}</span>
+                        <span className="text-sm text-slate-400">Page {page} / {totalPages}</span>
                         <div className="flex gap-2">
-                            <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="px-3 py-1.5 rounded-lg text-[11px] font-bold border border-slate-200 disabled:opacity-40 hover:border-brand-teal hover:text-brand-teal">Précédent</button>
-                            <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="px-3 py-1.5 rounded-lg text-[11px] font-bold border border-slate-200 disabled:opacity-40 hover:border-brand-teal hover:text-brand-teal">Suivant</button>
+                            <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-200 disabled:opacity-40 hover:border-brand-teal hover:text-brand-teal">Précédent</button>
+                            <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-200 disabled:opacity-40 hover:border-brand-teal hover:text-brand-teal">Suivant</button>
                         </div>
                     </div>
                 )}

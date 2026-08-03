@@ -61,6 +61,7 @@ export function mapCategoryFromBackend(c: BackendCategory, index = 0): Category 
         name: c.nom,
         description: c.description,
         icon: CATEGORY_ICONS[index % CATEGORY_ICONS.length],
+        image: c.image ?? undefined,
     };
 }
 
@@ -92,6 +93,7 @@ const ORDER_STATUS_TO_BOOKING: Record<BackendOrderStatus, BookingStatus> = {
     ACCEPTEE: BookingStatus.CONFIRMED,
     REFUSEE: BookingStatus.REASSIGNMENT_NEEDED,
     REPORTEE: BookingStatus.POSTPONED,
+    A_REASSIGNER: BookingStatus.REASSIGNMENT_NEEDED,
     EN_COURS: BookingStatus.IN_PROGRESS,
     TERMINEE: BookingStatus.COMPLETED,
     ANNULEE: BookingStatus.CANCELLED,
@@ -103,7 +105,7 @@ export const BOOKING_STATUS_TO_ORDER: Partial<Record<BookingStatus, BackendOrder
     [BookingStatus.ASSIGNED]: 'ASSIGNEE',
     [BookingStatus.CONFIRMED]: 'ACCEPTEE',
     [BookingStatus.REJECTED]: 'REFUSEE',
-    [BookingStatus.REASSIGNMENT_NEEDED]: 'REFUSEE',
+    [BookingStatus.REASSIGNMENT_NEEDED]: 'A_REASSIGNER',
     [BookingStatus.POSTPONED]: 'REPORTEE',
     [BookingStatus.IN_PROGRESS]: 'EN_COURS',
     [BookingStatus.COMPLETED]: 'TERMINEE',
@@ -122,12 +124,13 @@ export function mapOrderFromBackend(
         assigned_provider_id?: number;
         assigned_provider?: Provider;
         assignment_id?: number;
-        assignment_status?: 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE';
+        assignment_status?: 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE' | 'EXPIREE';
     },
 ): Booking {
     const quotePrice = order.quote?.price ? parseFloat(order.quote.price) : undefined;
     return {
         id: order.id,
+        uuid: order.uuid,
         client_id: order.client,
         client: order.client_detail ? mapUserFromBackend(order.client_detail) : undefined,
         category_id: order.category,
@@ -140,6 +143,7 @@ export function mapOrderFromBackend(
         quote_amount: quotePrice,
         quote_id: order.quote?.id,
         quote_status: order.quote?.status,
+        quote_description: order.quote?.description ?? undefined,
         assigned_provider_id: extras?.assigned_provider_id,
         assigned_provider: extras?.assigned_provider,
         assignment_id: extras?.assignment_id,
@@ -168,30 +172,39 @@ export function mapServiceFromBackend(s: BackendService): ProviderService {
     return {
         id: s.id,
         prestataire_id: s.prestataire,
+        prestataire_name: s.prestataire_nom,
         category_id: s.category,
         category_name: s.category_nom,
         price: parseFloat(s.price),
         city: s.city,
         description: s.description,
+        image: s.image ?? undefined,
         created_at: s.date_creation,
     };
 }
 
-const NOTIFICATION_TYPE_MAP: Record<BackendNotification['type'], NotificationType> = {
-    PROVIDER_ASSIGNED: 'provider_assigned',
-    PROVIDER_RESPONSE: 'provider_response',
+const NOTIFICATION_TYPE_MAP: Record<BackendNotification['type_notification'], NotificationType> = {
+    QUOTE_REFUSED: 'reassignment_needed',
+    NEW_ORDER_CREATED: 'order_created',
     REASSIGNMENT_NEEDED: 'reassignment_needed',
+    NEW_ASSIGNMENT: 'provider_assigned',
+    QUOTE_ACCEPTED: 'quote_validated',
+    PRESTATAIRE_ASSIGNED: 'provider_assigned',
+    NEW_QUOTE_RECEIVED: 'quote_received',
 };
 
-export function mapNotificationFromBackend(n: BackendNotification): AppNotification {
+/** Le backend ne connaît pas le rôle du destinataire : on construit le lien
+ * en fonction du rôle de l'utilisateur connecté qui consulte la liste. */
+export function mapNotificationFromBackend(n: BackendNotification, viewerRole: UserRole): AppNotification {
+    const base = viewerRole === UserRole.AGENT || viewerRole === UserRole.ADMIN ? '/agent/commandes' : '/booking';
     return {
         id: n.id,
-        user_id: n.user,
-        type: NOTIFICATION_TYPE_MAP[n.type] ?? 'order_created',
-        title: n.title,
+        user_id: 0,
+        type: NOTIFICATION_TYPE_MAP[n.type_notification] ?? 'order_created',
+        title: n.titre,
         message: n.message,
-        link: n.order ? `/agent/commandes/${n.order}` : undefined,
-        is_read: n.is_read,
+        link: n.order ? `${base}/${n.order}` : undefined,
+        is_read: n.est_lu,
         created_at: n.date_creation,
     };
 }

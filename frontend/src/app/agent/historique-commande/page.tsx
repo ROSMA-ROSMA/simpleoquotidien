@@ -17,16 +17,16 @@ export default function AgentHistoriqueCommandePage() {
     return (
         <AgentLayout title="Historique des commandes" subtitle="Journal complet de toutes les transitions de statut">
             {loading ? (
-                <p className="text-slate-400 text-[11px] text-center py-10">Chargement…</p>
+                <p className="text-slate-400 text-sm text-center py-10">Chargement…</p>
             ) : entries.length > 0 ? (
                 <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
-                    <table className="w-full text-[11px]">
+                    <table className="w-full text-sm">
                         <thead className="bg-slate-50/60">
                             <tr>
-                                <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-[11px]">Commande</th>
-                                <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-[11px]">Statut</th>
-                                <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-[11px]">Note</th>
-                                <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-[11px]">Date</th>
+                                <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-sm">Commande</th>
+                                <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-sm">Statut</th>
+                                <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-sm">Note</th>
+                                <th className="text-left py-3 px-5 font-bold text-slate-400 uppercase text-sm">Date</th>
                             </tr>
                         </thead>
                         <tbody>

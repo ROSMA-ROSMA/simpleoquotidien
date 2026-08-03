@@ -15,6 +15,7 @@ class RoleChoices(models.TextChoices):
 class PrestataireStatusChoices(models.TextChoices):
     EN_ATTENTE = 'EN_ATTENTE', 'En attente'
     VALIDE = 'VALIDE', 'Validé'
+    REJETE = 'REJETE', 'Rejeté'
     SUSPENDU = 'SUSPENDU', 'Suspendu'
 
 
@@ -69,11 +70,21 @@ class PrestataireProfile(models.Model):
         return self.company_name
 
 
+class AssignmentStatusChoices(models.TextChoices):
+    EN_ATTENTE = 'EN_ATTENTE', 'En attente de réponse'
+    ACCEPTEE = 'ACCEPTEE', 'Acceptée'
+    REFUSEE = 'REFUSEE', 'Refusée'
+    EXPIREE = 'EXPIREE', 'Expirée (délai dépassé)'
+
+
 class Assignment(models.Model):
     methode = models.CharField(max_length=100)
     order = models.ForeignKey('commandes.Order', on_delete=models.CASCADE, related_name='assignments')
     prestataire = models.ForeignKey(PrestataireProfile, on_delete=models.CASCADE, related_name='assignments_received')
     qualifier = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='assignments_qualified')
+    status = models.CharField(max_length=20, choices=AssignmentStatusChoices.choices, default=AssignmentStatusChoices.EN_ATTENTE)
+    motif_refus = models.TextField(blank=True, null=True)
+    date_reponse = models.DateTimeField(blank=True, null=True)
     date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)
 

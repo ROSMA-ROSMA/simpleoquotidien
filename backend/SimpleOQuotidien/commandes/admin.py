@@ -10,7 +10,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 
-from .models import Category, Order, Quote
+from .models import Category, Order, Quote, Service
 
 
 class QuoteInline(TabularInline):
@@ -22,16 +22,28 @@ class QuoteInline(TabularInline):
 
 @admin.register(Category)
 class CategoryAdmin(ModelAdmin):
-    list_display = ('nom', 'description_courte', 'order_count')
+    list_display = ('nom', 'description_courte', 'has_image', 'order_count')
     search_fields = ('nom',)
 
     @admin.display(description='Description')
     def description_courte(self, obj):
         return (obj.description[:60] + '…') if len(obj.description) > 60 else obj.description
 
+    @admin.display(description='Image', boolean=True)
+    def has_image(self, obj):
+        return bool(obj.image)
+
     @admin.display(description='Commandes')
     def order_count(self, obj):
         return obj.orders.count()
+
+
+@admin.register(Service)
+class ServiceAdmin(ModelAdmin):
+    list_display = ('category', 'prestataire', 'price', 'city', 'date_creation')
+    list_filter = ('category', 'city')
+    search_fields = ('prestataire__company_name', 'city', 'description')
+    autocomplete_fields = ('category', 'prestataire')
 
 
 @admin.register(Order)
@@ -61,6 +73,7 @@ class OrderAdmin(ModelAdmin):
             'ACCEPTEE': '#06B6D4',
             'REFUSEE': '#EF4444',
             'REPORTEE': '#F59E0B',
+            'A_REASSIGNER': '#EA580C',
             'EN_COURS': '#F97316',
             'TERMINEE': '#10B981',
             'ANNULEE': '#DC2626',

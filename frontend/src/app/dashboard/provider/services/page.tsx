@@ -53,13 +53,22 @@ export default function ProviderServicesPage() {
                     ) : services.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {services.map(service => (
-                                <div key={service.id} className="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
-                                    <p className="text-[11px] font-bold uppercase tracking-wide text-brand-teal mb-1">{service.category_name ?? 'Catégorie'}</p>
-                                    <p className="text-lg font-extrabold text-brand-dark mb-2">{formatPrice(service.price)} FCFA</p>
-                                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2">
-                                        <IconMapPin className="w-3.5 h-3.5" /> {service.city}
+                                <div key={service.id} className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
+                                    {service.image ? (
+                                        <img src={service.image} alt={service.category_name ?? 'Service'} className="w-full h-36 object-cover" />
+                                    ) : (
+                                        <div className="w-full h-36 bg-brand-tealLight flex items-center justify-center">
+                                            <IconBriefcase className="w-8 h-8 text-brand-teal/50" />
+                                        </div>
+                                    )}
+                                    <div className="p-6">
+                                        <p className="text-[11px] font-bold uppercase tracking-wide text-brand-teal mb-1">{service.category_name ?? 'Catégorie'}</p>
+                                        <p className="text-lg font-extrabold text-brand-dark mb-2">{formatPrice(service.price)} FCFA</p>
+                                        <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2">
+                                            <IconMapPin className="w-3.5 h-3.5" /> {service.city}
+                                        </div>
+                                        {service.description && <p className="text-[11px] text-slate-500">{service.description}</p>}
                                     </div>
-                                    {service.description && <p className="text-[11px] text-slate-500">{service.description}</p>}
                                 </div>
                             ))}
                         </div>

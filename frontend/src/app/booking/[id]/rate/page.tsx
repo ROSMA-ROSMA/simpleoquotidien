@@ -19,8 +19,7 @@ interface Props {
 export default function RateServicePage({ params }: Props) {
     const { id } = use(params);
     const router = useRouter();
-    const bookingId = parseInt(id, 10);
-    const { booking, loading } = useBooking(bookingId);
+    const { booking, loading } = useBooking(id);
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
     const [error, setError] = useState('');
@@ -32,8 +31,8 @@ export default function RateServicePage({ params }: Props) {
         setSubmitting(true);
         setError('');
         try {
-            await orderService.review(bookingId, rating, comment.trim() || undefined, booking.assigned_provider_id);
-            router.push(`/booking/${bookingId}/rating-success`);
+            await orderService.review(id, rating, comment.trim() || undefined, booking.assigned_provider_id);
+            router.push(`/booking/${id}/rating-success`);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Impossible d\'envoyer l\'avis');
             setSubmitting(false);
@@ -64,7 +63,7 @@ export default function RateServicePage({ params }: Props) {
             <LandingNavbar />
             <main className="flex-1 pt-28 pb-16">
                 <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <Link href={`/booking/${bookingId}`} className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-teal font-medium mb-6 transition-colors">
+                    <Link href={`/booking/${id}`} className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-teal font-medium mb-6 transition-colors">
                         <IconArrowLeft className="w-4 h-4" /> Retour
                     </Link>
 

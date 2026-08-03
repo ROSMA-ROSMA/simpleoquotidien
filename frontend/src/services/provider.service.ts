@@ -21,7 +21,7 @@ function toUser(p: ReturnType<typeof mapProviderFromBackend>): User {
 export const providerService = {
     async getAll(filters?: { city?: string; categoryId?: number }): Promise<LegacyApiResponse<User[]>> {
         const raw = await apiFetch<BackendPrestataire[] | { results: BackendPrestataire[] }>(
-            'api/utilisateurs/prestataires/',
+            'Info_utilisateurs/prestataires/',
         );
         let items = unwrapList(raw).map(mapProviderFromBackend);
         if (filters?.city) {
@@ -37,15 +37,21 @@ export const providerService = {
 
     async getProviders(): Promise<LegacyApiResponse<ReturnType<typeof mapProviderFromBackend>[]>> {
         const raw = await apiFetch<BackendPrestataire[] | { results: BackendPrestataire[] }>(
-            'api/utilisateurs/prestataires/',
+            'Info_utilisateurs/prestataires/',
         );
         const list = unwrapList(raw).map(mapProviderFromBackend);
         return { data: list, meta: { total: list.length } };
     },
 
     async getById(id: number): Promise<LegacyApiResponse<User>> {
-        const raw = await apiFetch<BackendPrestataire>(`api/utilisateurs/prestataires/${id}/`);
+        const raw = await apiFetch<BackendPrestataire>(`Info_utilisateurs/prestataires/${id}/`);
         return { data: toUser(mapProviderFromBackend(raw)) };
+    },
+
+    /** Profil complet (entreprise, tarif, documents…) — pour la fiche prestataire agent. */
+    async getProfileById(id: number): Promise<LegacyApiResponse<ReturnType<typeof mapProviderFromBackend>>> {
+        const raw = await apiFetch<BackendPrestataire>(`Info_utilisateurs/prestataires/${id}/`);
+        return { data: mapProviderFromBackend(raw) };
     },
 
     async search(query: string): Promise<LegacyApiResponse<User[]>> {
@@ -60,7 +66,7 @@ export const providerService = {
 
     async getPending(): Promise<LegacyApiResponse<ReturnType<typeof mapProviderFromBackend>[]>> {
         const raw = await apiFetch<BackendPrestataire[] | { results: BackendPrestataire[] }>(
-            'api/utilisateurs/prestataires/',
+            'Info_utilisateurs/prestataires/',
         );
         const list = unwrapList(raw)
             .map(mapProviderFromBackend)
@@ -68,14 +74,24 @@ export const providerService = {
         return { data: list, meta: { total: list.length } };
     },
 
+    async updatePhoto(id: number, photo: File): Promise<LegacyApiResponse<ReturnType<typeof mapProviderFromBackend>>> {
+        const form = new FormData();
+        form.set('photo', photo);
+        const raw = await apiFetch<BackendPrestataire>(`Info_utilisateurs/prestataires/${id}/`, {
+            method: 'PATCH',
+            body: form,
+        });
+        return { data: mapProviderFromBackend(raw) };
+    },
+
     async validatePrestataire(id: number): Promise<void> {
-        await apiFetch(`api/utilisateurs/prestataires/${id}/validate/`, {
+        await apiFetch(`Info_utilisateurs/prestataires/${id}/validate/`, {
             method: 'POST',
         });
     },
 
     async rejectPrestataire(id: number): Promise<void> {
-        await apiFetch(`api/utilisateurs/prestataires/${id}/reject/`, {
+        await apiFetch(`Info_utilisateurs/prestataires/${id}/reject/`, {
             method: 'POST',
         });
     },

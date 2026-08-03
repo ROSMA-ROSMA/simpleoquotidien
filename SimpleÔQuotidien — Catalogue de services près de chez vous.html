@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<!-- saved from url=(0071)https://id-preview-%2Daa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/ -->
+<html lang="en" data-tsd-source="/src/routes/__root.tsx:111:5"><head data-tsd-source="/src/routes/__root.tsx:112:7"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" as="image" href="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/hero-catalogue-QE7nfVjE.jpg"><link rel="stylesheet" href="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/css2" data-precedence="default"><link rel="stylesheet" href="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/styles-DciCkCB7.css" data-precedence="default"><meta name="author" content="Lovable"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@Lovable"><link rel="modulepreload" href="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/index-BYOXf5js.js"><link rel="preconnect" href="https://fonts.googleapis.com/"><link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="anonymous"><link rel="icon" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/favicon.ico" type="image/x-icon">
+<style>
+	@font-face {
+		font-family: 'CameraPlainVariable';
+		src: url('https://cdn.gpteng.co/mcp-widgets/v1/fonts/CameraPlainVariable.woff2') format('woff2');
+		font-weight: 100 900;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	#lovable-badge {
+		--badge-bg: #1b1b1b;
+		--badge-text: #c5c1b9;
+		--badge-text-hover: #dcdad5;
+		--badge-radius: 6px;
+		--badge-padding: 8px;
+		--badge-gap: 6px;
+		--badge-shadow: 
+			0 0 0 1px rgba(0, 0, 0, 0.88),
+			0 1px 0 0 rgba(0, 0, 0, 0.04),
+			0 2px 2px -1px rgba(0, 0, 0, 0.08),
+			0 4px 4px -2px rgba(0, 0, 0, 0.08),
+			0 8px 8px -4px rgba(0, 0, 0, 0.08),
+			0 16px 16px -8px rgba(0, 0, 0, 0.08);
+		--badge-transition-duration: 0.2s;
+		--badge-transition-easing: cubic-bezier(0.16, 1, 0.32, 1);
+		--focus-color: #575ECF;
+		--focus-offset: 2px;
+		--focus-width: 2px;
+		
+		position: fixed;
+		bottom: 12px;
+		right: 12px;
+		height: 24px;
+		display: flex;
+		align-items: center;
+		z-index: 1000000;
+		background-color: var(--badge-bg) !important;
+		color: var(--badge-text) !important;
+		border-radius: var(--badge-radius);
+		box-shadow: var(--badge-shadow) !important;
+		font-size: 12px;
+		font-family: CameraPlainVariable, "CameraPlainVariable Fallback", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		font-weight: 400 !important;
+		text-transform: none !important;
+		font-feature-settings: normal !important;
+		transform: translateZ(0);
+		will-change: transform, opacity;
+	}
+
+	#lovable-badge-cta {
+		display: flex;
+		align-items: center;
+		gap: var(--badge-gap);
+		padding: 0 var(--badge-padding);
+		height: 100%;
+		color: inherit;
+		text-decoration: none;
+		white-space: nowrap;
+		border-radius: var(--badge-radius) 0 0 var(--badge-radius);
+		transition: 
+			background-color var(--badge-transition-duration) ease,
+			color var(--badge-transition-duration) ease,
+			transform 0.1s ease;
+	}
+
+	#lovable-badge-cta:hover {
+		background: rgba(255, 255, 255, 0.04);
+		color: var(--badge-text-hover);
+	}
+
+	#lovable-badge-cta:active {
+		transform: scale(0.98);
+	}
+
+	#lovable-badge-cta:focus {
+		outline: none;
+	}
+
+	#lovable-badge-cta:focus-visible {
+		outline: var(--focus-width) solid var(--focus-color);
+		outline-offset: var(--focus-offset);
+		z-index: 1;
+	}
+
+	#lovable-badge-text {
+		line-height: 1;
+	}
+
+	#lovable-badge-divider {
+		width: 1px;
+		height: 24px;
+		background-color: rgba(255, 255, 255, 0.04);
+		flex-shrink: 0;
+	}
+
+	#lovable-badge-close {
+		width: 24px;
+		height: 24px;
+		min-width: 24px;
+		min-height: 24px;
+		cursor: pointer;
+		background: none;
+		border: none;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0 var(--badge-radius) var(--badge-radius) 0;
+		flex-shrink: 0;
+		transition: 
+			background-color var(--badge-transition-duration) ease,
+			transform 0.1s ease;
+	}
+
+	#lovable-badge-close:hover {
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	#lovable-badge-close:active {
+		transform: scale(0.92);
+	}
+
+	#lovable-badge-close:focus {
+		outline: none;
+	}
+
+	#lovable-badge-close:focus-visible {
+		outline: var(--focus-width) solid var(--focus-color);
+		outline-offset: calc(var(--focus-offset) * -1);
+		z-index: 1;
+	}
+
+	#lovable-badge-close svg path {
+		fill: var(--badge-text);
+		transition: fill var(--badge-transition-duration) ease;
+	}
+
+	#lovable-badge-close:hover svg path {
+		fill: var(--badge-text-hover);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		#lovable-badge-cta,
+		#lovable-badge-close,
+		#lovable-badge-close svg path {
+			transition: none;
+		}
+		
+		#lovable-badge-cta:active,
+		#lovable-badge-close:active {
+			transform: none;
+		}
+	}
+
+	@media (prefers-contrast: high) {
+		#lovable-badge {
+			--badge-bg: #000;
+			--badge-text: #fff;
+			--badge-text-hover: #fff;
+			border: 2px solid currentColor;
+		}
+		
+		#lovable-badge-cta:focus-visible,
+		#lovable-badge-close:focus-visible {
+			outline-width: 3px;
+		}
+	}
+</style>
+<meta name="twitter:title" content="SimpleÔQuotidien — Catalogue de services"><meta name="twitter:description" content="Choisissez une catégorie, puis le service dont vous avez besoin aujourd&amp;#x27;hui."><meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b64a5930-5bec-4268-946c-e464dade91cd/id-preview-9c0a74e8--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app-1785589214907.png"><meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b64a5930-5bec-4268-946c-e464dade91cd/id-preview-9c0a74e8--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app-1785589214907.png"><link rel="modulepreload" as="script" crossorigin="" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/assets/categorie._slug-Dm_joEyc.js"><title>SimpleÔQuotidien — Catalogue de services près de chez vous</title><meta name="description" content="Parcourez toutes les catégories de services SimpleÔQuotidien : maison, garde d&#39;enfants, cours, immobilier, location, beauté et plus encore."><meta property="og:title" content="SimpleÔQuotidien — Catalogue de services"><meta property="og:description" content="Choisissez une catégorie, puis le service dont vous avez besoin aujourd&#39;hui."><link rel="modulepreload" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/assets/routes-BZedjYo2.js"><link rel="modulepreload" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/assets/CategoryVisual-B5DatmlW.js"></head><body data-tsd-source="/src/routes/__root.tsx:115:7"><!--$--><!--/$--><script type="module" async="" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/index-BYOXf5js.js"></script><script src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/lovable.js" type="module"></script>
+<aside id="lovable-badge" role="complementary" dir="ltr" lang="en" aria-label="Edit with Lovable">
+	<a id="lovable-badge-cta" target="_blank" href="https://lovable.dev/projects/lovp_4s54h7fp5v9b294mvxqy5r0xax?utm_source=lovable-badge" rel="noopener nofollow" aria-label="Edit with Lovable">
+		<span id="lovable-badge-text">Edit with</span>
+		<svg xmlns="http://www.w3.org/2000/svg" width="52" height="16" fill="none" viewBox="0 0 52 16">
+  <path fill="#FCFBF8" fill-rule="evenodd" d="M20.318 5.25c.643 0 1.206.14 1.69.418a2.81 2.81 0 0 1 1.118 1.191c.266.513.4 1.115.4 1.807s-.134 1.296-.4 1.812a2.81 2.81 0 0 1-1.118 1.193c-.484.278-1.047.418-1.69.418s-1.208-.14-1.695-.418a2.85 2.85 0 0 1-1.125-1.193c-.262-.516-.393-1.12-.393-1.812s.131-1.294.393-1.807a2.848 2.848 0 0 1 1.125-1.191c.487-.279 1.052-.418 1.695-.418Zm0 1.425c-.27 0-.504.076-.7.228-.193.147-.34.37-.443.67-.102.295-.153.66-.153 1.093 0 .435.05.801.153 1.1.102.3.25.524.443.676.196.147.43.22.7.22.27 0 .502-.073.694-.22.193-.152.341-.375.443-.67.103-.299.153-.667.153-1.106 0-.65-.112-1.145-.337-1.481a1.08 1.08 0 0 0-.953-.51ZM32.7 5.25c.61 0 1.127.1 1.549.3.422.197.74.48.953.849.217.368.325.809.325 1.32v2.704c0 .29.02.562.062.812.044.245.108.4.19.466V12h-1.935a5.895 5.895 0 0 1-.105-.684 7.745 7.745 0 0 1-.02-.228 2.293 2.293 0 0 1-.151.203c-.205.242-.47.437-.793.584-.32.143-.685.215-1.094.215-.406 0-.77-.08-1.094-.24a1.845 1.845 0 0 1-.756-.682 1.984 1.984 0 0 1-.27-1.045c0-.606.178-1.069.535-1.388.356-.324.87-.534 1.542-.633l1.125-.16c.225-.032.403-.074.534-.123a.622.622 0 0 0 .288-.196.549.549 0 0 0 .093-.327.65.65 0 0 0-.11-.367.702.702 0 0 0-.32-.27c-.14-.07-.31-.105-.51-.105-.32 0-.576.083-.768.251-.193.164-.298.39-.314.676h-1.923c.016-.434.147-.82.393-1.155.25-.34.596-.604 1.039-.792.442-.189.954-.283 1.535-.283Zm.99 3.498a.98.98 0 0 1-.215.14 2.49 2.49 0 0 1-.584.178l-.473.092c-.315.061-.553.156-.713.283-.155.127-.233.305-.233.534 0 .23.084.412.252.547.168.135.383.203.645.203s.494-.058.694-.173c.201-.118.355-.282.461-.49.11-.21.166-.448.166-.714v-.6Zm4.526-2.375c.065-.125.138-.243.221-.349.197-.25.437-.44.719-.571.282-.135.6-.203.952-.203.528 0 .988.138 1.377.412.389.275.688.67.896 1.186.21.512.314 1.12.314 1.824 0 .7-.107 1.309-.32 1.825-.213.512-.518.906-.915 1.18-.393.275-.854.412-1.383.412-.352 0-.667-.062-.946-.184a1.832 1.832 0 0 1-.7-.554 2.2 2.2 0 0 1-.234-.383V12h-1.843V3h1.862v3.373Zm1.284.296c-.274 0-.51.085-.707.253-.192.163-.338.397-.436.7a3.376 3.376 0 0 0-.148 1.05c0 .406.05.759.148 1.058.098.299.243.53.436.694.197.164.433.246.707.246.279 0 .512-.082.7-.246.193-.164.336-.395.43-.694.099-.3.148-.652.148-1.058 0-.405-.05-.757-.147-1.056-.095-.299-.238-.53-.43-.694a1.015 1.015 0 0 0-.7-.253Zm9.416-1.419c.602 0 1.136.131 1.604.393.466.262.829.643 1.086 1.143.263.5.394 1.097.394 1.794 0 .25-.002.449-.006.596H47.51c.018.288.071.538.164.75a1.3 1.3 0 0 0 .491.596c.214.13.465.196.757.196.319 0 .583-.082.792-.246.209-.167.34-.403.393-.706h1.862a2.48 2.48 0 0 1-.485 1.235 2.54 2.54 0 0 1-1.051.805c-.439.188-.949.283-1.53.283-.655 0-1.225-.125-1.708-.375a2.672 2.672 0 0 1-1.13-1.143c-.267-.508-.4-1.137-.4-1.887 0-.712.14-1.327.418-1.843a2.86 2.86 0 0 1 1.155-1.186c.491-.27 1.051-.405 1.678-.405Zm-.044 1.345c-.274 0-.516.068-.725.203a1.29 1.29 0 0 0-.479.59 2.045 2.045 0 0 0-.132.498h2.562a1.873 1.873 0 0 0-.138-.602 1.061 1.061 0 0 0-.418-.516 1.243 1.243 0 0 0-.67-.173Z" clip-rule="evenodd"></path>
+  <path fill="#FCFBF8" d="m26.605 9.995 1.342-4.566h1.924L27.628 12h-2.07l-2.33-6.57h1.98l1.397 4.565Zm-13.013.143h2.256c1.632 0 1.421 1.837 1.418 1.861h-5.603V3h1.93v7.138Zm31.516 1.861h-1.862V3h1.862v8.999Z"></path>
+  <path fill="url(#a)" fill-rule="evenodd" d="M2.7 3c1.492 0 2.7 1.192 2.7 2.663v1.012h.9c1.49 0 2.7 1.192 2.7 2.662S7.791 12 6.3 12H0V5.663C0 4.193 1.209 3 2.7 3Z" clip-rule="evenodd"></path>
+  <defs>
+    <radialgradient id="a" cx="0" cy="0" r="1" gradientTransform="matrix(-1.54236 7.07838 -10.231 -2.15602 4.627 5.022)" gradientUnits="userSpaceOnUse">
+      <stop offset=".106" stop-color="#FE7B02"></stop>
+      <stop offset=".394" stop-color="#FE3F21"></stop>
+      <stop offset=".608" stop-color="#F858BC"></stop>
+      <stop offset=".929" stop-color="#575ECF"></stop>
+    </radialgradient>
+  </defs>
+</svg>
+
+
+	</a>
+	
+	<span id="lovable-badge-divider" aria-hidden="true"></span>
+	
+	<button id="lovable-badge-close" aria-label="Dismiss" title="Dismiss" type="button">
+		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+			<path d="M10.646 4.646a.5.5 0 1 1 .707.708L8.707 8l2.646 2.646a.5.5 0 1 1-.707.707L8 8.707l-2.646 2.646a.5.5 0 1 1-.708-.707L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708L8 7.293l2.646-2.647Z"></path>
+		</svg>
+	</button>
+</aside>
+<script>
+	// Don't show the lovable-badge if the page is in an iframe or if it's being rendered by puppeteer (screenshot service)
+	if (window.self !== window.top || navigator.userAgent.includes('puppeteer')) {
+		var badge = document.getElementById('lovable-badge');
+		if (badge) {
+			badge.style.display = 'none';
+		}
+	}
+
+	// Add click event listener to close button with animation
+	var closeButton = document.getElementById('lovable-badge-close');
+	if (closeButton) {
+		closeButton.addEventListener('click', function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			var badge = document.getElementById('lovable-badge');
+			if (badge) {
+				badge.classList.add('closing');
+				setTimeout(function() {
+					if (badge) {
+						badge.style.display = 'none';
+					}
+				}, 240);
+			}
+		});
+	}
+</script>
+<div class="min-h-screen" data-tsd-source="/src/routes/index.tsx:33:5"><header class="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur" data-tsd-source="/src/components/SiteHeader.tsx:5:5"><div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4" data-tsd-source="/src/components/SiteHeader.tsx:6:7"><a data-tsd-source="/src/components/SiteHeader.tsx:7:9" class="flex min-w-0 items-center gap-3 active" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/" data-status="active" aria-current="page"><span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-primary text-lg font-black text-primary-foreground" data-tsd-source="/src/components/SiteHeader.tsx:8:11">SÔ</span><span class="truncate text-lg font-extrabold tracking-tight text-foreground" data-tsd-source="/src/components/SiteHeader.tsx:11:11">Simple<span class="text-accent" data-tsd-source="/src/components/SiteHeader.tsx:12:19">Ô</span>Quotidien</span></a><nav class="hidden items-center gap-6 text-sm font-medium text-muted-foreground sm:flex" data-tsd-source="/src/components/SiteHeader.tsx:15:9"><a data-tsd-source="/src/components/SiteHeader.tsx:16:11" class="transition-colors hover:text-primary active" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/" data-status="active" aria-current="page">Catégories</a><a href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/#comment" class="transition-colors hover:text-primary" data-tsd-source="/src/components/SiteHeader.tsx:19:11">Comment ça marche</a></nav></div></header><section class="relative overflow-hidden border-b border-border/60" data-tsd-source="/src/routes/index.tsx:36:7"><img alt="Intérieur chaleureux avec plantes et objets du quotidien" class="absolute inset-0 h-full w-full object-cover" data-tsd-source="/src/routes/index.tsx:37:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/hero-catalogue-QE7nfVjE.jpg"><div class="absolute inset-0 bg-background/80 backdrop-blur-[2px]" data-tsd-source="/src/routes/index.tsx:42:9"></div><div class="relative mx-auto max-w-3xl px-5 pb-16 pt-14 text-center sm:pt-20" data-tsd-source="/src/routes/index.tsx:43:9"><span class="inline-flex items-center gap-2 rounded-full bg-accent-soft px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-accent" data-tsd-source="/src/routes/index.tsx:44:11">+ de 90 services disponibles</span><h1 class="mt-5 text-4xl font-extrabold text-foreground sm:text-5xl" data-tsd-source="/src/routes/index.tsx:47:11">De quoi avez-vous besoin aujourd'hui&nbsp;?</h1><p class="mx-auto mt-4 max-w-xl text-base text-muted-foreground" data-tsd-source="/src/routes/index.tsx:50:11">Choisissez une catégorie, puis le service qu'il vous faut. On s'occupe du reste.</p><div class="relative mx-auto mt-8 max-w-xl text-left" data-tsd-source="/src/routes/index.tsx:54:11"><div class="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 shadow-card focus-within:ring-2 focus-within:ring-ring/40" data-tsd-source="/src/routes/index.tsx:55:13"><span aria-hidden="true" class="text-lg" data-tsd-source="/src/routes/index.tsx:56:15">🔎</span><input placeholder="Plomberie, baby-sitting, location voiture…" aria-label="Rechercher un service ou une catégorie" class="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground" data-tsd-source="/src/routes/index.tsx:59:15" value=""><button type="button" class="shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-transform hover:-translate-y-0.5" data-tsd-source="/src/routes/index.tsx:71:15">Rechercher</button></div></div></div></section><main class="mx-auto max-w-6xl px-5 py-14" data-tsd-source="/src/routes/index.tsx:114:7"><div class="flex flex-wrap items-end justify-between gap-3" data-tsd-source="/src/routes/index.tsx:115:9"><h2 class="text-2xl font-bold text-foreground sm:text-3xl" data-tsd-source="/src/routes/index.tsx:116:11">Toutes les catégories</h2><p class="text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:117:11">14 univers de services</p></div><div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-tsd-source="/src/routes/index.tsx:120:9"><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/maison-travaux" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Maison &amp; Travaux" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-maison-DC7AwRlr.jpg"><div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">🏠</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Maison &amp; Travaux</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Réparations, rénovations et entretien de votre logement</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">10 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/services-a-la-personne" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Services à la personne" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-personne-Cx0iOahB.jpg"><div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">👨‍👩‍👧</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Services à la personne</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Un coup de main au quotidien, chez vous</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">9 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/formation-education" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Formation &amp; Éducation" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-formation-C4LwSaWI.jpg"><div class="absolute inset-0 bg-gradient-to-t from-accent/70 via-accent/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">📚</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Formation &amp; Éducation</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Progresser, apprendre et se dépasser</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">10 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/immobilier" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Immobilier" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-immobilier-B6DQEMnB.jpg"><div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">🏢</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Immobilier</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Acheter, louer, gérer et valoriser vos biens</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">8 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/location" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Location" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-location-tZbBBCaS.jpg"><div class="absolute inset-0 bg-gradient-to-t from-accent/70 via-accent/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">📦</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Location</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Louez ce dont vous avez besoin, quand vous en avez besoin</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">4 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/beaute-bien-etre" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Beauté &amp; Bien-être" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-beaute-CrVvdWpU.jpg"><div class="absolute inset-0 bg-gradient-to-t from-accent/70 via-accent/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">💇</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Beauté &amp; Bien-être</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Prenez soin de vous, sans bouger de chez vous</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">6 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/evenementiel" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Événementiel" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-evenementiel-B2zlEgad.jpg"><div class="absolute inset-0 bg-gradient-to-t from-accent/70 via-accent/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">🎉</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Événementiel</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Des moments réussis, du premier au dernier détail</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">6 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/automobile" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Automobile" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-automobile-DuUbRjrn.jpg"><div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">🚗</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Automobile</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Entretien, dépannage et transactions auto</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">5 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/transport-livraison" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Transport &amp; Livraison" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-transport-GZv6X4Jx.jpg"><div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">🚚</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Transport &amp; Livraison</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Déplacer vos biens et vos personnes en toute sécurité</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">4 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/informatique-digital" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Informatique &amp; Digital" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-informatique-zE6Ft4jJ.jpg"><div class="absolute inset-0 bg-gradient-to-t from-accent/70 via-accent/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">💻</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Informatique &amp; Digital</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Vos projets numériques entre de bonnes mains</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">5 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/juridique-administratif" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Juridique &amp; Administratif" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-juridique-Dn_Un360.jpg"><div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">⚖️</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Juridique &amp; Administratif</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Des experts pour sécuriser vos démarches</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">5 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/sante-bien-etre" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Santé &amp; Bien-être" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-sante-DeoC62Rd.jpg"><div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">❤️</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Santé &amp; Bien-être</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Des soins de qualité, directement à domicile</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">5 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/artisanat-reparation" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Artisanat &amp; Réparation" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-artisanat-Btf1GZje.jpg"><div class="absolute inset-0 bg-gradient-to-t from-accent/70 via-accent/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">🧵</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Artisanat &amp; Réparation</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Réparer plutôt que jeter, avec un savoir-faire</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">4 services</span></div></a><a data-tsd-source="/src/routes/index.tsx:122:13" href="https://id-preview--aa21dc16-d3f9-4def-b25a-81d10be5fbd1.lovable.app/categorie/securite" class="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"><div class="relative overflow-hidden bg-muted h-40 transition-transform duration-500 group-hover:scale-105" data-tsd-source="/src/components/CategoryVisual.tsx:24:5"><img alt="Sécurité" loading="lazy" class="h-full w-full object-cover" data-tsd-source="/src/components/CategoryVisual.tsx:26:9" src="./SimpleÔQuotidien — Catalogue de services près de chez vous_files/cat-securite-DeJNAPXF.jpg"><div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/10 to-transparent" data-tsd-source="/src/components/CategoryVisual.tsx:33:7"></div><span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-xl bg-background/85 text-lg backdrop-blur" data-tsd-source="/src/components/CategoryVisual.tsx:40:7">🔒</span></div><div class="flex flex-1 flex-col p-5" data-tsd-source="/src/routes/index.tsx:135:15"><h3 class="text-base font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:136:17">Sécurité</h3><p class="mt-1 line-clamp-2 text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:137:17">Protéger vos lieux, vos biens et vos événements</p><span class="mt-4 inline-flex w-fit rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary" data-tsd-source="/src/routes/index.tsx:138:17">3 services</span></div></a></div><section id="comment" class="mt-16 rounded-3xl border border-border bg-card p-8 shadow-card" data-tsd-source="/src/routes/index.tsx:146:9"><h2 class="text-xl font-bold text-foreground" data-tsd-source="/src/routes/index.tsx:147:11">Comment ça marche&nbsp;?</h2><ol class="mt-6 grid gap-6 sm:grid-cols-3" data-tsd-source="/src/routes/index.tsx:148:11"><li class="flex gap-3" data-tsd-source="/src/routes/index.tsx:154:15"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent text-sm font-bold text-accent-foreground" data-tsd-source="/src/routes/index.tsx:155:17">1</span><span class="min-w-0" data-tsd-source="/src/routes/index.tsx:158:17"><span class="block font-semibold text-foreground" data-tsd-source="/src/routes/index.tsx:159:19">Choisissez une catégorie</span><span class="block text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:160:19">Parcourez les univers ou utilisez la recherche.</span></span></li><li class="flex gap-3" data-tsd-source="/src/routes/index.tsx:154:15"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent text-sm font-bold text-accent-foreground" data-tsd-source="/src/routes/index.tsx:155:17">2</span><span class="min-w-0" data-tsd-source="/src/routes/index.tsx:158:17"><span class="block font-semibold text-foreground" data-tsd-source="/src/routes/index.tsx:159:19">Sélectionnez un service</span><span class="block text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:160:19">Chaque catégorie détaille ses prestations.</span></span></li><li class="flex gap-3" data-tsd-source="/src/routes/index.tsx:154:15"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent text-sm font-bold text-accent-foreground" data-tsd-source="/src/routes/index.tsx:155:17">3</span><span class="min-w-0" data-tsd-source="/src/routes/index.tsx:158:17"><span class="block font-semibold text-foreground" data-tsd-source="/src/routes/index.tsx:159:19">Faites votre demande</span><span class="block text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:160:19">Décrivez votre besoin, on vous met en relation.</span></span></li></ol></section></main><footer class="border-t border-border/70 py-8 text-center text-sm text-muted-foreground" data-tsd-source="/src/routes/index.tsx:168:7">© 2026 SimpleÔQuotidien — Vos services du quotidien, simplement.</footer></div></body></html>

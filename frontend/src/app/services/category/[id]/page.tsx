@@ -1,15 +1,15 @@
 'use client';
 
-import { use } from 'react';
+import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
 import { useCategory } from '@/hooks/useCategories';
-import { providerService } from '@/services/provider.service';
-import { useEffect, useState } from 'react';
-import { User } from '@/types';
-import { IconArrowLeft, IconMapPin } from '@tabler/icons-react';
+import { serviceService } from '@/services/service.service';
+import { formatPrice } from '@/lib/utils';
+import { ProviderService } from '@/types';
+import { IconArrowLeft, IconMapPin, IconUser, IconBriefcase } from '@tabler/icons-react';
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -19,11 +19,15 @@ export default function CategoryServicesPage({ params }: Props) {
     const { id } = use(params);
     const categoryId = parseInt(id, 10);
     const { category, loading, error } = useCategory(categoryId);
-    const [providers, setProviders] = useState<User[]>([]);
+    const [services, setServices] = useState<ProviderService[]>([]);
+    const [servicesLoading, setServicesLoading] = useState(true);
 
     useEffect(() => {
-        providerService.getAll().then(res => setProviders(res.data)).catch(() => setProviders([]));
-    }, []);
+        serviceService.getAll({ category_id: categoryId })
+            .then(res => setServices(res.data))
+            .catch(() => setServices([]))
+            .finally(() => setServicesLoading(false));
+    }, [categoryId]);
 
     if (loading) {
         return (
@@ -66,28 +70,38 @@ export default function CategoryServicesPage({ params }: Props) {
 
             <section className="py-12 flex-1">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-lg font-bold text-brand-dark mb-4">Prestataires disponibles</h2>
-                    <p className="text-sm text-slate-500 mb-6">
-                        Le catalogue « service par service » n&apos;existe pas encore côté API : voici les prestataires inscrits.
-                    </p>
+                    <h2 className="text-lg font-bold text-brand-dark mb-6">Services disponibles dans cette catégorie</h2>
 
-                    {providers.length > 0 ? (
+                    {servicesLoading ? (
+                        <p className="text-center text-slate-500 py-12">Chargement des services…</p>
+                    ) : services.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {providers.map(p => (
-                                <div key={p.id} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-card">
-                                    <p className="font-bold text-brand-dark">{p.first_name} {p.last_name}</p>
-                                    {p.intervention_city && (
-                                        <p className="text-sm text-slate-500 flex items-center gap-1 mt-2">
-                                            <IconMapPin className="w-4 h-4" /> {p.intervention_city}
-                                        </p>
+                            {services.map(service => (
+                                <div key={service.id} className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
+                                    {service.image ? (
+                                        <img src={service.image} alt={category.name} className="w-full h-40 object-cover" />
+                                    ) : (
+                                        <div className="w-full h-40 bg-brand-tealLight flex items-center justify-center">
+                                            <IconBriefcase className="w-8 h-8 text-brand-teal/50" />
+                                        </div>
                                     )}
+                                    <div className="p-6">
+                                        <p className="text-xl font-extrabold text-brand-teal mb-2">{formatPrice(service.price)} FCFA</p>
+                                        {service.description && <p className="text-sm text-slate-500 mb-3 line-clamp-2">{service.description}</p>}
+                                        <div className="flex items-center justify-between text-sm text-slate-500">
+                                            {service.prestataire_name && (
+                                                <span className="flex items-center gap-1.5"><IconUser className="w-3.5 h-3.5" /> {service.prestataire_name}</span>
+                                            )}
+                                            <span className="flex items-center gap-1.5"><IconMapPin className="w-3.5 h-3.5" /> {service.city}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
                         <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-card">
                             <p className="text-4xl mb-4">📭</p>
-                            <h3 className="text-lg font-bold text-brand-dark mb-1">Aucun prestataire listé</h3>
+                            <h3 className="text-lg font-bold text-brand-dark mb-1">Aucun service publié pour l&apos;instant</h3>
                             <p className="text-slate-500 text-sm">Vous pouvez quand même créer une demande ; un agent vous contactera.</p>
                         </div>
                     )}

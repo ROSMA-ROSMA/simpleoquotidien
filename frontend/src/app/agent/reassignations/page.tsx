@@ -16,7 +16,7 @@ export default function AgentReassignationsPage() {
     if (loading) {
         return (
             <AgentLayout title="À réassigner" subtitle="Chargement…">
-                <p className="text-slate-400 text-[11px]">Chargement…</p>
+                <p className="text-slate-400 text-sm">Chargement…</p>
             </AgentLayout>
         );
     }
@@ -31,12 +31,13 @@ export default function AgentReassignationsPage() {
                                 #
                             </div>
                             <div className="flex-1 min-w-[200px]">
-                                <p className="font-bold text-brand-dark text-[11px]">#SQ-{b.id} · {getBookingTitle(b)}</p>
-                                <p className="text-[11px] text-slate-500">{formatDateTime(b.scheduled_datetime)}</p>
-                                {b.reassignment_reason && <p className="text-[11px] text-brand-coral mt-1 font-semibold">{b.reassignment_reason}</p>}
+                                <p className="font-bold text-brand-dark text-sm">#SQ-{b.id} · {getBookingTitle(b)}</p>
+                                <p className="text-sm text-slate-500">{formatDateTime(b.scheduled_datetime)}</p>
+                                {b.assignment_status === 'EXPIREE' && <p className="text-sm text-brand-coral mt-1 font-semibold">Le prestataire n&apos;a pas répondu dans les 30 minutes.</p>}
+                                {b.assignment_status === 'REFUSEE' && <p className="text-sm text-brand-coral mt-1 font-semibold">Le prestataire a refusé cette mission.</p>}
                             </div>
                             <Badge variant="danger">À réassigner</Badge>
-                            <Link href={`/agent/commandes/${b.id}`} className="px-4 py-2 rounded-xl bg-brand-teal text-white text-[11px] font-bold hover:bg-brand-tealDark transition-colors">
+                            <Link href={`/agent/commandes/${b.uuid}`} className="px-4 py-2 rounded-xl bg-brand-teal text-white text-sm font-bold hover:bg-brand-tealDark transition-colors">
                                 Réassigner
                             </Link>
                         </div>

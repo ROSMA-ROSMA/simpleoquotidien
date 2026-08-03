@@ -125,20 +125,20 @@ export const useAppStore = create<AppState>()(
                 } else if (response === 'reject') {
                     set(s => ({
                         bookings: s.bookings.map(b => b.id === bookingId
-                            ? pushHistory({ ...b, assigned_provider_id: undefined, assigned_provider: undefined, reassignment_reason: reason }, BookingStatus.REJECTED, reason, UserRole.PROVIDER)
+                            ? pushHistory({ ...b, assigned_provider_id: undefined, assigned_provider: undefined }, BookingStatus.REJECTED, reason, UserRole.PROVIDER)
                             : b),
                     }));
                 } else {
                     set(s => ({
                         bookings: s.bookings.map(b => b.id === bookingId
-                            ? pushHistory({ ...b, assigned_provider_id: undefined, assigned_provider: undefined, reassignment_reason: reason }, BookingStatus.POSTPONED, reason, UserRole.PROVIDER)
+                            ? pushHistory({ ...b, assigned_provider_id: undefined, assigned_provider: undefined }, BookingStatus.POSTPONED, reason, UserRole.PROVIDER)
                             : b),
                     }));
                 }
             },
 
             contactProvider: (bookingId) => {
-                set(s => ({ bookings: s.bookings.map(b => (b.id === bookingId ? { ...b, provider_contacted: true } : b)) }));
+                set(s => ({ bookings: s.bookings.map(b => (b.id === bookingId ? { ...b } : b)) }));
             },
 
             startExecution: (bookingId) => get().transitionBooking(bookingId, BookingStatus.IN_PROGRESS, 'Intervention démarrée', UserRole.PROVIDER),

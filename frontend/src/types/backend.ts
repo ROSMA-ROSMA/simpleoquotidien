@@ -16,6 +16,7 @@ export interface BackendCategory {
     id: number;
     nom: string;
     description: string;
+    image?: string | null;
 }
 
 export type BackendOrderStatus =
@@ -25,6 +26,7 @@ export type BackendOrderStatus =
     | 'ACCEPTEE'
     | 'REFUSEE'
     | 'REPORTEE'
+    | 'A_REASSIGNER'
     | 'EN_COURS'
     | 'TERMINEE'
     | 'ANNULEE';
@@ -35,11 +37,14 @@ export interface BackendQuote {
     id: number;
     status: BackendQuoteStatus;
     price: string;
-    order: number;
+    description?: string | null;
+    pdf_file?: string | null;
+    order: string;
 }
 
 export interface BackendOrder {
     id: number;
+    uuid: string;
     status: BackendOrderStatus;
     description: string;
     localisation: string;
@@ -69,14 +74,16 @@ export interface BackendPrestataire {
     date_modification?: string;
 }
 
-export type BackendAssignmentStatus = 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE';
+export type BackendAssignmentStatus = 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE' | 'EXPIREE';
 
 export interface BackendAssignment {
     id: number;
     methode: string;
     status: BackendAssignmentStatus;
-    reason?: string;
-    order: number;
+    motif_refus?: string | null;
+    date_reponse?: string | null;
+    date_creation?: string;
+    order: string;
     prestataire: number;
     qualifier: number;
 }
@@ -90,27 +97,36 @@ export interface BackendNote {
     author_username?: string;
 }
 
-export type BackendNotificationType = 'PROVIDER_ASSIGNED' | 'PROVIDER_RESPONSE' | 'REASSIGNMENT_NEEDED';
+export type BackendNotificationType =
+    | 'QUOTE_REFUSED'
+    | 'NEW_ORDER_CREATED'
+    | 'REASSIGNMENT_NEEDED'
+    | 'NEW_ASSIGNMENT'
+    | 'QUOTE_ACCEPTED'
+    | 'PRESTATAIRE_ASSIGNED'
+    | 'NEW_QUOTE_RECEIVED';
 
 export interface BackendNotification {
     id: number;
-    user: number;
-    type: BackendNotificationType;
-    title: string;
+    titre: string;
     message: string;
-    order?: number | null;
-    is_read: boolean;
+    type_notification: BackendNotificationType;
+    type_notification_display?: string;
+    order?: string | null;
+    est_lu: boolean;
     date_creation: string;
 }
 
 export interface BackendService {
     id: number;
     prestataire: number;
+    prestataire_nom?: string;
     category: number;
     category_nom?: string;
     price: string;
     city: string;
     description: string;
+    image?: string | null;
     date_creation?: string;
 }
 

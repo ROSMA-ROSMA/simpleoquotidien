@@ -7,6 +7,7 @@ import Footer from '@/components/layout/Footer';
 import CategoryCard from '@/components/services/CategoryCard';
 import SearchBar from '@/components/services/SearchBar';
 import { useCategories } from '@/hooks/useCategories';
+import { IconSparkles } from '@tabler/icons-react';
 
 export default function ServicesPage() {
     const router = useRouter();
@@ -31,28 +32,38 @@ export default function ServicesPage() {
         <div className="min-h-screen bg-brand-surface flex flex-col">
             <LandingNavbar />
 
-            <section className="pt-32 pb-12 bg-mesh relative overflow-hidden">
-                <div className="absolute top-20 right-10 w-72 h-72 bg-brand-mint/15 rounded-full filter blur-3xl opacity-70" />
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="text-center mb-10">
-                        <h1 className="text-4xl sm:text-5xl font-extrabold text-brand-dark mb-4">
-                            Nos <span className="gradient-text">Univers</span>
-                        </h1>
-                        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-                            Explorez nos catégories et demandez une intervention par univers de service.
-                        </p>
-                    </div>
-
+            <section className="relative overflow-hidden border-b border-slate-100">
+                <img
+                    src="/hero-catalogue.jpg"
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-brand-surface/85 backdrop-blur-[2px]" />
+                <div className="relative z-10 max-w-3xl mx-auto px-5 pt-32 pb-16 sm:pt-40 text-center">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-brand-tealLight px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-brand-teal">
+                        <IconSparkles className="w-3.5 h-3.5" />
+                        {loading ? 'Catalogue de services' : `${categories.length} univers de services disponibles`}
+                    </span>
+                    <h1 className="mt-5 text-4xl sm:text-5xl font-extrabold text-brand-dark">
+                        De quoi avez-vous besoin aujourd&apos;hui&nbsp;?
+                    </h1>
+                    <p className="mx-auto mt-4 max-w-xl text-base text-slate-500">
+                        Choisissez une catégorie, puis le service qu&apos;il vous faut. On s&apos;occupe du reste.
+                    </p>
                     <SearchBar
                         onSearch={handleSearch}
-                        placeholder="Rechercher un service ou une catégorie..."
-                        className="max-w-2xl mx-auto"
+                        placeholder="Plomberie, baby-sitting, location voiture…"
+                        className="max-w-xl mx-auto mt-8 text-left"
                     />
                 </div>
             </section>
 
             <section className="py-16 flex-1">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex flex-wrap items-end justify-between gap-3 mb-8">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-brand-dark">Toutes les catégories</h2>
+                        {!loading && <p className="text-sm text-slate-500">{categories.length} univers de services</p>}
+                    </div>
                     {loading && (
                         <p className="text-center text-slate-500 py-12">Chargement des catégories…</p>
                     )}
