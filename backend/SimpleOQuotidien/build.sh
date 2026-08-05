@@ -13,6 +13,7 @@ from users.models import Utilisateur
 # 1) Superuser (Admin)
 if not Utilisateur.objects.filter(email='admin@simpleoquotidien.com').exists():
     admin = Utilisateur.objects.create_superuser(
+        username='admin',
         email='admin@simpleoquotidien.com',
         password='Admin@2026!',
         first_name='Admin',
@@ -29,6 +30,7 @@ else:
 # 2) Agent
 if not Utilisateur.objects.filter(email='agent@simpleoquotidien.com').exists():
     agent = Utilisateur.objects.create_user(
+        username='agent',
         email='agent@simpleoquotidien.com',
         password='Agent@2026!',
         first_name='Agent',
