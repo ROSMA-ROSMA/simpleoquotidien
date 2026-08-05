@@ -15,6 +15,8 @@ import os
 from pathlib import Path
 from urllib.parse import urlsplit
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,12 +32,12 @@ _frontend_url_parts = urlsplit(FRONTEND_URL)
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-rcgiq6850$gzrw_^e202j!gdc6+qgwd#v%f7t0)=8fu#&=t3m8"
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-rcgiq6850$gzrw_^e202j!gdc6+qgwd#v%f7t0)=8fu#&=t3m8')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 AUTH_USER_MODEL = 'users.Utilisateur'
 
@@ -65,6 +67,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.middleware.security.SecurityMiddleware",
     'corsheaders.middleware.CorsMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -74,6 +79,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 ROOT_URLCONF = "SimpleOQuotidien.urls"
 
@@ -99,11 +108,12 @@ WSGI_APPLICATION = "SimpleOQuotidien.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        conn_max_age=600,
+    )
 }
+
 
 
 # Password validation
@@ -205,7 +215,12 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    FRONTEND_URL,
+]
+# Autoriser toutes les origines en dev local uniquement
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
 
 # Celery / Redis
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6380/0')
@@ -221,8 +236,8 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False  # Impératif pour le port 587
 
 # Vos identifiants exacts transmis par Brevo :
-EMAIL_HOST_USER = 'b303d7001@smtp-brevo.com'
-EMAIL_HOST_PASSWORD = 'bskdtaTmZPjBexV'  # Collez la clé/mot de passe affiché sur Brevo
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'b303d7001@smtp-brevo.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'bskdtaTmZPjBexV')
 
 # L'adresse expéditeur (doit être un e-mail validé dans votre compte Brevo)
 DEFAULT_FROM_EMAIL = 'SimpleOQuotidien <kamta.mariane1@icloud.com>'
@@ -230,7 +245,7 @@ DEFAULT_FROM_EMAIL = 'SimpleOQuotidien <kamta.mariane1@icloud.com>'
 # 86400 secondes = 24 heures
 PASSWORD_RESET_TIMEOUT = 86400
 
-
+# Les valeurs DEBUG et SECRET_KEY sont déjà définies plus haut via os.environ.get()
 UNFOLD = {
     "SITE_TITLE": "SimpleÔQuotidien",
     "SITE_HEADER": "SimpleÔQuotidien",
