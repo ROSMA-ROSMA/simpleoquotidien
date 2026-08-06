@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve
 from users.views import CustomActivationView, LogoutView
 from commandes.views import DirectQuoteActionView
 from drf_spectacular.views import (
@@ -36,8 +37,11 @@ urlpatterns = [
     ),
 ]
 
-# Fichiers media (images uploadées) — toujours servir, y compris en production
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Fichiers media (images, documents uploadés) — re_path fonctionne même si DEBUG=False
+# (contrairement à static() qui retourne une liste vide en production)
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'djoser',
     'rest_framework_simplejwt',
     'drf_spectacular',
+    'anymail',
 ]
 
 MIDDLEWARE = [
@@ -228,18 +229,11 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TIMEZONE = TIME_ZONE
 
-# Configuration SMTP Brevo pour Django
-# Port 465/SSL est plus fiable sur les plateformes cloud (Render, Railway)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp-relay.brevo.com'
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-EMAIL_TIMEOUT = 15  # Timeout en secondes pour éviter les blocages gunicorn
-
-# Vos identifiants exacts transmis par Brevo :
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'b303d7001@smtp-brevo.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'bskdtaTmZPjBexV')
+# Configuration Email via Brevo HTTP API (plus fiable que SMTP sur Render)
+EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
+ANYMAIL = {
+    'BREVO_API_KEY': os.environ.get('BREVO_API_KEY', ''),
+}
 
 # L'adresse expéditeur (doit être un e-mail validé dans votre compte Brevo)
 DEFAULT_FROM_EMAIL = 'SimpleOQuotidien <kamta.mariane1@icloud.com>'
