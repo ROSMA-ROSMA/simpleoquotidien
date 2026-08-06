@@ -229,11 +229,13 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TIMEZONE = TIME_ZONE
 
 # Configuration SMTP Brevo pour Django
+# Port 465/SSL est plus fiable sur les plateformes cloud (Render, Railway)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False  # Impératif pour le port 587
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_TIMEOUT = 15  # Timeout en secondes pour éviter les blocages gunicorn
 
 # Vos identifiants exacts transmis par Brevo :
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'b303d7001@smtp-brevo.com')
