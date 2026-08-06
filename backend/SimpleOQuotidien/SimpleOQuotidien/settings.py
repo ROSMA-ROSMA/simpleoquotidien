@@ -236,7 +236,7 @@ ANYMAIL = {
 }
 
 # L'adresse expéditeur (doit être un e-mail validé dans votre compte Brevo)
-DEFAULT_FROM_EMAIL = 'SimpleOQuotidien <kamta.mariane1@icloud.com>'
+DEFAULT_FROM_EMAIL = 'SimpleOQuotidien <tsaffotagouffomegane@gmail.com>'
 # PASSWORD_RESET_TIMEOUT = 3600
 # 86400 secondes = 24 heures
 PASSWORD_RESET_TIMEOUT = 86400
