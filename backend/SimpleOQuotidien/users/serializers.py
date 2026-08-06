@@ -88,7 +88,15 @@ class PrestataireCreateSerializer(serializers.ModelSerializer):
 
             # 4. Envoi explicite du mail d'activation personnalisé !
             request = self.context.get('request')
-            ActivationEmail(request, context={'user': user}).send([user.email])
+            try:
+                ActivationEmail(request, context={'user': user}).send([user.email])
+            except Exception:
+                # SMTP peut échouer sur les plateformes cloud (Render, etc.)
+                # Le compte est quand même créé, l'email pourra être renvoyé plus tard
+                import logging
+                logging.getLogger(__name__).warning(
+                    f"Échec envoi email d'activation pour {user.email}"
+                )
 
         # 5. Création du profil Prestataire associé
         prestataire_profile = PrestataireProfile.objects.create(
