@@ -49,7 +49,9 @@ export function mapUserFromBackend(u: BackendUser): User {
         first_name: u.first_name,
         last_name: u.last_name,
         role: mapRoleFromBackend(u.role),
-        is_active: true,
+        is_active: u.is_active ?? true,
+        // Le statut de validation réel des prestataires vit sur PrestataireProfile.verification_status,
+        // pas sur Utilisateur — voir providerService pour la valeur exacte.
         is_verified: true,
         pays: u.pays,
     };
@@ -138,6 +140,7 @@ export function mapOrderFromBackend(
         scheduled_datetime: order.date,
         address: order.localisation,
         message: order.description,
+        audio_note: order.voice_note ?? undefined,
         total_amount: quotePrice ?? order.budget,
         status: resolveBookingStatus(order),
         quote_amount: quotePrice,

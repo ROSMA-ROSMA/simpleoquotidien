@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Booking, BookingStatus, BOOKING_STATUS_LABELS } from '@/types';
 import { formatPrice, formatDateTime, getBookingTitle } from '@/lib/utils';
 import Badge from '@/components/ui/Badge';
-import { IconCalendar, IconUser, IconMapPin, IconCreditCard, IconCircleCheck, IconClock } from '@tabler/icons-react';
+import { IconCalendar, IconUser, IconMapPin, IconCreditCard, IconCircleCheck, IconClock, IconMicrophone } from '@tabler/icons-react';
 
 interface BookingCardProps {
     booking: Booking;
@@ -59,6 +59,11 @@ export default function BookingCard({ booking, showPayButton = false, showAction
                             <IconMapPin className="w-3.5 h-3.5 text-slate-400" />
                             {booking.address}
                         </div>
+                        {booking.audio_note && (
+                            <div className="flex items-center gap-1.5 bg-brand-tealLight text-brand-teal px-2 py-1 rounded-md font-semibold">
+                                <IconMicrophone className="w-3.5 h-3.5" /> Message vocal
+                            </div>
+                        )}
                     </div>
                 </div>
 

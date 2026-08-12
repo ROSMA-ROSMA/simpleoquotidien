@@ -55,6 +55,8 @@ export interface CreateOrderInput {
     address: string;
     message?: string;
     budget: number;
+    /** Message vocal décrivant le besoin, joint à la description pour le prestataire/agent. */
+    voiceNote?: Blob;
 }
 
 export const orderService = {
@@ -82,11 +84,29 @@ export const orderService = {
     },
 
     async create(payload: CreateOrderInput): Promise<LegacyApiResponse<Booking>> {
+        const description = payload.message?.trim() || 'Demande de service';
+
+        if (payload.voiceNote) {
+            const fd = new FormData();
+            fd.append('category', String(payload.category_id));
+            fd.append('date', payload.scheduled_datetime);
+            fd.append('localisation', payload.address);
+            fd.append('description', description);
+            fd.append('budget', String(payload.budget));
+            const ext = payload.voiceNote.type.includes('mp4') ? 'm4a' : 'webm';
+            fd.append('voice_note', payload.voiceNote, `note-vocale.${ext}`);
+            const raw = await apiFetch<BackendOrder>('Commandes/orders/', {
+                method: 'POST',
+                body: fd,
+            });
+            return { data: mapOrderFromBackend(raw) };
+        }
+
         const body = {
             category: payload.category_id,
             date: payload.scheduled_datetime,
             localisation: payload.address,
-            description: payload.message?.trim() || 'Demande de service',
+            description,
             budget: payload.budget,
         };
         const raw = await apiFetch<BackendOrder>('Commandes/orders/', {

@@ -39,6 +39,6 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id', 'uuid', 'status', 'description', 'localisation', 'date', 'budget',
-            'images', 'category', 'category_nom', 'client', 'client_detail', 'quote',
+            'images', 'voice_note', 'category', 'category_nom', 'client', 'client_detail', 'quote',
         ]
         read_only_fields = ['client']

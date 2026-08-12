@@ -29,11 +29,11 @@ L'équipe {{ site_name }}
             <td align="center">
                 <table role="presentation" width="100%" style="max-width: 560px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
                     
-                    <!-- En-tête Gradient -->
+                    <!-- En-tête Gradient (couleurs de la marque) -->
                     <tr>
-                        <td style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%); padding: 40px 30px; text-align: center;">
+                        <td style="background: linear-gradient(135deg, #005B52 0%, #00423B 100%); padding: 40px 30px; text-align: center;">
                             <div style="font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">
-                                SimpleÔQuotidien
+                                Simple<span style="color: #FF7043;">Ô</span>Quotidien
                             </div>
                             <p style="color: rgba(255, 255, 255, 0.85); font-size: 14px; margin-top: 6px; margin-bottom: 0;">
                                 Bienvenue parmi nous !
@@ -60,14 +60,14 @@ L'équipe {{ site_name }}
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 32px;">
                                 <tr>
                                     <td align="center">
-                                        <a href="{{ protocol }}://{{ domain }}/{{ url|safe }}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 36px; border-radius: 12px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);">
+                                        <a href="{{ protocol }}://{{ domain }}/{{ url|safe }}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #005B52 0%, #00423B 100%); color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 36px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 91, 82, 0.35);">
                                             Activer mon compte
                                         </a>
                                     </td>
                                 </tr>
                             </table>
 
-                            <div style="background-color: #f8fafc; border-left: 4px solid #6366f1; border-radius: 6px; padding: 14px 16px; margin-bottom: 24px;">
+                            <div style="background-color: #f8fafc; border-left: 4px solid #005B52; border-radius: 6px; padding: 14px 16px; margin-bottom: 24px;">
                                 <p style="font-size: 13px; color: #64748b; margin: 0;">
                                     ⏳ <strong>Rappel :</strong> Ce lien est valide pendant <strong>24 heures</strong>.
                                 </p>
@@ -75,7 +75,7 @@ L'équipe {{ site_name }}
 
                             <p style="font-size: 13px; color: #94a3b8; margin-bottom: 0;">
                                 Si le bouton ne fonctionne pas, copiez ce lien :<br>
-                                <a href="{{ protocol }}://{{ domain }}/{{ url|safe }}" style="color: #6366f1; word-break: break-all;">{{ protocol }}://{{ domain }}/{{ url|safe }}</a>
+                                <a href="{{ protocol }}://{{ domain }}/{{ url|safe }}" style="color: #005B52; word-break: break-all;">{{ protocol }}://{{ domain }}/{{ url|safe }}</a>
                             </p>
                         </td>
                     </tr>

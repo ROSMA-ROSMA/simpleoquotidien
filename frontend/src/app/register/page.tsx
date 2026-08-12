@@ -14,6 +14,7 @@ export default function RegisterPage() {
     const { register } = useAuth();
     const [role, setRole] = useState<'client' | 'provider'>('client');
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
@@ -34,29 +35,52 @@ export default function RegisterPage() {
 
     const updateField = (field: string, value: string | boolean) => {
         setFormData(prev => ({ ...prev, [field]: value }));
+        setFieldErrors(prev => {
+            if (!prev[field]) return prev;
+            const next = { ...prev };
+            delete next[field];
+            return next;
+        });
+    };
+
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const validate = (): Record<string, string> => {
+        const errors: Record<string, string> = {};
+
+        if (!formData.first_name.trim()) errors.first_name = 'Le prénom est obligatoire.';
+        if (!formData.last_name.trim()) errors.last_name = 'Le nom est obligatoire.';
+
+        if (!formData.email.trim()) errors.email = "L'email est obligatoire.";
+        else if (!EMAIL_RE.test(formData.email.trim())) errors.email = 'Veuillez saisir une adresse email valide.';
+
+        if (!formData.password) errors.password = 'Le mot de passe est obligatoire.';
+        else if (formData.password.length < 8) errors.password = 'Le mot de passe doit contenir au moins 8 caractères.';
+
+        if (role === 'provider') {
+            if (!formData.company_name.trim()) errors.company_name = "Le nom de l'entreprise / activité est obligatoire.";
+            if (!formData.intervention_city.trim()) errors.intervention_city = "La ville d'intervention est obligatoire pour un prestataire.";
+            if (!formData.identity_card_expiry) errors.identity_card_expiry = "La date d'expiration de la pièce d'identité est obligatoire.";
+            if (!cniFile) errors.cniFile = "La pièce d'identité est obligatoire.";
+            if (!photoFile) errors.photoFile = 'La photo est obligatoire.';
+        }
+
+        return errors;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.email || !formData.password || !formData.first_name || !formData.last_name) {
-            setError('Veuillez remplir tous les champs obligatoires.');
+
+        const errors = validate();
+        setFieldErrors(errors);
+        if (Object.keys(errors).length > 0) {
+            setError('Veuillez corriger les champs indiqués ci-dessous.');
             return;
         }
 
         if (role === 'provider') {
             // Prestataire registration — send multipart to the backend proxy
-            if (!formData.intervention_city.trim()) {
-                setError("La ville d'intervention est obligatoire pour un prestataire.");
-                return;
-            }
-            if (!cniFile || !photoFile) {
-                setError("La pièce d'identité et la photo sont obligatoires.");
-                return;
-            }
-            if (!formData.company_name.trim()) {
-                setError("Le nom de l'entreprise / activité est obligatoire.");
-                return;
-            }
+            if (!cniFile || !photoFile) return; // déjà validé par validate() ci-dessus
 
             setSubmitting(true);
             setError('');
@@ -176,6 +200,7 @@ export default function RegisterPage() {
                                 value={formData.first_name}
                                 onChange={(e) => updateField('first_name', e.target.value)}
                                 icon={<IconUser className="w-5 h-5" />}
+                                error={fieldErrors.first_name}
                                 required
                             />
                             <Input
@@ -184,6 +209,7 @@ export default function RegisterPage() {
                                 value={formData.last_name}
                                 onChange={(e) => updateField('last_name', e.target.value)}
                                 icon={<IconUser className="w-5 h-5" />}
+                                error={fieldErrors.last_name}
                                 required
                             />
                         </div>
@@ -195,6 +221,7 @@ export default function RegisterPage() {
                             value={formData.email}
                             onChange={(e) => updateField('email', e.target.value)}
                             icon={<IconMail className="w-5 h-5" />}
+                            error={fieldErrors.email}
                             required
                         />
 
@@ -214,6 +241,7 @@ export default function RegisterPage() {
                             value={formData.password}
                             onChange={(e) => updateField('password', e.target.value)}
                             icon={<IconLock className="w-5 h-5" />}
+                            error={fieldErrors.password}
                             required
                         />
 
@@ -231,6 +259,7 @@ export default function RegisterPage() {
                                     value={formData.company_name}
                                     onChange={(e) => updateField('company_name', e.target.value)}
                                     icon={<IconUser className="w-5 h-5" />}
+                                    error={fieldErrors.company_name}
                                     required
                                 />
 
@@ -248,6 +277,7 @@ export default function RegisterPage() {
                                     value={formData.intervention_city}
                                     onChange={(e) => updateField('intervention_city', e.target.value)}
                                     icon={<IconMapPin className="w-5 h-5" />}
+                                    error={fieldErrors.intervention_city}
                                     required
                                 />
 
@@ -265,6 +295,7 @@ export default function RegisterPage() {
                                     value={formData.identity_card_expiry}
                                     onChange={(e) => updateField('identity_card_expiry', e.target.value)}
                                     icon={<IconCalendar className="w-5 h-5" />}
+                                    error={fieldErrors.identity_card_expiry}
                                     required
                                 />
 
@@ -287,10 +318,11 @@ export default function RegisterPage() {
                                                 type="file"
                                                 className="hidden"
                                                 accept="image/*,.pdf"
-                                                onChange={(e) => setCniFile(e.target.files?.[0] ?? null)}
+                                                onChange={(e) => { setCniFile(e.target.files?.[0] ?? null); setFieldErrors(prev => { const next = { ...prev }; delete next.cniFile; return next; }); }}
                                             />
                                         </label>
                                     )}
+                                    {fieldErrors.cniFile && <p className="text-xs text-red-500 font-medium mt-1.5">{fieldErrors.cniFile}</p>}
                                 </div>
 
                                 {/* Photo upload */}
@@ -312,10 +344,11 @@ export default function RegisterPage() {
                                                 type="file"
                                                 className="hidden"
                                                 accept="image/*"
-                                                onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
+                                                onChange={(e) => { setPhotoFile(e.target.files?.[0] ?? null); setFieldErrors(prev => { const next = { ...prev }; delete next.photoFile; return next; }); }}
                                             />
                                         </label>
                                     )}
+                                    {fieldErrors.photoFile && <p className="text-xs text-red-500 font-medium mt-1.5">{fieldErrors.photoFile}</p>}
                                 </div>
 
                                 <label className="flex items-center gap-3 cursor-pointer">

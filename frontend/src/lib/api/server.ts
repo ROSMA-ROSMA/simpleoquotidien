@@ -133,6 +133,40 @@ export async function backendActivate(
     return body;
 }
 
+/** Demande l'envoi de l'e-mail de réinitialisation de mot de passe (Djoser renvoie
+ * toujours 204, même si l'adresse n'existe pas — anti-énumération de comptes). */
+export async function backendForgotPassword(email: string): Promise<void> {
+    const res = await fetch(`${BACKEND_URL}/api/auth/users/reset_password/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+    });
+    if (!res.ok && res.status !== 400) {
+        throw new BackendError("Impossible d'envoyer l'e-mail pour le moment.", res.status);
+    }
+}
+
+/** Confirme la réinitialisation (uid/token issus du lien reçu par e-mail) avec le nouveau mot de passe. */
+export async function backendResetPasswordConfirm(
+    uid: string,
+    token: string,
+    newPassword: string,
+): Promise<void> {
+    const res = await fetch(`${BACKEND_URL}/api/auth/users/reset_password_confirm/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid, token, new_password: newPassword }),
+    });
+    if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new BackendError(
+            extractErrorMessage(body, 'Lien de réinitialisation invalide ou expiré.'),
+            res.status,
+            body,
+        );
+    }
+}
+
 /** Redemande un e-mail d'activation (utile si le lien a expiré — validité 24h). */
 export async function backendResendActivation(email: string): Promise<void> {
     const res = await fetch(`${BACKEND_URL}/api/auth/users/resend_activation/`, {

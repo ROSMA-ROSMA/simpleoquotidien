@@ -62,7 +62,7 @@ export default function Footer() {
                     </p>
                     <div className="flex items-center gap-4">
                         <span className="text-xs text-gray-600">
-                            Fait avec ❤️ au Burkina Faso
+                            Une solution de DigiScia
                         </span>
                     </div>
                 </div>

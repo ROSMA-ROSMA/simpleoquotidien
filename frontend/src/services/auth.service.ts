@@ -55,6 +55,30 @@ export const authService = {
         }
     },
 
+    async forgotPassword(email: string): Promise<{ success: boolean; error?: string }> {
+        try {
+            await authFetch('forgot-password', {
+                method: 'POST',
+                body: JSON.stringify({ email }),
+            });
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: err instanceof Error ? err.message : 'Erreur serveur.' };
+        }
+    },
+
+    async resetPasswordConfirm(uid: string, token: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+        try {
+            await authFetch('reset-password-confirm', {
+                method: 'POST',
+                body: JSON.stringify({ uid, token, new_password: newPassword }),
+            });
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: err instanceof Error ? err.message : 'Lien de réinitialisation invalide.' };
+        }
+    },
+
     async register(data: RegisterFormData): Promise<{ success: boolean; error?: string }> {
         try {
             await authFetch('register', {

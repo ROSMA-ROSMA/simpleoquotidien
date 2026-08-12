@@ -32,6 +32,7 @@ function LoginForm() {
     const [submitting, setSubmitting] = useState(false);
     const [resendState, setResendState] = useState<'idle' | 'sending' | 'sent'>('idle');
     const registered = searchParams.get('registered') === 'true';
+    const passwordReset = searchParams.get('passwordReset') === 'true';
     const redirect = searchParams.get('redirect');
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -80,6 +81,12 @@ function LoginForm() {
                         </div>
                     )}
 
+                    {passwordReset && (
+                        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl mb-6 text-sm">
+                            Votre mot de passe a été modifié avec succès. Connectez-vous avec votre nouveau mot de passe.
+                        </div>
+                    )}
+
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl mb-6 text-sm">
                             <p>{error}</p>
@@ -112,15 +119,20 @@ function LoginForm() {
                             icon={<IconMail className="w-5 h-5" />}
                             required
                         />
-                        <Input
-                            label="Mot de passe"
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            icon={<IconLock className="w-5 h-5" />}
-                            required
-                        />
+                        <div>
+                            <Input
+                                label="Mot de passe"
+                                type="password"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                icon={<IconLock className="w-5 h-5" />}
+                                required
+                            />
+                            <Link href="/forgot-password" className="inline-block mt-2 text-sm font-semibold text-brand-teal hover:text-brand-tealDark transition-colors">
+                                Mot de passe oublié ?
+                            </Link>
+                        </div>
 
                         <Button type="submit" fullWidth size="lg" disabled={submitting}>
                             {submitting ? 'Connexion…' : 'Se connecter'}

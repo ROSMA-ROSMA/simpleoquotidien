@@ -172,12 +172,18 @@ export default function ProviderDashboardPage() {
                                             </div>
                                         ))}
                                     </div>
-                                ) : (
+                                ) : profile?.verification_status === 'VALIDE' ? (
                                     <EmptyState
                                         icon={<IconBriefcase className="w-8 h-8" />}
                                         title="Aucun service publié"
                                         description="Créez votre premier service pour apparaître dans le catalogue des clients."
                                         action={<Link href="/dashboard/provider/services/create" className="text-brand-teal font-bold text-[11px] hover:text-brand-tealDark">Créer un service →</Link>}
+                                    />
+                                ) : (
+                                    <EmptyState
+                                        icon={<IconBriefcase className="w-8 h-8" />}
+                                        title="Profil en attente de validation"
+                                        description="Votre profil doit d'abord être validé par l'administrateur avant de pouvoir créer un service."
                                     />
                                 )}
                             </div>

@@ -49,6 +49,13 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         return qs  # AGENT / ADMIN voient tout
 
     def perform_create(self, serializer):
+        # 0. Un prestataire non encore validé par l'administrateur ne peut pas recevoir
+        # d'offre/assignation — le filtre côté frontend (agent) n'est qu'un confort d'UI,
+        # la vraie garde doit être ici.
+        prestataire = serializer.validated_data.get('prestataire')
+        if prestataire is not None and prestataire.verification_status != PrestataireStatusChoices.VALIDE:
+            raise PermissionDenied("Ce prestataire n'est pas encore validé par l'administrateur.")
+
         # 1. Sauvegarde de l'assignation en associant l'agent connecté (qualifier)
         assignment = serializer.save(qualifier=self.request.user)
 
@@ -59,10 +66,20 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         notifier_attribution_client(assignment)
 
         # 4. Démarrage du timer de 30 minutes : réassignation automatique si le
-        # prestataire ne répond pas à temps.
-        check_assignment_timeout.apply_async(
-            args=[assignment.id], countdown=ASSIGNMENT_TIMEOUT_SECONDS
-        )
+        # prestataire ne répond pas à temps. Best-effort : si le broker Celery/Redis
+        # est indisponible (ex. non provisionné en production), l'assignation — déjà
+        # enregistrée et déjà notifiée aux deux parties — ne doit pas échouer pour autant
+        # (c'était la cause de l'erreur 500 malgré l'envoi effectif des e-mails).
+        try:
+            check_assignment_timeout.apply_async(
+                args=[assignment.id], countdown=ASSIGNMENT_TIMEOUT_SECONDS
+            )
+        except Exception:
+            import logging
+            logging.getLogger(__name__).warning(
+                f"Échec de la planification du timeout pour l'assignation {assignment.id} "
+                "(broker Celery indisponible ?)"
+            )
 
     @action(detail=True, methods=['post'], url_path='accept')
     def accept(self, request, pk=None):

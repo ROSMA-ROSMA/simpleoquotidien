@@ -157,6 +157,12 @@ export default function BookingDetailPage({ params }: Props) {
                             {booking.message && (
                                 <p className="text-sm text-slate-500 italic mt-3 pt-3 border-t border-slate-200">&ldquo;{booking.message}&rdquo;</p>
                             )}
+                            {booking.audio_note && (
+                                <div className={booking.message ? 'mt-3' : 'mt-3 pt-3 border-t border-slate-200'}>
+                                    <span className="text-xs font-bold uppercase tracking-wide text-slate-400 block mb-1.5">Message vocal du client</span>
+                                    <audio src={booking.audio_note} controls className="h-9 w-full max-w-sm" />
+                                </div>
+                            )}
                             {booking.status === BookingStatus.QUOTE_SENT && booking.quote_amount && (
                                 <div className="mt-3 pt-3 border-t border-slate-200">
                                     <span className="text-sm text-slate-600">Devis proposé : <strong className="text-brand-teal">{formatPrice(booking.quote_amount)} FCFA</strong></span>

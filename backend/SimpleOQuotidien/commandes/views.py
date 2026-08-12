@@ -19,7 +19,7 @@ from notifications.services import (
     notifier_validation_devis_agent,
 )
 from drf_spectacular.utils import extend_schema
-from users.models import AssignmentStatusChoices, RoleChoices
+from users.models import AssignmentStatusChoices, PrestataireStatusChoices, RoleChoices
 
 User = get_user_model()
 
@@ -181,6 +181,10 @@ class ServiceViewSet(viewsets.ModelViewSet):
         profile = getattr(self.request.user, 'prestataire_profile', None)
         if profile is None:
             raise PermissionDenied('Seuls les prestataires peuvent créer un service.')
+        if profile.verification_status != PrestataireStatusChoices.VALIDE:
+            raise PermissionDenied(
+                "Votre profil doit d'abord être validé par l'administrateur avant de pouvoir créer un service."
+            )
         serializer.save(prestataire=profile)
 
     def perform_update(self, serializer):

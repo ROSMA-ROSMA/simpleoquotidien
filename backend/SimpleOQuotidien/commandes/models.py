@@ -41,6 +41,7 @@ class Order(models.Model):
     date = models.DateTimeField()
     budget = models.DecimalField(max_digits=10, decimal_places=2)
     images = models.ImageField(upload_to='orders/', blank=True, null=True)
+    voice_note = models.FileField(upload_to='orders/voice_notes/', blank=True, null=True)
     date_creation = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     date_modification = models.DateTimeField(auto_now=True, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='orders')

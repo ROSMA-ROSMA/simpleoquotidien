@@ -6,8 +6,9 @@ import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import CategoryCard from '@/components/services/CategoryCard';
 import SearchBar from '@/components/services/SearchBar';
+import Link from 'next/link';
 import { useCategories } from '@/hooks/useCategories';
-import { IconSparkles } from '@tabler/icons-react';
+import { IconSparkles, IconArrowLeft } from '@tabler/icons-react';
 
 export default function ServicesPage() {
     const router = useRouter();
@@ -40,6 +41,12 @@ export default function ServicesPage() {
                 />
                 <div className="absolute inset-0 bg-brand-surface/85 backdrop-blur-[2px]" />
                 <div className="relative z-10 max-w-3xl mx-auto px-5 pt-32 pb-16 sm:pt-40 text-center">
+                    <Link
+                        href="/"
+                        className="absolute left-4 top-24 sm:top-28 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-brand-teal transition-colors"
+                    >
+                        <IconArrowLeft className="w-4 h-4" /> Retour à l&apos;accueil
+                    </Link>
                     <span className="inline-flex items-center gap-2 rounded-full bg-brand-tealLight px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-brand-teal">
                         <IconSparkles className="w-3.5 h-3.5" />
                         {loading ? 'Catalogue de services' : `${categories.length} univers de services disponibles`}

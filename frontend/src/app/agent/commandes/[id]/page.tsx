@@ -193,6 +193,12 @@ export default function AgentCommandeDetailPage({ params }: Props) {
                             <div className="flex justify-between border-t border-slate-50 pt-2"><span className="text-slate-400">Budget indicatif</span><span className="font-bold text-brand-teal">{formatPrice(booking.total_amount)} F</span></div>
                         </div>
                         {booking.message && <p className="text-sm text-slate-500 italic mt-4 pt-4 border-t border-slate-100">&ldquo;{booking.message}&rdquo;</p>}
+                        {booking.audio_note && (
+                            <div className={booking.message ? 'mt-3' : 'mt-4 pt-4 border-t border-slate-100'}>
+                                <span className="text-xs font-bold uppercase tracking-wide text-slate-400 block mb-1.5">Message vocal du client</span>
+                                <audio src={booking.audio_note} controls className="h-9 w-full" />
+                            </div>
+                        )}
                     </div>
 
                     {booking.quote_id && (

@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useMemo } from 'react';
 import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
@@ -18,7 +18,14 @@ export default function ServiceDetailPage({ params }: Props) {
     const { id } = use(params);
     const serviceId = parseInt(id);
     const service = useAppStore(s => s.services.find(sv => sv.id === serviceId));
-    const reviews = useAppStore(s => s.reviews.filter(r => r.booking?.service_id === serviceId));
+    const allReviews = useAppStore(s => s.reviews);
+    // Dérivé via useMemo plutôt que dans le sélecteur Zustand : un sélecteur qui renvoie un
+    // nouveau tableau à chaque appel (filter/map) casse le contrat de useSyncExternalStore et
+    // provoque une boucle de rendu infinie ("Maximum update depth exceeded" — React error #185).
+    const reviews = useMemo(
+        () => allReviews.filter(r => r.booking?.service_id === serviceId),
+        [allReviews, serviceId],
+    );
     const avgRating = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
 
     if (!service) {

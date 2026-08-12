@@ -7,6 +7,7 @@ import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
+import VoiceRecorder from '@/components/booking/VoiceRecorder';
 import { useAuth } from '@/context/AuthContext';
 import { useCategory } from '@/hooks/useCategories';
 import { orderService } from '@/services/order.service';
@@ -25,6 +26,7 @@ export default function BookCategoryPage({ params }: Props) {
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [form, setForm] = useState({ date: '', time: '', address: '', message: '', budget: '5000' });
+    const [voiceNote, setVoiceNote] = useState<Blob | null>(null);
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -50,6 +52,7 @@ export default function BookCategoryPage({ params }: Props) {
                 address: form.address.trim(),
                 message: form.message.trim() || undefined,
                 budget: Number(form.budget) || 0,
+                voiceNote: voiceNote ?? undefined,
             });
             router.push(`/booking/${res.data.uuid}?booking_success=true`);
         } catch (err) {
@@ -113,6 +116,7 @@ export default function BookCategoryPage({ params }: Props) {
                                     className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal outline-none resize-none"
                                 />
                             </div>
+                            <VoiceRecorder onChange={setVoiceNote} />
                             <Button type="submit" fullWidth size="lg" disabled={submitting}>
                                 {submitting ? 'Envoi…' : 'Envoyer la demande'}
                             </Button>

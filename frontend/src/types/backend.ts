@@ -10,6 +10,7 @@ export interface BackendUser {
     last_name: string;
     role: BackendRole;
     pays: string;
+    is_active?: boolean;
 }
 
 export interface BackendCategory {
@@ -51,6 +52,7 @@ export interface BackendOrder {
     date: string;
     budget: number;
     images?: string | null;
+    voice_note?: string | null;
     category: number;
     category_nom?: string;
     client: number;

@@ -11,12 +11,13 @@ import { serviceService } from '@/services/service.service';
 import { providerService } from '@/services/provider.service';
 import { formatPrice } from '@/lib/utils';
 import { ProviderService } from '@/types';
-import { IconBriefcase, IconPlus, IconMapPin } from '@tabler/icons-react';
+import { IconBriefcase, IconPlus, IconMapPin, IconClock } from '@tabler/icons-react';
 
 export default function ProviderServicesPage() {
     const { currentUser } = useAuth();
     const [services, setServices] = useState<ProviderService[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isValidated, setIsValidated] = useState(false);
 
     const load = useCallback(async () => {
         if (!currentUser) return;
@@ -24,6 +25,7 @@ export default function ProviderServicesPage() {
         try {
             const providers = await providerService.getProviders();
             const myProfile = providers.data.find(p => p.email === currentUser.email);
+            setIsValidated(myProfile?.verification_status === 'VALIDE');
             if (!myProfile) { setServices([]); return; }
             const res = await serviceService.getAll({ prestataire_id: myProfile.id });
             setServices(res.data);
@@ -44,10 +46,20 @@ export default function ProviderServicesPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-2xl font-extrabold text-brand-dark">Mes services</h1>
-                        <Link href="/dashboard/provider/services/create">
-                            <Button size="sm" icon={<IconPlus className="w-4 h-4" />}>Créer un service</Button>
-                        </Link>
+                        {!loading && isValidated && (
+                            <Link href="/dashboard/provider/services/create">
+                                <Button size="sm" icon={<IconPlus className="w-4 h-4" />}>Créer un service</Button>
+                            </Link>
+                        )}
                     </div>
+                    {!loading && !isValidated && (
+                        <div className="flex items-start gap-3 bg-yellow-50 border border-yellow-100 rounded-xl p-4 mb-6 text-sm text-yellow-800">
+                            <IconClock className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                            <p>
+                                Votre profil doit d&apos;abord être validé par l&apos;administrateur avant de pouvoir créer un service.
+                            </p>
+                        </div>
+                    )}
                     {loading ? (
                         <p className="text-[11px] text-slate-400">Chargement…</p>
                     ) : services.length > 0 ? (
