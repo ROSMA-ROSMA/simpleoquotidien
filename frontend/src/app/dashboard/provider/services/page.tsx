@@ -44,7 +44,7 @@ export default function ProviderServicesPage() {
             <Navbar activeTab="services" />
             <main className="flex-1 py-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                         <h1 className="text-2xl font-extrabold text-brand-dark">Mes services</h1>
                         {!loading && isValidated && (
                             <Link href="/dashboard/provider/services/create">

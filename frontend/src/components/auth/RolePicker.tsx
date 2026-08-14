@@ -32,7 +32,7 @@ export default function RolePicker({ selectedRole, onChange }: RolePickerProps) 
                     type="button"
                     onClick={() => onChange(role.value)}
                     className={cn(
-                        'relative p-5 rounded-2xl border-2 transition-all duration-300 text-left group',
+                        'relative p-3.5 sm:p-5 rounded-2xl border-2 transition-all duration-300 text-left group',
                         selectedRole === role.value
                             ? 'border-brand-teal bg-brand-tealLight shadow-md shadow-brand-teal/10'
                             : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50'
@@ -40,7 +40,7 @@ export default function RolePicker({ selectedRole, onChange }: RolePickerProps) 
                 >
                     <div
                         className={cn(
-                            'w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-all duration-300',
+                            'w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-2 sm:mb-3 transition-all duration-300',
                             selectedRole === role.value
                                 ? 'bg-brand-teal text-white scale-110'
                                 : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'

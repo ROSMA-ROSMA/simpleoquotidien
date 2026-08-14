@@ -80,24 +80,24 @@ export default function BookServicePage({ params }: Props) {
                     </Link>
 
                     {/* Service summary */}
-                    <div className="bg-white rounded-2xl p-6 shadow-card border border-slate-100 mb-6">
-                        <div className="flex items-center gap-4">
+                    <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-card border border-slate-100 mb-6">
+                        <div className="flex items-center gap-3 sm:gap-4">
                             {service.image && (
-                                <img src={service.image} alt={service.name} className="w-20 h-20 rounded-xl object-cover" />
+                                <img src={service.image} alt={service.name} className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl object-cover flex-shrink-0" />
                             )}
-                            <div className="flex-1">
-                                <h1 className="text-xl font-bold text-brand-dark">{service.name}</h1>
-                                <p className="text-sm text-slate-500">{service.provider?.first_name} {service.provider?.last_name}</p>
+                            <div className="flex-1 min-w-0">
+                                <h1 className="text-lg sm:text-xl font-bold text-brand-dark truncate">{service.name}</h1>
+                                <p className="text-sm text-slate-500 truncate">{service.provider?.first_name} {service.provider?.last_name}</p>
                             </div>
-                            <div className="text-right">
-                                <span className="text-2xl font-extrabold text-brand-teal">{formatPrice(service.price)}</span>
+                            <div className="text-right flex-shrink-0">
+                                <span className="text-xl sm:text-2xl font-extrabold text-brand-teal">{formatPrice(service.price)}</span>
                                 <span className="text-sm text-slate-400 block">FCFA</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Booking form */}
-                    <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                    <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                         <h2 className="text-2xl font-extrabold text-brand-dark mb-6">Réserver ce service</h2>
 
                         {error && (

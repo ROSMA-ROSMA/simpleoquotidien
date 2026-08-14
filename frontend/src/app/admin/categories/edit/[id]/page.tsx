@@ -70,7 +70,7 @@ export default function AdminEditCategoryPage({ params }: Props) {
         <div className="min-h-screen bg-brand-surface py-10">
             <div className="max-w-xl mx-auto px-4">
                 <Link href="/dashboard/admin" className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-teal font-medium mb-6"><IconArrowLeft className="w-4 h-4" /> Retour</Link>
-                <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                     <h1 className="text-2xl font-extrabold text-brand-dark mb-6">Modifier la catégorie</h1>
                     {error && <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl text-base text-red-600">{error}</div>}
                     <form onSubmit={handleSubmit} className="space-y-4">

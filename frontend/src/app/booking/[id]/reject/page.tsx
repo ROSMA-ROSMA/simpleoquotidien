@@ -60,7 +60,7 @@ export default function RejectBookingPage({ params }: Props) {
                         <IconArrowLeft className="w-4 h-4" /> Retour
                     </Link>
 
-                    <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                    <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                         <div className="text-center mb-6">
                             <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3">
                                 <IconX className="w-7 h-7 text-red-500" />

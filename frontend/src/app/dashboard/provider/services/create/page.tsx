@@ -67,7 +67,7 @@ export default function ProviderCreateServicePage() {
         <div className="min-h-screen bg-brand-surface py-10">
             <div className="max-w-xl mx-auto px-4">
                 <Link href="/dashboard/provider/services" className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-teal font-medium mb-6"><IconArrowLeft className="w-4 h-4" /> Retour</Link>
-                <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                     <h1 className="text-2xl font-extrabold text-brand-dark mb-2">Créer un service</h1>
                     <p className="text-[11px] text-slate-500 mb-6">Choisissez la catégorie proposée par l&apos;administrateur, fixez votre prix et la ville où vous intervenez.</p>
                     {error && <p className="text-[11px] text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3 mb-4">{error}</p>}

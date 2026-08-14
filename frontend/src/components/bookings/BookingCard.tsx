@@ -27,8 +27,8 @@ export default function BookingCard({ booking, showPayButton = false, showAction
     const isPending = booking.payment?.status === 'pending';
 
     return (
-        <article className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-card-hover transition-all duration-300 group">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <article className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-card-hover transition-all duration-300 group">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
                 {/* Left: Info */}
                 <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
@@ -55,8 +55,8 @@ export default function BookingCard({ booking, showPayButton = false, showAction
                                 {booking.client.first_name}
                             </div>
                         )}
-                        <div className="flex items-center gap-2">
-                            <IconMapPin className="w-3.5 h-3.5 text-slate-400" />
+                        <div className="flex items-center gap-2 break-words min-w-0">
+                            <IconMapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                             {booking.address}
                         </div>
                         {booking.audio_note && (
@@ -87,7 +87,7 @@ export default function BookingCard({ booking, showPayButton = false, showAction
                     )}
                     {showPayButton && !isPaid && !isPending && booking.status === BookingStatus.CONFIRMED && (
                         <Link
-                            href={`/payment/initiate/${booking.id}`}
+                            href={`/payment/initiate/${booking.uuid ?? booking.id}`}
                             className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-brand-coral hover:bg-brand-coralHover text-white text-sm font-bold rounded-xl shadow-lg shadow-brand-coral/20 transition-all hover:-translate-y-0.5"
                         >
                             <IconCreditCard className="w-4 h-4" /> Payer

@@ -124,14 +124,14 @@ export default function BookingDetailPage({ params }: Props) {
                         <IconArrowLeft className="w-4 h-4" /> Retour au dashboard
                     </Link>
 
-                    <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100 mb-6">
-                        <div className="flex items-start justify-between mb-6">
+                    <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100 mb-6">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
                             <div>
-                                <h1 className="text-2xl font-extrabold text-brand-dark mb-2">Réservation #{booking.id}</h1>
+                                <h1 className="text-xl sm:text-2xl font-extrabold text-brand-dark mb-2">Réservation #{booking.id}</h1>
                                 <Badge variant={statusVariant()}>{BOOKING_STATUS_LABELS[booking.status]}</Badge>
                             </div>
-                            <div className="text-right">
-                                <span className="text-3xl font-extrabold text-brand-teal">{formatPrice(booking.total_amount)}</span>
+                            <div className="sm:text-right">
+                                <span className="text-2xl sm:text-3xl font-extrabold text-brand-teal">{formatPrice(booking.total_amount)}</span>
                                 <span className="text-sm text-slate-500 block">FCFA</span>
                             </div>
                         </div>
@@ -192,7 +192,7 @@ export default function BookingDetailPage({ params }: Props) {
                                 </Button>
                             )}
                             {canPay && (
-                                <Link href={`/payment/initiate/${booking.id}`}>
+                                <Link href={`/payment/initiate/${booking.uuid ?? booking.id}`}>
                                     <Button variant="coral" icon={<IconCreditCard className="w-4 h-4" />}>Payer maintenant</Button>
                                 </Link>
                             )}

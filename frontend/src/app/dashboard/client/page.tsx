@@ -54,7 +54,7 @@ export default function ClientDashboardPage() {
             <main className="flex-1 py-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Welcome Banner */}
-                    <div className="bg-gradient-to-r from-brand-teal to-brand-tealDark rounded-2xl p-8 mb-8 text-white relative overflow-hidden">
+                    <div className="bg-gradient-to-r from-brand-teal to-brand-tealDark rounded-2xl p-5 sm:p-8 mb-8 text-white relative overflow-hidden">
                         <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
                         <h1 className="text-2xl sm:text-3xl font-extrabold mb-2">
                             Bonjour {currentUser.first_name} 👋

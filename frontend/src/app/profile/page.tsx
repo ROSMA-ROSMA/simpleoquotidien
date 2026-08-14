@@ -118,10 +118,10 @@ export default function ProfilePage() {
                             <p className="text-xs text-slate-400 mt-1">{currentUser.email}</p>
                         </div>
 
-                        <div className="md:col-span-2 bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                        <div className="md:col-span-2 bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                             <h2 className="text-lg font-bold text-brand-dark mb-6">Informations personnelles</h2>
                             <form onSubmit={handleSubmit} className="space-y-5">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <Input label="Prénom" value={form.first_name} onChange={(e) => setForm(f => ({ ...f, first_name: e.target.value }))} icon={<IconUser className="w-5 h-5" />} required />
                                     <Input label="Nom" value={form.last_name} onChange={(e) => setForm(f => ({ ...f, last_name: e.target.value }))} icon={<IconUser className="w-5 h-5" />} required />
                                 </div>

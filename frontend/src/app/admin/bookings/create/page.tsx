@@ -55,7 +55,7 @@ export default function AdminCreateBookingPage() {
         <div className="min-h-screen bg-brand-surface py-10">
             <div className="max-w-xl mx-auto px-4">
                 <Link href="/dashboard/admin" className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-teal font-medium mb-6"><IconArrowLeft className="w-4 h-4" /> Retour</Link>
-                <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                     <h1 className="text-2xl font-extrabold text-brand-dark mb-6">Créer une réservation</h1>
                     {error && <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl text-base text-red-600">{error}</div>}
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -65,7 +65,7 @@ export default function AdminCreateBookingPage() {
                                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <Input label="Date" type="date" value={form.date} onChange={(e) => setForm(f => ({ ...f, date: e.target.value }))} icon={<IconCalendar className="w-5 h-5" />} required />
                             <Input label="Heure" type="time" value={form.time} onChange={(e) => setForm(f => ({ ...f, time: e.target.value }))} icon={<IconClock className="w-5 h-5" />} required />
                         </div>

@@ -64,18 +64,18 @@ export default function ServiceDetailPage({ params }: Props) {
                             </div>
 
                             {/* Details */}
-                            <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div>
-                                        <h1 className="text-3xl font-extrabold text-brand-dark mb-2">{service.name}</h1>
+                            <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
+                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                                    <div className="min-w-0">
+                                        <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-dark mb-2 break-words">{service.name}</h1>
                                         {service.category && (
                                             <span className="inline-block bg-brand-tealLight text-brand-teal text-xs font-bold px-3 py-1 rounded-full">
                                                 {service.category.name}
                                             </span>
                                         )}
                                     </div>
-                                    <div className="text-right">
-                                        <span className="text-3xl font-extrabold text-brand-teal">{formatPrice(service.price)}</span>
+                                    <div className="sm:text-right flex-shrink-0">
+                                        <span className="text-2xl sm:text-3xl font-extrabold text-brand-teal">{formatPrice(service.price)}</span>
                                         <span className="text-sm text-slate-500 block">FCFA</span>
                                     </div>
                                 </div>
@@ -111,7 +111,7 @@ export default function ServiceDetailPage({ params }: Props) {
                             </div>
 
                             {/* Reviews */}
-                            <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                            <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                                 <h2 className="text-xl font-bold text-brand-dark mb-6 flex items-center gap-2">
                                     <IconStar className="w-5 h-5 text-yellow-400" /> Avis clients ({reviews.length})
                                 </h2>

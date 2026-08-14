@@ -78,14 +78,14 @@ export default function EditBookingPage({ params }: Props) {
                         <IconArrowLeft className="w-4 h-4" /> Retour
                     </Link>
 
-                    <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                    <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                         <h1 className="text-2xl font-extrabold text-brand-dark mb-2">Modifier la réservation</h1>
                         <p className="text-slate-500 text-sm mb-6">{getBookingTitle(booking)} — {formatPrice(booking.total_amount)} FCFA</p>
 
                         {error && <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl mb-6 text-sm">{error}</div>}
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <Input label="Date" type="date" value={form.date} onChange={(e) => setForm(f => ({ ...f, date: e.target.value }))} icon={<IconCalendar className="w-5 h-5" />} required />
                                 <Input label="Heure" type="time" value={form.time} onChange={(e) => setForm(f => ({ ...f, time: e.target.value }))} icon={<IconClock className="w-5 h-5" />} required />
                             </div>

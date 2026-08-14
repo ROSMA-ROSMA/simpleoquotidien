@@ -42,7 +42,7 @@ export default function ProviderNotificationsPage() {
             <Navbar activeTab="notifications" />
             <main className="flex-1 py-8">
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                         <h1 className="text-2xl font-extrabold text-brand-dark">Notifications</h1>
                         {unread > 0 && (
                             <Button variant="ghost" size="sm" icon={<IconCircleCheck className="w-4 h-4" />} onClick={handleMarkAllRead}>

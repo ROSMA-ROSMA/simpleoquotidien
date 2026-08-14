@@ -1,22 +1,40 @@
 'use client';
 
-import { use, useState, ReactNode } from 'react';
+// TEMPORARY preview page — mock booking, no backend/auth needed. Delete after visual review.
+
+import { useState, ReactNode } from 'react';
 import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
-import { useBooking } from '@/hooks/useOrders';
 import { formatPrice, formatDateTime, getBookingTitle } from '@/lib/utils';
-import { PaymentMethod } from '@/types';
+import { PaymentMethod, BookingStatus, Booking, Provider } from '@/types';
 import {
     IconArrowLeft, IconDeviceMobile, IconCash, IconBuildingBank, IconCreditCard,
     IconCheck, IconCalendar, IconMapPin, IconUser, IconLock, IconCopy,
     IconCircleCheck, IconHome, IconReceipt2,
 } from '@tabler/icons-react';
 
-interface Props { params: Promise<{ id: string }>; }
-
 type Step = 'form' | 'processing' | 'success';
 type Operator = 'orange' | 'moov' | 'telecel';
+
+const mockProvider: Provider = {
+    id: 1, user_id: 1, email: 'aicha@example.com', first_name: 'Aïcha', last_name: 'Ouédraogo',
+    pays: 'Burkina Faso', company_name: 'Aïcha Ménage Pro', services: 'Ménage', zones_couvertes: 'Ouagadougou',
+    langue: 'fr', tarif: '15000', verification_status: 'verified',
+};
+
+const booking: Booking = {
+    id: 42,
+    uuid: 'preview-uuid',
+    client_id: 1,
+    category_id: 1,
+    category_name: 'Ménage à domicile complet',
+    scheduled_datetime: new Date(Date.now() + 86400000).toISOString(),
+    address: '12 Avenue Kwame Nkrumah, Secteur 15, Ouagadougou',
+    total_amount: 15000,
+    status: BookingStatus.CONFIRMED,
+    assigned_provider: mockProvider,
+};
 
 const paymentMethods: { id: PaymentMethod; label: string; description: string; icon: ReactNode; color: string }[] = [
     { id: PaymentMethod.MOBILE_MONEY, label: 'Mobile Money', description: 'Orange, Moov, Telecel', icon: <IconDeviceMobile className="w-5 h-5" />, color: 'bg-orange-50 text-orange-600' },
@@ -84,9 +102,8 @@ function StepIndicator({ step }: { step: Step }) {
     );
 }
 
-export default function PaymentInitiatePage({ params }: Props) {
-    const { id } = use(params);
-    const { booking, loading } = useBooking(id);
+export default function PaymentPreviewPage() {
+    const id = booking.uuid!;
 
     const [step, setStep] = useState<Step>('form');
     const [method, setMethod] = useState<PaymentMethod | null>(null);
@@ -97,27 +114,8 @@ export default function PaymentInitiatePage({ params }: Props) {
     const [cardCvc, setCardCvc] = useState('');
     const [cardName, setCardName] = useState('');
     const [bankConfirmed, setBankConfirmed] = useState(false);
-    const [txnRef, setTxnRef] = useState('');
+    const [txnRef, setTxnRef] = useState('TXN-2026-482913');
     const [copied, setCopied] = useState(false);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-brand-surface">
-                <p className="text-slate-500">Chargement…</p>
-            </div>
-        );
-    }
-
-    if (!booking) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-brand-surface px-4">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-brand-dark mb-2">Réservation introuvable</h1>
-                    <Link href="/dashboard/client" className="text-brand-teal font-bold">← Retour</Link>
-                </div>
-            </div>
-        );
-    }
 
     const title = getBookingTitle(booking);
 
@@ -158,12 +156,21 @@ export default function PaymentInitiatePage({ params }: Props) {
         setTimeout(() => setCopied(false), 1800);
     };
 
-    const selectedMethod = paymentMethods.find(m => m.id === method);
+    const selectedMethod = paymentMethods.find(m => m.id === method) ?? paymentMethods[0];
 
     return (
         <div className="min-h-screen bg-brand-surface flex flex-col">
             <LandingNavbar />
             <main className="flex-1 pt-24 sm:pt-28 pb-16">
+                {/* DEV-ONLY step jumper */}
+                <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 flex gap-2">
+                    {(['form', 'processing', 'success'] as Step[]).map(s => (
+                        <button key={s} onClick={() => { setMethod(PaymentMethod.MOBILE_MONEY); setStep(s); }} className="text-xs px-3 py-1.5 bg-slate-800 text-white rounded-lg">
+                            {s}
+                        </button>
+                    ))}
+                </div>
+
                 <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
                     {step === 'form' && (
                         <Link href={`/booking/${id}`} className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-teal font-medium mb-5 transition-colors">
@@ -174,10 +181,8 @@ export default function PaymentInitiatePage({ params }: Props) {
                     <StepIndicator step={step} />
 
                     <div className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
-                        {/* ─── Step: form ─── */}
                         {step === 'form' && (
                             <form onSubmit={handleSubmit}>
-                                {/* Order summary */}
                                 <div className="p-5 sm:p-8 border-b border-slate-100">
                                     <h1 className="text-xl sm:text-2xl font-extrabold text-brand-dark mb-1">Récapitulatif</h1>
                                     <p className="text-slate-400 text-sm mb-5">Vérifiez les détails avant de payer</p>
@@ -211,7 +216,6 @@ export default function PaymentInitiatePage({ params }: Props) {
                                     </div>
                                 </div>
 
-                                {/* Method selection */}
                                 <div className="p-5 sm:p-8 border-b border-slate-100">
                                     <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Moyen de paiement</h2>
                                     <div className="grid grid-cols-2 gap-3">
@@ -240,7 +244,6 @@ export default function PaymentInitiatePage({ params }: Props) {
                                         ))}
                                     </div>
 
-                                    {/* Dynamic fields per method */}
                                     {method === PaymentMethod.MOBILE_MONEY && (
                                         <div className="mt-5 animate-in space-y-4">
                                             <div className="grid grid-cols-3 gap-2">
@@ -275,7 +278,6 @@ export default function PaymentInitiatePage({ params }: Props) {
 
                                     {method === PaymentMethod.CARD && (
                                         <div className="mt-5 animate-in space-y-4">
-                                            {/* Card preview */}
                                             <div className="rounded-2xl p-5 bg-gradient-to-br from-brand-teal to-brand-tealDark text-white shadow-lg shadow-brand-teal/20 relative overflow-hidden">
                                                 <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full" />
                                                 <div className="absolute -right-2 top-10 w-20 h-20 bg-white/10 rounded-full" />
@@ -283,7 +285,7 @@ export default function PaymentInitiatePage({ params }: Props) {
                                                     <IconCreditCard className="w-8 h-8 opacity-80" />
                                                     <span className="text-xs font-bold tracking-widest opacity-70">CARTE</span>
                                                 </div>
-                                                <p className="text-base sm:text-xl font-mono tracking-wide sm:tracking-widest mb-4 relative truncate">
+                                                <p className="text-lg sm:text-xl font-mono tracking-widest mb-4 relative">
                                                     {cardNumber || '•••• •••• •••• ••••'}
                                                 </p>
                                                 <div className="flex items-end justify-between relative">
@@ -391,7 +393,6 @@ export default function PaymentInitiatePage({ params }: Props) {
                                     )}
                                 </div>
 
-                                {/* Submit */}
                                 <div className="p-5 sm:p-8">
                                     <button
                                         type="submit"
@@ -407,7 +408,6 @@ export default function PaymentInitiatePage({ params }: Props) {
                             </form>
                         )}
 
-                        {/* ─── Step: processing ─── */}
                         {step === 'processing' && (
                             <div className="p-12 sm:p-20 flex flex-col items-center justify-center text-center">
                                 <div className="relative w-16 h-16 mb-6">
@@ -419,8 +419,7 @@ export default function PaymentInitiatePage({ params }: Props) {
                             </div>
                         )}
 
-                        {/* ─── Step: success ─── */}
-                        {step === 'success' && selectedMethod && (
+                        {step === 'success' && (
                             <div className="p-6 sm:p-10 text-center animate-in">
                                 <div className="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-5">
                                     <span className="absolute inset-0 rounded-full bg-emerald-100 animate-ping opacity-75" />

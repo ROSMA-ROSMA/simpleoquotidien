@@ -116,11 +116,12 @@ function ValidationSection() {
                             </div>
                             {/* Zone d'action dédiée, bien visible et séparée du contenu — uniquement pour les candidatures en attente */}
                             {p.verification_status === 'EN_ATTENTE' && (
-                                <div className="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50/70 border-t border-slate-100">
+                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 px-4 sm:px-6 py-4 bg-slate-50/70 border-t border-slate-100">
                                     <Button
                                         size="lg"
                                         variant="secondary"
-                                        className="!border-red-200 !text-red-500 hover:!bg-red-50 hover:!border-red-300"
+                                        fullWidth
+                                        className="sm:w-auto !border-red-200 !text-red-500 hover:!bg-red-50 hover:!border-red-300"
                                         icon={<IconX className="w-5 h-5" />}
                                         onClick={() => setRejectTarget(p)}
                                         disabled={actionLoading === p.id}
@@ -129,6 +130,8 @@ function ValidationSection() {
                                     </Button>
                                     <Button
                                         size="lg"
+                                        fullWidth
+                                        className="sm:w-auto"
                                         icon={<IconCheck className="w-5 h-5" />}
                                         onClick={() => handleValidate(p.id)}
                                         disabled={actionLoading === p.id}
@@ -243,7 +246,7 @@ export default function AdminDashboardPage() {
         <div className="flex min-h-screen bg-brand-surface">
             <AdminSidebar activeSection={activeSection} onSectionChange={setActiveSection} pendingCount={pendingProviders.length} />
 
-            <main className="flex-1 ml-64 p-8">
+            <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 pt-20 md:pt-8 min-w-0">
                 {/* Dashboard Overview */}
                 {activeSection === 'dashboard' && (
                     <div className="animate-in">
@@ -297,6 +300,7 @@ export default function AdminDashboardPage() {
                             </div>
                         ) : (
                             <div className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
+                                <div className="overflow-x-auto">
                                 <table className="w-full text-base">
                                     <thead className="bg-slate-50/60"><tr><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Nom</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Email</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Rôle</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Statut</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Actions</th></tr></thead>
                                     <tbody>
@@ -329,6 +333,7 @@ export default function AdminDashboardPage() {
                                         })}
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -347,6 +352,7 @@ export default function AdminDashboardPage() {
                             </div>
                         ) : (
                             <div className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
+                                <div className="overflow-x-auto">
                                 <table className="w-full text-base">
                                     <thead className="bg-slate-50/60"><tr><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Nom</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Description</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Actions</th></tr></thead>
                                     <tbody>
@@ -362,6 +368,7 @@ export default function AdminDashboardPage() {
                                         ))}
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -383,6 +390,7 @@ export default function AdminDashboardPage() {
                             </div>
                         ) : (
                             <div className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
+                                <div className="overflow-x-auto">
                                 <table className="w-full text-base">
                                     <thead className="bg-slate-50/60"><tr><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Catégorie</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Prestataire</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Ville</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Prix</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Actions</th></tr></thead>
                                     <tbody>
@@ -399,6 +407,7 @@ export default function AdminDashboardPage() {
                                         ))}
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -417,6 +426,7 @@ export default function AdminDashboardPage() {
                             </div>
                         ) : (
                             <div className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
+                                <div className="overflow-x-auto">
                                 <table className="w-full text-base">
                                     <thead className="bg-slate-50/60"><tr><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">#</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Service</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Date</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Statut</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Montant</th></tr></thead>
                                     <tbody>
@@ -433,6 +443,7 @@ export default function AdminDashboardPage() {
                                         ))}
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -443,6 +454,7 @@ export default function AdminDashboardPage() {
                     <div className="animate-in">
                         <h1 className="text-3xl font-extrabold text-brand-dark mb-6">Paiements</h1>
                         <div className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
+                            <div className="overflow-x-auto">
                             <table className="w-full text-base">
                                 <thead className="bg-slate-50/60"><tr><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Ref</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Réservation</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Méthode</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Montant</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Statut</th></tr></thead>
                                 <tbody>
@@ -457,6 +469,7 @@ export default function AdminDashboardPage() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -466,6 +479,7 @@ export default function AdminDashboardPage() {
                     <div className="animate-in">
                         <h1 className="text-3xl font-extrabold text-brand-dark mb-6">Avis</h1>
                         <div className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
+                            <div className="overflow-x-auto">
                             <table className="w-full text-base">
                                 <thead className="bg-slate-50/60"><tr><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Service</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Note</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Commentaire</th></tr></thead>
                                 <tbody>
@@ -478,6 +492,7 @@ export default function AdminDashboardPage() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 )}

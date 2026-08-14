@@ -46,14 +46,14 @@ export default function StatCard({ label, value, icon, color = 'teal', className
     const c = colorMap[color];
 
     return (
-        <div className={cn(`stat-card ${c.bg} rounded-xl p-6 border ${c.border}`, className)}>
-            <div className="flex items-center justify-between">
-                <div>
-                    <p className={`text-base font-bold ${c.text} mb-1.5`}>{label}</p>
-                    <p className="text-4xl font-extrabold text-brand-dark">{value}</p>
+        <div className={cn(`stat-card ${c.bg} rounded-xl p-4 sm:p-6 border ${c.border}`, className)}>
+            <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                    <p className={`text-xs sm:text-base font-bold ${c.text} mb-1 sm:mb-1.5 truncate`}>{label}</p>
+                    <p className="text-xl sm:text-4xl font-extrabold text-brand-dark truncate">{value}</p>
                 </div>
                 {icon && (
-                    <div className={`w-14 h-14 rounded-xl ${c.iconBg} flex items-center justify-center`}>
+                    <div className={`w-9 h-9 sm:w-14 sm:h-14 rounded-xl ${c.iconBg} flex items-center justify-center shrink-0`}>
                         <span className={c.text}>{icon}</span>
                     </div>
                 )}

@@ -68,7 +68,7 @@ export default function PostponeBookingPage({ params }: Props) {
                         <IconArrowLeft className="w-4 h-4" /> Retour
                     </Link>
 
-                    <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                    <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                         <div className="text-center mb-6">
                             <div className="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-3">
                                 <IconClock className="w-7 h-7 text-orange-500" />
@@ -78,7 +78,7 @@ export default function PostponeBookingPage({ params }: Props) {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <Input label="Nouvelle date" type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} icon={<IconCalendar className="w-5 h-5" />} required />
                                 <Input label="Nouvelle heure" type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} icon={<IconClock className="w-5 h-5" />} required />
                             </div>

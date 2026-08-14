@@ -89,7 +89,7 @@ export default function BookCategoryPage({ params }: Props) {
                         <IconArrowLeft className="w-4 h-4" /> Retour
                     </Link>
 
-                    <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                    <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                         <h1 className="text-2xl font-extrabold text-brand-dark mb-2">Demande — {category.name}</h1>
                         <p className="text-slate-500 text-sm mb-6">{category.description}</p>
 
@@ -100,7 +100,7 @@ export default function BookCategoryPage({ params }: Props) {
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <Input label="Date" type="date" min={minDate} value={form.date} onChange={(e) => setForm(f => ({ ...f, date: e.target.value }))} icon={<IconCalendar className="w-5 h-5" />} required />
                                 <Input label="Heure" type="time" value={form.time} onChange={(e) => setForm(f => ({ ...f, time: e.target.value }))} icon={<IconClock className="w-5 h-5" />} required />
                             </div>

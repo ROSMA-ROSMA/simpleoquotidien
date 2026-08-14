@@ -67,7 +67,7 @@ export default function RateServicePage({ params }: Props) {
                         <IconArrowLeft className="w-4 h-4" /> Retour
                     </Link>
 
-                    <div className="bg-white rounded-2xl p-8 shadow-card border border-slate-100">
+                    <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-card border border-slate-100">
                         <div className="text-center mb-8">
                             <div className="w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <IconStar className="w-8 h-8 text-yellow-400" />
