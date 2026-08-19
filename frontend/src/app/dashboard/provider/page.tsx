@@ -75,7 +75,7 @@ export default function ProviderDashboardPage() {
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
                         <div>
                             <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-dark mb-1">
-                                Bienvenue, {currentUser.first_name} 👋
+                                Bienvenue, {currentUser.first_name}
                             </h1>
                             <p className="text-slate-500 text-[11px]">Gérez vos interventions et réservations depuis votre espace.</p>
                         </div>

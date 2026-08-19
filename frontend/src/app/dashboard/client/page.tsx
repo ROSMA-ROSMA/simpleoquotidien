@@ -57,7 +57,7 @@ export default function ClientDashboardPage() {
                     <div className="bg-gradient-to-r from-brand-teal to-brand-tealDark rounded-2xl p-5 sm:p-8 mb-8 text-white relative overflow-hidden">
                         <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
                         <h1 className="text-2xl sm:text-3xl font-extrabold mb-2">
-                            Bonjour {currentUser.first_name} 👋
+                            Bonjour {currentUser.first_name}
                         </h1>
                         <p className="text-brand-tealLight/80 text-[11px]">
                             Bienvenue sur votre espace personnel. Gérez vos réservations et découvrez de nouveaux services.
