@@ -116,12 +116,18 @@ export default function RegisterPage() {
                     // Extract readable error from proxy response: { error, details }
                     let msg = 'Inscription impossible.';
                     if (body?.details && typeof body.details === 'object') {
-                        // DRF validation errors: { field: ["message", ...], ... }
+                        // DRF validation errors: { field: ["message", ...] } — mais aussi
+                        // nichés sous 'user' pour les champs du sous-serializer (email,
+                        // username, password), ex. { user: { email: ["..."] } }.
                         const messages: string[] = [];
-                        for (const [, val] of Object.entries(body.details)) {
+                        const collect = (val: unknown): void => {
                             if (Array.isArray(val)) messages.push(...val.map(String));
                             else if (typeof val === 'string') messages.push(val);
-                        }
+                            else if (val && typeof val === 'object') {
+                                for (const nested of Object.values(val)) collect(nested);
+                            }
+                        };
+                        collect(body.details);
                         if (messages.length) msg = messages.join(' ');
                     } else if (body?.error) {
                         msg = String(body.error);

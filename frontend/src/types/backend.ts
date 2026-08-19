@@ -96,7 +96,8 @@ export interface BackendNote {
     commentaire: string;
     prestataire: number;
     author: number;
-    author_username?: string;
+    author_email?: string;
+    date_creation?: string;
 }
 
 export type BackendNotificationType =

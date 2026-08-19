@@ -198,6 +198,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'EXCEPTION_HANDLER': 'SimpleOQuotidien.exception_handlers.custom_exception_handler',
 }
 
 SPECTACULAR_SETTINGS = {
@@ -214,6 +215,7 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     'BLACKLIST_AFTER_ROTATION': True,
     "AUTH_HEADER_TYPES": ("Bearer",),
+    "TOKEN_OBTAIN_SERIALIZER": "users.serializers.CustomTokenObtainPairSerializer",
 }
 
 CORS_ALLOWED_ORIGINS = [

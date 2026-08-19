@@ -51,9 +51,13 @@ class PrestataireProfile(models.Model):
     langue = models.CharField(max_length=100)
     tarif = models.CharField(max_length=100)
     verification_status = models.CharField(
-        max_length=20, 
-        choices=PrestataireStatusChoices.choices, 
+        max_length=20,
+        choices=PrestataireStatusChoices.choices,
         default=PrestataireStatusChoices.EN_ATTENTE
+    )
+    motif_statut = models.TextField(
+        blank=True, null=True,
+        help_text="Motif du rejet ou de la suspension, conservé pour traçabilité."
     )
     cni_passeport = models.FileField(upload_to='Prestataire/cni/')
     justificatif = models.FileField(upload_to='Prestataire/justificatifs/')
@@ -87,6 +91,12 @@ class Assignment(models.Model):
     date_reponse = models.DateTimeField(blank=True, null=True)
     date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # Le frontend prend la 1re assignation par commande en supposant un tri
+        # du plus récent au plus ancien : sans cet ordre explicite, une
+        # réassignation pouvait laisser apparaître le nom de l'ancien prestataire.
+        ordering = ['-date_creation']
 
     def __str__(self):
         # Si la commande a un attribut uuid

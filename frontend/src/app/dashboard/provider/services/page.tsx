@@ -6,18 +6,23 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
+import Modal from '@/components/ui/Modal';
 import { useAuth } from '@/context/AuthContext';
 import { serviceService } from '@/services/service.service';
 import { providerService } from '@/services/provider.service';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, formatDateTime } from '@/lib/utils';
 import { ProviderService } from '@/types';
-import { IconBriefcase, IconPlus, IconMapPin, IconClock } from '@tabler/icons-react';
+import { IconBriefcase, IconPlus, IconMapPin, IconClock, IconEdit, IconTrash, IconEye, IconAlertTriangle } from '@tabler/icons-react';
 
 export default function ProviderServicesPage() {
     const { currentUser } = useAuth();
     const [services, setServices] = useState<ProviderService[]>([]);
     const [loading, setLoading] = useState(true);
     const [isValidated, setIsValidated] = useState(false);
+    const [detailTarget, setDetailTarget] = useState<ProviderService | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<ProviderService | null>(null);
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
 
     const load = useCallback(async () => {
         if (!currentUser) return;
@@ -34,6 +39,21 @@ export default function ProviderServicesPage() {
     }, [currentUser]);
 
     useEffect(() => { load(); }, [load]);
+
+    const confirmDelete = async () => {
+        if (!deleteTarget) return;
+        setDeleting(true);
+        setDeleteError(null);
+        try {
+            await serviceService.delete(deleteTarget.id);
+            setServices(prev => prev.filter(s => s.id !== deleteTarget.id));
+            setDeleteTarget(null);
+        } catch (e) {
+            setDeleteError(e instanceof Error ? e.message : 'Erreur lors de la suppression');
+        } finally {
+            setDeleting(false);
+        }
+    };
 
     if (!currentUser) {
         return <div className="min-h-screen flex items-center justify-center"><Link href="/login" className="text-brand-teal font-bold">Se connecter →</Link></div>;
@@ -79,7 +99,22 @@ export default function ProviderServicesPage() {
                                         <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2">
                                             <IconMapPin className="w-3.5 h-3.5" /> {service.city}
                                         </div>
-                                        {service.description && <p className="text-[11px] text-slate-500">{service.description}</p>}
+                                        {service.description && <p className="text-[11px] text-slate-500 line-clamp-2">{service.description}</p>}
+                                        <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-50">
+                                            <Button variant="secondary" size="sm" onClick={() => setDetailTarget(service)} icon={<IconEye className="w-3.5 h-3.5" />}>Détail</Button>
+                                            <Link href={`/dashboard/provider/services/${service.id}/edit`}>
+                                                <Button variant="secondary" size="sm" icon={<IconEdit className="w-3.5 h-3.5" />}>Modifier</Button>
+                                            </Link>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="!text-red-500 hover:!bg-red-50"
+                                                onClick={() => { setDeleteError(null); setDeleteTarget(service); }}
+                                                icon={<IconTrash className="w-3.5 h-3.5" />}
+                                            >
+                                                Supprimer
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -90,6 +125,62 @@ export default function ProviderServicesPage() {
                 </div>
             </main>
             <Footer />
+
+            <Modal open={detailTarget !== null} onClose={() => setDetailTarget(null)} title="Détail du service">
+                {detailTarget && (
+                    <div className="space-y-4">
+                        {detailTarget.image && (
+                            <img src={detailTarget.image} alt={detailTarget.category_name ?? 'Service'} className="w-full h-44 object-cover rounded-xl border border-slate-200" />
+                        )}
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span className="text-slate-400 text-xs font-bold uppercase">Catégorie</span>
+                                <p className="text-slate-700 font-medium">{detailTarget.category_name ?? '—'}</p>
+                            </div>
+                            <div>
+                                <span className="text-slate-400 text-xs font-bold uppercase">Prix</span>
+                                <p className="text-slate-700 font-medium">{formatPrice(detailTarget.price)} FCFA</p>
+                            </div>
+                            <div>
+                                <span className="text-slate-400 text-xs font-bold uppercase">Ville</span>
+                                <p className="text-slate-700 font-medium">{detailTarget.city}</p>
+                            </div>
+                            <div>
+                                <span className="text-slate-400 text-xs font-bold uppercase">Créé le</span>
+                                <p className="text-slate-700 font-medium">{detailTarget.created_at ? formatDateTime(detailTarget.created_at) : '—'}</p>
+                            </div>
+                        </div>
+                        {detailTarget.description && (
+                            <div>
+                                <span className="text-slate-400 text-xs font-bold uppercase">Description</span>
+                                <p className="text-slate-600 text-sm mt-1">{detailTarget.description}</p>
+                            </div>
+                        )}
+                        <div className="flex justify-end pt-2">
+                            <Button variant="secondary" onClick={() => setDetailTarget(null)}>Fermer</Button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
+            <Modal open={deleteTarget !== null} onClose={() => !deleting && setDeleteTarget(null)} title="Supprimer ce service ?">
+                {deleteTarget && (
+                    <div>
+                        <div className="flex items-start gap-3 bg-red-50 border border-red-100 rounded-xl p-4">
+                            <IconAlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-slate-700">
+                                Voulez-vous vraiment supprimer ce service ({deleteTarget.category_name ?? 'Service'} — {formatPrice(deleteTarget.price)} FCFA) ?
+                                Il sera immédiatement retiré du catalogue.
+                            </p>
+                        </div>
+                        {deleteError && <p className="text-[11px] text-red-600 mt-3">{deleteError}</p>}
+                        <div className="flex items-center justify-end gap-3 mt-6">
+                            <Button variant="secondary" onClick={() => setDeleteTarget(null)} disabled={deleting}>Annuler</Button>
+                            <Button variant="danger" onClick={confirmDelete} disabled={deleting}>{deleting ? 'Suppression…' : 'Confirmer la suppression'}</Button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 }

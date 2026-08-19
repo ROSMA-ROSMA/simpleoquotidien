@@ -15,8 +15,10 @@ import { userService } from '@/services/user.service';
 import { providerService } from '@/services/provider.service';
 import { categoryService } from '@/services/category.service';
 import { serviceService } from '@/services/service.service';
+import { reviewService } from '@/services/review.service';
 import { formatPrice, formatDateTime, getRoleBadge, getBookingTitle } from '@/lib/utils';
 import { BookingStatus, UserRole, BOOKING_STATUS_LABELS, PaymentStatus, User, Category, ProviderService } from '@/types';
+import { BackendNote } from '@/types/backend';
 import { IconUsers, IconBriefcase, IconCalendar, IconCurrencyDollar, IconPlus, IconEdit, IconCircleCheck, IconStar, IconEye, IconTrash, IconCheck, IconX, IconFileText, IconPhoto, IconAlertTriangle } from '@tabler/icons-react';
 
 /* ──── Validation Sub-Component ──── */
@@ -26,6 +28,8 @@ function ValidationSection() {
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState<number | null>(null);
     const [rejectTarget, setRejectTarget] = useState<ProviderRow | null>(null);
+    const [suspendTarget, setSuspendTarget] = useState<ProviderRow | null>(null);
+    const [motif, setMotif] = useState('');
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -52,9 +56,23 @@ function ValidationSection() {
         const id = rejectTarget.id;
         setActionLoading(id);
         try {
-            await providerService.rejectPrestataire(id);
+            await providerService.rejectPrestataire(id, motif);
             setProviders(prev => prev.map(p => p.id === id ? { ...p, verification_status: 'REJETE' } : p));
             setRejectTarget(null);
+            setMotif('');
+        } catch (e) { alert(e instanceof Error ? e.message : 'Erreur'); }
+        finally { setActionLoading(null); }
+    };
+
+    const confirmSuspend = async () => {
+        if (!suspendTarget) return;
+        const id = suspendTarget.id;
+        setActionLoading(id);
+        try {
+            await providerService.suspendPrestataire(id, motif);
+            setProviders(prev => prev.map(p => p.id === id ? { ...p, verification_status: 'SUSPENDU' } : p));
+            setSuspendTarget(null);
+            setMotif('');
         } catch (e) { alert(e instanceof Error ? e.message : 'Erreur'); }
         finally { setActionLoading(null); }
     };
@@ -114,29 +132,59 @@ function ValidationSection() {
                                     )}
                                 </div>
                             </div>
-                            {/* Zone d'action dédiée, bien visible et séparée du contenu — uniquement pour les candidatures en attente */}
-                            {p.verification_status === 'EN_ATTENTE' && (
+                            {/* Zone d'action dédiée, bien visible et séparée du contenu */}
+                            {p.verification_status !== 'REJETE' && p.verification_status !== 'SUSPENDU' && (
                                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 px-4 sm:px-6 py-4 bg-slate-50/70 border-t border-slate-100">
+                                    {p.verification_status === 'EN_ATTENTE' && (
+                                        <Button
+                                            size="lg"
+                                            variant="secondary"
+                                            fullWidth
+                                            className="sm:w-auto !border-red-200 !text-red-500 hover:!bg-red-50 hover:!border-red-300"
+                                            icon={<IconX className="w-5 h-5" />}
+                                            onClick={() => { setMotif(''); setRejectTarget(p); }}
+                                            disabled={actionLoading === p.id}
+                                        >
+                                            Rejeter
+                                        </Button>
+                                    )}
+                                    {p.verification_status === 'VALIDE' && (
+                                        <Button
+                                            size="lg"
+                                            variant="secondary"
+                                            fullWidth
+                                            className="sm:w-auto !border-amber-200 !text-amber-600 hover:!bg-amber-50 hover:!border-amber-300"
+                                            icon={<IconAlertTriangle className="w-5 h-5" />}
+                                            onClick={() => { setMotif(''); setSuspendTarget(p); }}
+                                            disabled={actionLoading === p.id}
+                                        >
+                                            Suspendre
+                                        </Button>
+                                    )}
+                                    {p.verification_status === 'EN_ATTENTE' && (
+                                        <Button
+                                            size="lg"
+                                            fullWidth
+                                            className="sm:w-auto"
+                                            icon={<IconCheck className="w-5 h-5" />}
+                                            onClick={() => handleValidate(p.id)}
+                                            disabled={actionLoading === p.id}
+                                        >
+                                            Valider
+                                        </Button>
+                                    )}
+                                </div>
+                            )}
+                            {/* Prestataire rejeté ou suspendu : seule la réactivation reste possible ici */}
+                            {(p.verification_status === 'REJETE' || p.verification_status === 'SUSPENDU') && (
+                                <div className="flex items-center justify-end gap-3 px-4 sm:px-6 py-4 bg-slate-50/70 border-t border-slate-100">
                                     <Button
                                         size="lg"
-                                        variant="secondary"
-                                        fullWidth
-                                        className="sm:w-auto !border-red-200 !text-red-500 hover:!bg-red-50 hover:!border-red-300"
-                                        icon={<IconX className="w-5 h-5" />}
-                                        onClick={() => setRejectTarget(p)}
-                                        disabled={actionLoading === p.id}
-                                    >
-                                        Rejeter
-                                    </Button>
-                                    <Button
-                                        size="lg"
-                                        fullWidth
-                                        className="sm:w-auto"
                                         icon={<IconCheck className="w-5 h-5" />}
                                         onClick={() => handleValidate(p.id)}
                                         disabled={actionLoading === p.id}
                                     >
-                                        Valider
+                                        Réactiver (valider)
                                     </Button>
                                 </div>
                             )}
@@ -156,12 +204,182 @@ function ValidationSection() {
                                 Cette action est visible par le prestataire.
                             </p>
                         </div>
+                        <label className="block mt-4 text-sm font-semibold text-slate-600">
+                            Motif du rejet (visible par le prestataire)
+                            <textarea
+                                value={motif}
+                                onChange={e => setMotif(e.target.value)}
+                                rows={3}
+                                className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-sm outline-none focus:border-brand-teal"
+                                placeholder="Ex : documents illisibles, informations incomplètes…"
+                            />
+                        </label>
                         <div className="flex items-center justify-end gap-3 mt-6">
                             <Button variant="secondary" onClick={() => setRejectTarget(null)} disabled={actionLoading === rejectTarget.id}>
                                 Annuler
                             </Button>
                             <Button variant="danger" onClick={confirmReject} disabled={actionLoading === rejectTarget.id}>
                                 {actionLoading === rejectTarget.id ? 'Rejet en cours…' : 'Confirmer le rejet'}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
+            <Modal open={suspendTarget !== null} onClose={() => setSuspendTarget(null)} title="Suspendre ce prestataire ?">
+                {suspendTarget && (
+                    <div>
+                        <div className="flex items-start gap-3 bg-amber-50 border border-amber-100 rounded-xl p-4">
+                            <IconAlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-slate-700">
+                                Voulez-vous vraiment suspendre{' '}
+                                <span className="font-bold">{suspendTarget.first_name} {suspendTarget.last_name}</span> ?
+                                Il ne pourra plus recevoir d&apos;assignation ni modifier son catalogue tant qu&apos;il n&apos;est pas réactivé.
+                            </p>
+                        </div>
+                        <label className="block mt-4 text-sm font-semibold text-slate-600">
+                            Motif de la suspension
+                            <textarea
+                                value={motif}
+                                onChange={e => setMotif(e.target.value)}
+                                rows={3}
+                                className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-sm outline-none focus:border-brand-teal"
+                                placeholder="Ex : plaintes clients répétées, comportement inapproprié…"
+                            />
+                        </label>
+                        <div className="flex items-center justify-end gap-3 mt-6">
+                            <Button variant="secondary" onClick={() => setSuspendTarget(null)} disabled={actionLoading === suspendTarget.id}>
+                                Annuler
+                            </Button>
+                            <Button variant="danger" onClick={confirmSuspend} disabled={actionLoading === suspendTarget.id}>
+                                {actionLoading === suspendTarget.id ? 'Suspension en cours…' : 'Confirmer la suspension'}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+        </div>
+    );
+}
+
+/* ──── Avis clients / Modération ──── */
+function ReviewsModerationSection() {
+    const [reviews, setReviews] = useState<BackendNote[]>([]);
+    const [providerNames, setProviderNames] = useState<Record<number, string>>({});
+    const [loading, setLoading] = useState(true);
+    const [actionLoading, setActionLoading] = useState<number | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<BackendNote | null>(null);
+
+    const load = useCallback(async () => {
+        setLoading(true);
+        try {
+            const [reviewsList, providersRes] = await Promise.all([
+                reviewService.getAll(),
+                providerService.getProviders(),
+            ]);
+            const names: Record<number, string> = {};
+            for (const p of providersRes.data) names[p.id] = p.company_name || `${p.first_name} ${p.last_name}`;
+            setReviews(reviewsList);
+            setProviderNames(names);
+        } catch { setReviews([]); }
+        finally { setLoading(false); }
+    }, []);
+
+    useEffect(() => { load(); }, [load]);
+
+    const confirmDelete = async () => {
+        if (!deleteTarget) return;
+        const id = deleteTarget.id;
+        setActionLoading(id);
+        try {
+            await reviewService.remove(id);
+            setReviews(prev => prev.filter(r => r.id !== id));
+            setDeleteTarget(null);
+        } catch (e) { alert(e instanceof Error ? e.message : 'Erreur'); }
+        finally { setActionLoading(null); }
+    };
+
+    const averageRating = reviews.length ? reviews.reduce((sum, r) => sum + r.etoile, 0) / reviews.length : 0;
+
+    return (
+        <div className="animate-in">
+            <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+                <h1 className="text-3xl font-extrabold text-brand-dark">Avis clients</h1>
+                {!loading && reviews.length > 0 && (
+                    <span className="flex items-center gap-1.5 text-sm font-bold text-slate-500">
+                        <IconStar className="w-4 h-4 text-yellow-400 fill-yellow-400" /> {averageRating.toFixed(1)} de moyenne sur {reviews.length} avis
+                    </span>
+                )}
+            </div>
+            {loading ? (
+                <div className="bg-white rounded-2xl p-10 text-center shadow-card border border-slate-100">
+                    <p className="text-slate-400 text-lg">Chargement…</p>
+                </div>
+            ) : reviews.length === 0 ? (
+                <div className="bg-white rounded-2xl p-10 text-center shadow-card border border-slate-100">
+                    <p className="text-slate-400 text-lg">Aucun avis pour le moment</p>
+                </div>
+            ) : (
+                <div className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-base">
+                            <thead className="bg-slate-50/60">
+                                <tr>
+                                    <th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Prestataire</th>
+                                    <th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Client</th>
+                                    <th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Note</th>
+                                    <th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Commentaire</th>
+                                    <th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Date</th>
+                                    <th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[...reviews]
+                                    .sort((a, b) => (b.date_creation ?? '').localeCompare(a.date_creation ?? ''))
+                                    .map(r => (
+                                        <tr key={r.id} className="border-t border-slate-50 hover:bg-slate-50/50 align-top">
+                                            <td className="py-3 px-4 font-medium text-slate-700">{providerNames[r.prestataire] ?? `#${r.prestataire}`}</td>
+                                            <td className="py-3 px-4 text-slate-500">{r.author_email ?? '—'}</td>
+                                            <td className="py-3 px-4"><span className="flex items-center gap-1 whitespace-nowrap"><IconStar className="w-4 h-4 text-yellow-400 fill-yellow-400" /> {r.etoile}/5</span></td>
+                                            <td className="py-3 px-4 text-slate-500 max-w-sm">{r.commentaire || <span className="italic text-slate-300">Sans commentaire</span>}</td>
+                                            <td className="py-3 px-4 text-slate-400 text-sm whitespace-nowrap">{r.date_creation ? formatDateTime(r.date_creation) : '—'}</td>
+                                            <td className="py-3 px-4">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    disabled={actionLoading === r.id}
+                                                    onClick={() => setDeleteTarget(r)}
+                                                    title="Supprimer cet avis (modération)"
+                                                >
+                                                    <IconTrash className="w-4 h-4 text-red-400" />
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            <Modal open={deleteTarget !== null} onClose={() => setDeleteTarget(null)} title="Supprimer cet avis ?">
+                {deleteTarget && (
+                    <div>
+                        <div className="flex items-start gap-3 bg-red-50 border border-red-100 rounded-xl p-4">
+                            <IconAlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-slate-700">
+                                Voulez-vous vraiment supprimer cet avis
+                                {deleteTarget.author_email ? <> de <span className="font-bold">{deleteTarget.author_email}</span></> : ''}
+                                {' '}({deleteTarget.etoile}/5{deleteTarget.commentaire ? ` — "${deleteTarget.commentaire}"` : ''}) ?
+                                Cette action est définitive.
+                            </p>
+                        </div>
+                        <div className="flex items-center justify-end gap-3 mt-6">
+                            <Button variant="secondary" onClick={() => setDeleteTarget(null)} disabled={actionLoading === deleteTarget.id}>
+                                Annuler
+                            </Button>
+                            <Button variant="danger" onClick={confirmDelete} disabled={actionLoading === deleteTarget.id}>
+                                {actionLoading === deleteTarget.id ? 'Suppression…' : 'Confirmer la suppression'}
                             </Button>
                         </div>
                     </div>
@@ -182,10 +400,14 @@ export default function AdminDashboardPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [usersLoading, setUsersLoading] = useState(true);
     const [providerStatusByUserId, setProviderStatusByUserId] = useState<Record<number, string>>({});
+    const [providerIdByUserId, setProviderIdByUserId] = useState<Record<number, number>>({});
+    const [userSearch, setUserSearch] = useState('');
+    const [userRoleFilter, setUserRoleFilter] = useState('');
+    const [userStatusFilter, setUserStatusFilter] = useState('');
+    const [userActionLoading, setUserActionLoading] = useState<number | null>(null);
 
     // --- Store data (no backend) ---
     const payments = useAppStore(s => s.payments);
-    const reviews = useAppStore(s => s.reviews);
     const [services, setServices] = useState<ProviderService[]>([]);
     const [servicesLoading, setServicesLoading] = useState(true);
 
@@ -210,15 +432,43 @@ export default function AdminDashboardPage() {
     const loadProviderStatuses = useCallback(async () => {
         try {
             const res = await providerService.getProviders();
-            const map: Record<number, string> = {};
-            for (const p of res.data) map[p.user_id] = p.verification_status;
-            setProviderStatusByUserId(map);
-        } catch { setProviderStatusByUserId({}); }
+            const statusMap: Record<number, string> = {};
+            const idMap: Record<number, number> = {};
+            for (const p of res.data) { statusMap[p.user_id] = p.verification_status; idMap[p.user_id] = p.id; }
+            setProviderStatusByUserId(statusMap);
+            setProviderIdByUserId(idMap);
+        } catch { setProviderStatusByUserId({}); setProviderIdByUserId({}); }
     }, []);
 
     useEffect(() => { loadUsers(); loadProviderStatuses(); loadServices(); }, [loadUsers, loadProviderStatuses, loadServices]);
 
     const pendingProviders = users.filter(u => u.role === UserRole.PROVIDER && providerStatusByUserId[u.id] === 'EN_ATTENTE');
+
+    const filteredUsers = users.filter(u => {
+        if (userRoleFilter && u.role !== userRoleFilter) return false;
+        if (userStatusFilter) {
+            const status = u.role === UserRole.PROVIDER ? (providerStatusByUserId[u.id] ?? 'VALIDE') : (u.is_active ? 'ACTIF' : 'INACTIF');
+            if (status !== userStatusFilter) return false;
+        }
+        if (userSearch.trim()) {
+            const q = userSearch.trim().toLowerCase();
+            const haystack = `${u.first_name} ${u.last_name} ${u.email}`.toLowerCase();
+            if (!haystack.includes(q)) return false;
+        }
+        return true;
+    });
+
+    const handleUserProviderAction = async (userId: number, action: 'validate' | 'suspend') => {
+        const prestataireId = providerIdByUserId[userId];
+        if (!prestataireId) return;
+        setUserActionLoading(userId);
+        try {
+            if (action === 'validate') await providerService.validatePrestataire(prestataireId);
+            else await providerService.suspendPrestataire(prestataireId);
+            await loadProviderStatuses();
+        } catch (e) { alert(e instanceof Error ? e.message : 'Erreur'); }
+        finally { setUserActionLoading(null); }
+    };
 
     if (!currentUser || currentUser.role !== UserRole.ADMIN) {
         return (
@@ -290,9 +540,33 @@ export default function AdminDashboardPage() {
                 {/* Users */}
                 {activeSection === 'users' && (
                     <div className="animate-in">
-                        <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
                             <h1 className="text-3xl font-extrabold text-brand-dark">Utilisateurs</h1>
                             <Link href="/admin/users/create"><Button size="sm" icon={<IconPlus className="w-4 h-4" />}>Ajouter</Button></Link>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3 mb-4">
+                            <input
+                                type="text"
+                                value={userSearch}
+                                onChange={e => setUserSearch(e.target.value)}
+                                placeholder="Rechercher par nom ou email…"
+                                className="flex-1 min-w-[220px] px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-brand-teal"
+                            />
+                            <select value={userRoleFilter} onChange={e => setUserRoleFilter(e.target.value)} className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-brand-teal">
+                                <option value="">Tous les rôles</option>
+                                <option value={UserRole.CLIENT}>Client</option>
+                                <option value={UserRole.PROVIDER}>Prestataire</option>
+                                <option value={UserRole.AGENT}>Agent</option>
+                                <option value={UserRole.ADMIN}>Admin</option>
+                            </select>
+                            <select value={userStatusFilter} onChange={e => setUserStatusFilter(e.target.value)} className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-brand-teal">
+                                <option value="">Tous les statuts</option>
+                                <option value="EN_ATTENTE">En attente</option>
+                                <option value="VALIDE">Validé / Actif</option>
+                                <option value="REJETE">Rejeté</option>
+                                <option value="SUSPENDU">Suspendu</option>
+                                <option value="INACTIF">Inactif</option>
+                            </select>
                         </div>
                         {usersLoading ? (
                             <div className="bg-white rounded-2xl p-10 text-center shadow-card border border-slate-100">
@@ -304,7 +578,9 @@ export default function AdminDashboardPage() {
                                 <table className="w-full text-base">
                                     <thead className="bg-slate-50/60"><tr><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Nom</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Email</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Rôle</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Statut</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Actions</th></tr></thead>
                                     <tbody>
-                                        {users.map(u => {
+                                        {filteredUsers.length === 0 ? (
+                                            <tr><td colSpan={5} className="py-8 px-4 text-center text-slate-400">Aucun utilisateur ne correspond à cette recherche.</td></tr>
+                                        ) : filteredUsers.map(u => {
                                             const rb = getRoleBadge(u.role);
                                             const providerStatus = u.role === UserRole.PROVIDER ? providerStatusByUserId[u.id] : undefined;
                                             return (
@@ -327,6 +603,16 @@ export default function AdminDashboardPage() {
                                                     </td>
                                                     <td className="py-3 px-4 flex gap-2">
                                                         <Link href={`/admin/users/edit/${u.id}`}><Button variant="ghost" size="sm"><IconEdit className="w-4 h-4" /></Button></Link>
+                                                        {providerStatus === 'VALIDE' && (
+                                                            <Button variant="ghost" size="sm" title="Suspendre" disabled={userActionLoading === u.id} onClick={() => handleUserProviderAction(u.id, 'suspend')}>
+                                                                <IconAlertTriangle className="w-4 h-4 text-amber-500" />
+                                                            </Button>
+                                                        )}
+                                                        {(providerStatus === 'SUSPENDU' || providerStatus === 'REJETE') && (
+                                                            <Button variant="ghost" size="sm" title="Réactiver" disabled={userActionLoading === u.id} onClick={() => handleUserProviderAction(u.id, 'validate')}>
+                                                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                                            </Button>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             );
@@ -474,27 +760,9 @@ export default function AdminDashboardPage() {
                     </div>
                 )}
 
-                {/* Reviews — pas de backend list, reste sur le store */}
+                {/* Avis clients — modération admin, données réelles (Notes API) */}
                 {activeSection === 'reviews' && (
-                    <div className="animate-in">
-                        <h1 className="text-3xl font-extrabold text-brand-dark mb-6">Avis</h1>
-                        <div className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
-                            <div className="overflow-x-auto">
-                            <table className="w-full text-base">
-                                <thead className="bg-slate-50/60"><tr><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Service</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Note</th><th className="text-left py-3 px-4 font-bold text-slate-400 uppercase text-xs">Commentaire</th></tr></thead>
-                                <tbody>
-                                    {reviews.map(r => (
-                                        <tr key={r.id} className="border-t border-slate-50 hover:bg-slate-50/50">
-                                            <td className="py-3 px-4 font-medium text-slate-700">{r.author_username ?? `Avis #${r.id}`}</td>
-                                            <td className="py-3 px-4"><span className="flex items-center gap-1"><IconStar className="w-4 h-4 text-brand-coral" /> {r.rating}</span></td>
-                                            <td className="py-3 px-4 text-slate-500 max-w-xs truncate">{r.comment}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            </div>
-                        </div>
-                    </div>
+                    <ReviewsModerationSection />
                 )}
             </main>
         </div>

@@ -49,15 +49,35 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         return qs  # AGENT / ADMIN voient tout
 
     def perform_create(self, serializer):
-        # 0. Un prestataire non encore validé par l'administrateur ne peut pas recevoir
-        # d'offre/assignation — le filtre côté frontend (agent) n'est qu'un confort d'UI,
-        # la vraie garde doit être ici.
+        # 0. Un prestataire non encore validé (rejeté/suspendu) par l'administrateur
+        # ne peut pas recevoir d'offre/assignation — le filtre côté frontend (agent)
+        # n'est qu'un confort d'UI, la vraie garde doit être ici.
         prestataire = serializer.validated_data.get('prestataire')
         if prestataire is not None and prestataire.verification_status != PrestataireStatusChoices.VALIDE:
             raise PermissionDenied("Ce prestataire n'est pas encore validé par l'administrateur.")
 
+        # 0bis. On ne peut plus (ré)assigner une commande déjà finalisée (terminée
+        # ou annulée) : aucune écriture partielle ne doit avoir lieu dans ce cas.
+        order = serializer.validated_data.get('order')
+        if order is not None and order.status in (
+            OrderStatusChoices.TERMINEE, OrderStatusChoices.ANNULEE,
+        ):
+            raise PermissionDenied('Cette commande est déjà finalisée : impossible de l’assigner.')
+
         # 1. Sauvegarde de l'assignation en associant l'agent connecté (qualifier)
         assignment = serializer.save(qualifier=self.request.user)
+
+        # 1bis. Un agent doit pouvoir intervenir à tout moment (même sur une commande
+        # déjà assignée) pour changer de prestataire. On neutralise alors les anciennes
+        # assignations encore actives de cette commande : sans cela l'ancien prestataire
+        # restait en mesure d'accepter/refuser une offre périmée, et la commande
+        # paraissait "assignée" à l'agent sans qu'il ne puisse plus agir dessus.
+        order.assignments.exclude(pk=assignment.pk).filter(
+            status=AssignmentStatusChoices.EN_ATTENTE,
+        ).update(status=AssignmentStatusChoices.EXPIREE, date_reponse=timezone.now())
+
+        order.status = OrderStatusChoices.ASSIGNEE
+        order.save(update_fields=['status'])
 
         # 2. Notification In-App + E-mail au Prestataire (avec le template provider_assignment.html)
         notifier_assignation_prestataire(assignment)
@@ -245,7 +265,22 @@ class PrestataireProfileViewSet(viewsets.ModelViewSet):
             return denied
         prestataire = self.get_object()
         prestataire.verification_status = PrestataireStatusChoices.REJETE
-        prestataire.save(update_fields=['verification_status'])
+        prestataire.motif_statut = request.data.get('motif', '')
+        prestataire.save(update_fields=['verification_status', 'motif_statut'])
+        return Response(PrestataireProfileSerializer(prestataire).data)
+
+    @action(detail=True, methods=['post'])
+    def suspend(self, request, pk=None):
+        """Suspend un prestataire déjà validé (ex. VALIDE -> SUSPENDU). Un prestataire
+        suspendu ne peut plus recevoir d'assignation (cf. AssignmentViewSet.perform_create)
+        ni créer/modifier de service tant qu'il n'est pas revalidé."""
+        denied = self._require_agent_or_admin(request)
+        if denied:
+            return denied
+        prestataire = self.get_object()
+        prestataire.verification_status = PrestataireStatusChoices.SUSPENDU
+        prestataire.motif_statut = request.data.get('motif', '')
+        prestataire.save(update_fields=['verification_status', 'motif_statut'])
         return Response(PrestataireProfileSerializer(prestataire).data)
 
 

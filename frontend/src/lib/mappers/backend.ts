@@ -163,7 +163,7 @@ export function mapReviewFromBackend(note: BackendNote, provider?: Provider): Re
         provider,
         rating: note.etoile,
         comment: note.commentaire,
-        author_username: note.author_username,
+        author_username: note.author_email,
     };
 }
 

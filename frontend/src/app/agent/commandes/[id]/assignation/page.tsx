@@ -6,17 +6,20 @@ import { useRouter } from 'next/navigation';
 import AgentLayout from '@/components/layout/AgentLayout';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import ProviderRating from '@/components/reviews/ProviderRating';
 import { useAuth } from '@/context/AuthContext';
 import { orderService } from '@/services/order.service';
 import { providerService } from '@/services/provider.service';
+import { reviewService, RatingSummary } from '@/services/review.service';
 import { getInitials, getBookingTitle } from '@/lib/utils';
 import { Booking, Provider } from '@/types';
-import { IconArrowLeft, IconSearch, IconStar, IconMapPin, IconUserCheck, IconScale, IconX } from '@tabler/icons-react';
+import { IconArrowLeft, IconSearch, IconMapPin, IconUserCheck, IconScale, IconX } from '@tabler/icons-react';
 
 interface Props { params: Promise<{ id: string }>; }
 
-type SortMode = 'price_asc' | 'price_desc';
+type SortMode = 'rating_desc' | 'price_asc' | 'price_desc';
 const MAX_COMPARE = 4;
+const emptyRating: RatingSummary = { average: 0, count: 0 };
 
 function priceOf(p: Provider): number {
     const n = parseFloat(String(p.tarif).replace(/[^0-9.]/g, ''));
@@ -30,25 +33,28 @@ export default function AssignationPage({ params }: Props) {
 
     const [booking, setBooking] = useState<Booking | null>(null);
     const [providers, setProviders] = useState<Provider[]>([]);
+    const [ratings, setRatings] = useState<Map<number, RatingSummary>>(new Map());
     const [loading, setLoading] = useState(true);
     const [assigningId, setAssigningId] = useState<number | null>(null);
 
     const [search, setSearch] = useState('');
     const [city, setCity] = useState('');
-    const [sort, setSort] = useState<SortMode>('price_asc');
+    const [sort, setSort] = useState<SortMode>('rating_desc');
     const [compareIds, setCompareIds] = useState<number[]>([]);
     const [showCompare, setShowCompare] = useState(false);
 
     useEffect(() => {
         (async () => {
             try {
-                const [bookingRes, providersRes] = await Promise.all([
+                const [bookingRes, providersRes, ratingsMap] = await Promise.all([
                     orderService.getById(id),
                     providerService.getProviders(),
+                    reviewService.getSummaryByProvider().catch(() => new Map<number, RatingSummary>()),
                 ]);
                 setBooking(bookingRes.data);
                 setCity(bookingRes.data.intervention_city ?? '');
                 setProviders(providersRes.data);
+                setRatings(ratingsMap);
             } catch {
                 setBooking(null);
             } finally {
@@ -56,6 +62,8 @@ export default function AssignationPage({ params }: Props) {
             }
         })();
     }, [id]);
+
+    const ratingOf = useCallback((providerId: number) => ratings.get(providerId) ?? emptyRating, [ratings]);
 
     const cities = useMemo(() => {
         const set = new Set<string>();
@@ -75,9 +83,13 @@ export default function AssignationPage({ params }: Props) {
             const q = city.toLowerCase();
             list = list.filter(p => p.zones_couvertes?.toLowerCase().includes(q));
         }
-        list = [...list].sort((a, b) => (sort === 'price_asc' ? priceOf(a) - priceOf(b) : priceOf(b) - priceOf(a)));
+        list = [...list].sort((a, b) => {
+            if (sort === 'price_asc') return priceOf(a) - priceOf(b);
+            if (sort === 'price_desc') return priceOf(b) - priceOf(a);
+            return ratingOf(b.id).average - ratingOf(a.id).average;
+        });
         return list;
-    }, [providers, search, city, sort]);
+    }, [providers, search, city, sort, ratingOf]);
 
     const compared = useMemo(() => providers.filter(p => compareIds.includes(p.id)), [providers, compareIds]);
 
@@ -147,6 +159,7 @@ export default function AssignationPage({ params }: Props) {
                                         </div>
                                     </div>
                                     <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between items-center border-t border-slate-50 pt-2"><span className="text-slate-400">Note</span><ProviderRating average={ratingOf(p.id).average} count={ratingOf(p.id).count} /></div>
                                         <div className="flex justify-between border-t border-slate-50 pt-2"><span className="text-slate-400">Tarif</span><span className="font-bold text-brand-teal">{p.tarif || '—'}</span></div>
                                         <div className="flex justify-between border-t border-slate-50 pt-2"><span className="text-slate-400">Zones</span><span className="font-semibold text-slate-700 text-right">{p.zones_couvertes || '—'}</span></div>
                                         <div className="flex justify-between border-t border-slate-50 pt-2"><span className="text-slate-400">Langue</span><span className="font-semibold text-slate-700">{p.langue || '—'}</span></div>
@@ -195,6 +208,7 @@ export default function AssignationPage({ params }: Props) {
                         {cities.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                     <select value={sort} onChange={(e) => setSort(e.target.value as SortMode)} className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-brand-teal">
+                        <option value="rating_desc">Trier par note</option>
                         <option value="price_asc">Trier par prix croissant</option>
                         <option value="price_desc">Trier par prix décroissant</option>
                     </select>
@@ -236,7 +250,7 @@ export default function AssignationPage({ params }: Props) {
                                                 <p className="text-sm text-slate-400 uppercase font-bold">À partir de</p>
                                                 <p className="text-brand-teal font-extrabold">{p.tarif || '—'}</p>
                                             </div>
-                                            <IconStar className="w-4 h-4 text-yellow-400" />
+                                            <ProviderRating average={ratingOf(p.id).average} count={ratingOf(p.id).count} />
                                         </div>
                                         <div className="flex gap-2 mt-1">
                                             <Link href={`/agent/prestataire/${p.id}`} className="flex-1">

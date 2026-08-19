@@ -38,22 +38,14 @@ export async function POST(request: NextRequest) {
         });
     } catch (err) {
         if (err instanceof BackendError) {
-            // SimpleJWT returns "No active account found with the given credentials" for is_active=False
-            const detail = typeof (err.body as Record<string, unknown>)?.detail === 'string'
-                ? (err.body as Record<string, string>).detail
-                : '';
-            const isInactive = detail.toLowerCase().includes('no active account')
-                || detail.toLowerCase().includes('aucun compte actif');
-            // is_active=False ne signifie qu'une seule chose côté backend : l'email
-            // n'a pas encore été confirmé (la validation admin d'un prestataire ne
-            // touche jamais is_active, voir PrestataireProfile.verification_status).
-            const message = isInactive
-                ? "Confirmez votre adresse e-mail pour activer votre compte. Vérifiez votre boîte de réception (et vos spams)."
-                : extractErrorMessage(err.body, err.message);
-            return NextResponse.json(
-                { error: message, code: isInactive ? 'EMAIL_NOT_CONFIRMED' : undefined },
-                { status: err.status },
-            );
+            // CustomTokenObtainPairSerializer (backend) distingue désormais les 3 causes
+            // d'échec via err.body.code : 'no_account', 'invalid_password', 'email_not_confirmed'.
+            const backendCode = typeof (err.body as Record<string, unknown>)?.code === 'string'
+                ? (err.body as Record<string, string>).code
+                : undefined;
+            const message = extractErrorMessage(err.body, err.message);
+            const code = backendCode === 'email_not_confirmed' ? 'EMAIL_NOT_CONFIRMED' : undefined;
+            return NextResponse.json({ error: message, code }, { status: err.status });
         }
         return NextResponse.json({ error: 'Impossible de se connecter au serveur.' }, { status: 502 });
     }

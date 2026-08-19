@@ -5,12 +5,16 @@ import Link from 'next/link';
 import AgentLayout from '@/components/layout/AgentLayout';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import ProviderRating from '@/components/reviews/ProviderRating';
+import StarRating from '@/components/ui/StarRating';
 import { providerService } from '@/services/provider.service';
+import { reviewService } from '@/services/review.service';
 import { mapProviderFromBackend } from '@/lib/mappers/backend';
-import { getInitials } from '@/lib/utils';
+import { getInitials, formatDateTime } from '@/lib/utils';
+import { BackendNote } from '@/types/backend';
 import {
     IconArrowLeft, IconMail, IconMapPin, IconLanguage, IconCoin,
-    IconFileText, IconId, IconBriefcase, IconPhoto,
+    IconFileText, IconId, IconBriefcase, IconPhoto, IconMessage,
 } from '@tabler/icons-react';
 
 interface Props { params: Promise<{ id: string }>; }
@@ -40,6 +44,8 @@ export default function AgentPrestataireProfilePage({ params }: Props) {
     const providerId = parseInt(id, 10);
     const [provider, setProvider] = useState<Provider | null>(null);
     const [loading, setLoading] = useState(true);
+    const [reviews, setReviews] = useState<BackendNote[]>([]);
+    const [reviewsLoading, setReviewsLoading] = useState(true);
 
     const load = useCallback(async () => {
         try {
@@ -50,6 +56,16 @@ export default function AgentPrestataireProfilePage({ params }: Props) {
     }, [providerId]);
 
     useEffect(() => { load(); }, [load]);
+
+    useEffect(() => {
+        setReviewsLoading(true);
+        reviewService.getByProvider(providerId)
+            .then(setReviews)
+            .catch(() => setReviews([]))
+            .finally(() => setReviewsLoading(false));
+    }, [providerId]);
+
+    const averageRating = reviews.length ? reviews.reduce((sum, r) => sum + r.etoile, 0) / reviews.length : 0;
 
     if (loading) {
         return (
@@ -86,6 +102,11 @@ export default function AgentPrestataireProfilePage({ params }: Props) {
                         <p className="font-extrabold text-brand-dark text-lg">{provider.company_name || `${provider.first_name} ${provider.last_name}`}</p>
                         <p className="text-sm text-slate-400 mb-3">{provider.first_name} {provider.last_name}</p>
                         <Badge variant={statusVariant(provider.verification_status)}>{statusLabel(provider.verification_status)}</Badge>
+                        {!reviewsLoading && (
+                            <div className="flex justify-center mt-3">
+                                <ProviderRating average={averageRating} count={reviews.length} />
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -138,6 +159,37 @@ export default function AgentPrestataireProfilePage({ params }: Props) {
                                 <p className="text-sm text-slate-400">Aucun document fourni.</p>
                             )}
                         </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-bold text-brand-dark flex items-center gap-2">
+                                <IconMessage className="w-4 h-4 text-brand-teal" /> Avis clients
+                            </h3>
+                            {!reviewsLoading && reviews.length > 0 && (
+                                <ProviderRating average={averageRating} count={reviews.length} />
+                            )}
+                        </div>
+                        {reviewsLoading ? (
+                            <p className="text-sm text-slate-400">Chargement des avis…</p>
+                        ) : reviews.length === 0 ? (
+                            <p className="text-sm text-slate-400">Aucun avis client pour l&apos;instant.</p>
+                        ) : (
+                            <div className="space-y-4">
+                                {[...reviews]
+                                    .sort((a, b) => (b.date_creation ?? '').localeCompare(a.date_creation ?? ''))
+                                    .map(r => (
+                                        <div key={r.id} className="border-t border-slate-50 pt-4 first:border-t-0 first:pt-0">
+                                            <div className="flex items-center justify-between gap-3 mb-1">
+                                                <StarRating rating={r.etoile} size="sm" />
+                                                <span className="text-xs text-slate-400 shrink-0">{r.date_creation ? formatDateTime(r.date_creation) : ''}</span>
+                                            </div>
+                                            {r.commentaire && <p className="text-sm text-slate-600">&ldquo;{r.commentaire}&rdquo;</p>}
+                                            {r.author_email && <p className="text-xs text-slate-400 mt-1">{r.author_email}</p>}
+                                        </div>
+                                    ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

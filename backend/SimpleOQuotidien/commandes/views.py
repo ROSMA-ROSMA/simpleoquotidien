@@ -214,3 +214,21 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Order.objects.filter(client=user)
         return Order.objects.all()
 
+    # Statuts pour lesquels une commande n'est pas (encore) engagée avec un
+    # prestataire : le client peut encore l'annuler/la supprimer lui-même.
+    CLIENT_DELETABLE_STATUSES = (
+        OrderStatusChoices.CREEE, OrderStatusChoices.EN_TRAITEMENT,
+        OrderStatusChoices.ASSIGNEE, OrderStatusChoices.REFUSEE,
+        OrderStatusChoices.REPORTEE, OrderStatusChoices.A_REASSIGNER,
+        OrderStatusChoices.ANNULEE,
+    )
+
+    def perform_destroy(self, instance):
+        user = self.request.user
+        if user.role == 'CLIENT' and instance.status not in self.CLIENT_DELETABLE_STATUSES:
+            raise PermissionDenied(
+                'Cette commande est déjà engagée (devis accepté, en cours ou'
+                ' terminée) et ne peut plus être supprimée.'
+            )
+        instance.delete()
+

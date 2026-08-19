@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from djoser.serializers import UserCreatePasswordRetypeSerializer, UserSerializer
 from django.db import transaction
 from .models import Utilisateur, PrestataireProfile, Assignment, Subscription, Notes, RoleChoices
@@ -6,6 +8,39 @@ from commandes.models import Order
 from djoser.conf import settings as djoser_settings
 # Import de ta classe d'email personnalisée d'activation
 from .email import ActivationEmail
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Distingue les 3 causes d'échec de connexion (SimpleJWT renvoie par défaut le
+    même message "No active account found..." qu'il s'agisse d'un email inconnu,
+    d'un mauvais mot de passe ou d'un compte pas encore confirmé par email —
+    ce qui affichait à tort "vérifiez votre boîte mail" même en cas de mot de
+    passe erroné)."""
+
+    def validate(self, attrs):
+        email = attrs.get(self.username_field)
+        password = attrs.get('password')
+
+        try:
+            user = Utilisateur.objects.get(**{self.username_field: email})
+        except Utilisateur.DoesNotExist:
+            raise AuthenticationFailed(
+                "Aucun compte n'est associé à cette adresse e-mail.",
+                'no_account',
+            )
+
+        if not user.check_password(password):
+            raise AuthenticationFailed('Mot de passe incorrect.', 'invalid_password')
+
+        if not user.is_active:
+            raise AuthenticationFailed(
+                "Confirmez votre adresse e-mail pour activer votre compte. "
+                "Vérifiez votre boîte de réception (et vos spams).",
+                'email_not_confirmed',
+            )
+
+        return super().validate(attrs)
+
 
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField(
@@ -112,11 +147,11 @@ class PrestataireProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = PrestataireProfile
         fields = [
-            'id', 'user', 'company_name', 'services', 'zones_couvertes', 'langue', 
-            'tarif', 'verification_status', 'cni_passeport', 'justificatif', 
+            'id', 'user', 'company_name', 'services', 'zones_couvertes', 'langue',
+            'tarif', 'verification_status', 'motif_statut', 'cni_passeport', 'justificatif',
             'photo', 'date_creation', 'date_modification',
         ]
-        read_only_fields = ['id', 'verification_status', 'date_creation', 'date_modification']
+        read_only_fields = ['id', 'verification_status', 'motif_statut', 'date_creation', 'date_modification']
 
 
 # --- AUTRES SÉRIALIZERS ---

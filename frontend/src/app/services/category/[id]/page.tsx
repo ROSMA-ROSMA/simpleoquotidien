@@ -1,12 +1,14 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
+import ProviderRating from '@/components/reviews/ProviderRating';
 import { useCategory } from '@/hooks/useCategories';
 import { serviceService } from '@/services/service.service';
+import { reviewService, RatingSummary } from '@/services/review.service';
 import { formatPrice } from '@/lib/utils';
 import { ProviderService } from '@/types';
 import { IconArrowLeft, IconMapPin, IconUser, IconBriefcase } from '@tabler/icons-react';
@@ -15,19 +17,39 @@ interface Props {
     params: Promise<{ id: string }>;
 }
 
+type SortMode = 'rating_desc' | 'price_asc' | 'price_desc';
+
 export default function CategoryServicesPage({ params }: Props) {
     const { id } = use(params);
     const categoryId = parseInt(id, 10);
     const { category, loading, error } = useCategory(categoryId);
     const [services, setServices] = useState<ProviderService[]>([]);
     const [servicesLoading, setServicesLoading] = useState(true);
+    const [ratings, setRatings] = useState<Map<number, RatingSummary>>(new Map());
+    const [sort, setSort] = useState<SortMode>('rating_desc');
 
     useEffect(() => {
         serviceService.getAll({ category_id: categoryId })
             .then(res => setServices(res.data))
             .catch(() => setServices([]))
             .finally(() => setServicesLoading(false));
+        reviewService.getSummaryByProvider()
+            .then(setRatings)
+            .catch(() => setRatings(new Map()));
     }, [categoryId]);
+
+    // Les prestataires les mieux notés apparaissent en premier par défaut : la note
+    // client a ainsi un impact direct sur le matching / le choix du client.
+    const sortedServices = useMemo(() => {
+        const ratingOf = (s: ProviderService) => ratings.get(s.prestataire_id)?.average ?? 0;
+        const list = [...services];
+        list.sort((a, b) => {
+            if (sort === 'price_asc') return a.price - b.price;
+            if (sort === 'price_desc') return b.price - a.price;
+            return ratingOf(b) - ratingOf(a);
+        });
+        return list;
+    }, [services, ratings, sort]);
 
     if (loading) {
         return (
@@ -70,13 +92,28 @@ export default function CategoryServicesPage({ params }: Props) {
 
             <section className="py-12 flex-1">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-lg font-bold text-brand-dark mb-6">Services disponibles dans cette catégorie</h2>
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                        <h2 className="text-lg font-bold text-brand-dark">Services disponibles dans cette catégorie</h2>
+                        {services.length > 1 && (
+                            <select
+                                value={sort}
+                                onChange={(e) => setSort(e.target.value as SortMode)}
+                                className="px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-brand-teal"
+                            >
+                                <option value="rating_desc">Mieux notés</option>
+                                <option value="price_asc">Prix croissant</option>
+                                <option value="price_desc">Prix décroissant</option>
+                            </select>
+                        )}
+                    </div>
 
                     {servicesLoading ? (
                         <p className="text-center text-slate-500 py-12">Chargement des services…</p>
-                    ) : services.length > 0 ? (
+                    ) : sortedServices.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {services.map(service => (
+                            {sortedServices.map(service => {
+                                const rating = ratings.get(service.prestataire_id);
+                                return (
                                 <div key={service.id} className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
                                     {service.image ? (
                                         <img src={service.image} alt={category.name} className="w-full h-40 object-cover" />
@@ -86,7 +123,10 @@ export default function CategoryServicesPage({ params }: Props) {
                                         </div>
                                     )}
                                     <div className="p-6">
-                                        <p className="text-xl font-extrabold text-brand-teal mb-2">{formatPrice(service.price)} FCFA</p>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <p className="text-xl font-extrabold text-brand-teal">{formatPrice(service.price)} FCFA</p>
+                                            <ProviderRating average={rating?.average ?? 0} count={rating?.count ?? 0} showCount={false} />
+                                        </div>
                                         {service.description && <p className="text-sm text-slate-500 mb-3 line-clamp-2">{service.description}</p>}
                                         <div className="flex items-center justify-between text-sm text-slate-500">
                                             {service.prestataire_name && (
@@ -96,7 +136,8 @@ export default function CategoryServicesPage({ params }: Props) {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-card">

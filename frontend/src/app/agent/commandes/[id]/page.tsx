@@ -89,7 +89,11 @@ export default function AgentCommandeDetailPage({ params }: Props) {
 
     const assignedProvider = providers.find(p => p.id === booking.assigned_provider_id);
 
-    const canAssign = [BookingStatus.PENDING, BookingStatus.PROCESSING, BookingStatus.REASSIGNMENT_NEEDED].includes(booking.status);
+    // L'agent doit pouvoir intervenir à tout moment sur une commande non finalisée —
+    // y compris en changeant de prestataire après une assignation déjà en cours —
+    // et pas uniquement avant la 1re assignation ou après un refus explicite.
+    const FINAL_STATUSES = [BookingStatus.COMPLETED, BookingStatus.CLOSED, BookingStatus.CANCELLED];
+    const canAssign = !FINAL_STATUSES.includes(booking.status);
     const canReassign = booking.status === BookingStatus.REASSIGNMENT_NEEDED;
     const canClose = booking.status === BookingStatus.COMPLETED;
 
@@ -139,7 +143,7 @@ export default function AgentCommandeDetailPage({ params }: Props) {
                     {canAssign && (
                         <Link href={`/agent/commandes/${id}/assignation`}>
                             <Button variant="coral" icon={<IconUserPlus className="w-4 h-4" />}>
-                                Assigner un prestataire
+                                {assignedProvider ? 'Changer de prestataire' : 'Assigner un prestataire'}
                             </Button>
                         </Link>
                     )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
@@ -10,10 +10,16 @@ import Button from '@/components/ui/Button';
 import { useBooking } from '@/hooks/useOrders';
 import { orderService } from '@/services/order.service';
 import { getBookingTitle } from '@/lib/utils';
-import { IconArrowLeft, IconStar } from '@tabler/icons-react';
+import { IconArrowLeft, IconStar, IconCircleCheck } from '@tabler/icons-react';
 
 interface Props {
     params: Promise<{ id: string }>;
+}
+
+/** Le modèle Notes (backend) ne rattache une note qu'au prestataire, pas à la commande —
+ * on empêche donc côté frontend de noter deux fois la même réservation. */
+function ratedFlagKey(bookingId: string) {
+    return `sq_rated_booking_${bookingId}`;
 }
 
 export default function RateServicePage({ params }: Props) {
@@ -24,6 +30,13 @@ export default function RateServicePage({ params }: Props) {
     const [comment, setComment] = useState('');
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [alreadyRated, setAlreadyRated] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setAlreadyRated(window.localStorage.getItem(ratedFlagKey(id)) === '1');
+        }
+    }, [id]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,6 +45,7 @@ export default function RateServicePage({ params }: Props) {
         setError('');
         try {
             await orderService.review(id, rating, comment.trim() || undefined, booking.assigned_provider_id);
+            window.localStorage.setItem(ratedFlagKey(id), '1');
             router.push(`/booking/${id}/rating-success`);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Impossible d\'envoyer l\'avis');
@@ -78,6 +92,17 @@ export default function RateServicePage({ params }: Props) {
 
                         {error && <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl mb-6 text-sm">{error}</div>}
 
+                        {alreadyRated ? (
+                            <div className="text-center">
+                                <div className="flex items-center justify-center gap-2 text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 mb-6">
+                                    <IconCircleCheck className="w-5 h-5" />
+                                    <span className="text-sm font-semibold">Vous avez déjà évalué cette prestation. Merci !</span>
+                                </div>
+                                <Link href={`/booking/${id}`}>
+                                    <Button variant="secondary" fullWidth>Retour à la réservation</Button>
+                                </Link>
+                            </div>
+                        ) : (
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="text-center">
                                 <label className="block text-sm font-semibold text-slate-700 mb-3">Votre note</label>
@@ -101,6 +126,7 @@ export default function RateServicePage({ params }: Props) {
                                 {submitting ? 'Envoi…' : 'Envoyer mon avis'}
                             </Button>
                         </form>
+                        )}
                     </div>
                 </div>
             </main>

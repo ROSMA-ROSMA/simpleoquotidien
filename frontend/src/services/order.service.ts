@@ -224,20 +224,18 @@ export const orderService = {
         return orderService.update(uuid, { status: BookingStatus.CANCELLED });
     },
 
+    async remove(uuid: string): Promise<void> {
+        await apiFetch(`Commandes/orders/${uuid}/`, { method: 'DELETE' });
+    },
+
     async pay(_uuid: string, _method: PaymentMethod) {
         throw new ApiError('Paiement en ligne non connecté au backend.', 501);
     },
 
     async review(_uuid: string, rating: number, comment?: string, providerId?: number) {
         if (!providerId) throw new ApiError('Prestataire inconnu pour cette commande.', 400);
-        await apiFetch('Info_utilisateurs/notes/', {
-            method: 'POST',
-            body: JSON.stringify({
-                etoile: rating,
-                commentaire: comment ?? '',
-                prestataire: providerId,
-            }),
-        });
+        const { reviewService } = await import('./review.service');
+        await reviewService.create(providerId, rating, comment);
         return { data: { ok: true } };
     },
 

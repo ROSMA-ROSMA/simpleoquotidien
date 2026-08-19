@@ -2,28 +2,46 @@
 
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import FeatureBanner from '@/components/ui/FeatureBanner';
+import Modal from '@/components/ui/Modal';
 import { useBooking } from '@/hooks/useOrders';
 import { orderService } from '@/services/order.service';
 import { providerService } from '@/services/provider.service';
 import { formatPrice, formatDateTime, getBookingTitle } from '@/lib/utils';
 import { BookingStatus, BOOKING_STATUS_LABELS, User } from '@/types';
-import { IconCalendar, IconMapPin, IconUser, IconArrowLeft, IconCreditCard, IconEdit, IconClockPause, IconStar, IconMessage, IconCircleCheck, IconX } from '@tabler/icons-react';
+import { IconCalendar, IconMapPin, IconUser, IconArrowLeft, IconCreditCard, IconEdit, IconClockPause, IconStar, IconMessage, IconCircleCheck, IconX, IconTrash, IconAlertTriangle } from '@tabler/icons-react';
 
 interface Props {
     params: Promise<{ id: string }>;
 }
 
+const DELETABLE_STATUSES = [
+    BookingStatus.PENDING, BookingStatus.PROCESSING, BookingStatus.ASSIGNED,
+    BookingStatus.REASSIGNMENT_NEEDED, BookingStatus.POSTPONED, BookingStatus.CANCELLED,
+];
+
 export default function BookingDetailPage({ params }: Props) {
     const { id } = use(params);
+    const router = useRouter();
     const { booking, loading, reload } = useBooking(id);
     const [provider, setProvider] = useState<User | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
     const [contacted, setContacted] = useState(false);
+    const [alreadyRated, setAlreadyRated] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setAlreadyRated(window.localStorage.getItem(`sq_rated_booking_${id}`) === '1');
+        }
+    }, [id]);
 
     useEffect(() => {
         if (!booking?.assigned_provider_id) {
@@ -74,7 +92,8 @@ export default function BookingDetailPage({ params }: Props) {
     };
 
     const canModify = booking.status === BookingStatus.PENDING || booking.status === BookingStatus.CONFIRMED;
-    const canRate = booking.status === BookingStatus.COMPLETED;
+    const canDelete = DELETABLE_STATUSES.includes(booking.status);
+    const canRate = booking.status === BookingStatus.COMPLETED && !alreadyRated;
     const canPay = booking.status === BookingStatus.CONFIRMED;
     const canContactProvider = !!booking.assigned_provider_id;
     const canValidateQuote = booking.status === BookingStatus.QUOTE_SENT;
@@ -112,6 +131,18 @@ export default function BookingDetailPage({ params }: Props) {
             await reload();
         } finally {
             setActionLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        setDeleting(true);
+        setDeleteError(null);
+        try {
+            await orderService.remove(id);
+            router.push('/dashboard/client');
+        } catch (e) {
+            setDeleteError(e instanceof Error ? e.message : 'Erreur lors de la suppression');
+            setDeleting(false);
         }
     };
 
@@ -226,11 +257,43 @@ export default function BookingDetailPage({ params }: Props) {
                                     <Button variant="primary" icon={<IconStar className="w-4 h-4" />}>Évaluer</Button>
                                 </Link>
                             )}
+                            {booking.status === BookingStatus.COMPLETED && alreadyRated && (
+                                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-xl">
+                                    <IconCircleCheck className="w-4 h-4" /> Déjà évalué
+                                </span>
+                            )}
+                            {canDelete && (
+                                <Button
+                                    variant="ghost"
+                                    icon={<IconTrash className="w-4 h-4" />}
+                                    className="!text-red-500 hover:!bg-red-50"
+                                    onClick={() => { setDeleteError(null); setShowDeleteConfirm(true); }}
+                                >
+                                    Supprimer la commande
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </div>
             </main>
             <Footer />
+
+            <Modal open={showDeleteConfirm} onClose={() => !deleting && setShowDeleteConfirm(false)} title="Supprimer cette commande ?">
+                <div>
+                    <div className="flex items-start gap-3 bg-red-50 border border-red-100 rounded-xl p-4">
+                        <IconAlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-slate-700">
+                            Voulez-vous vraiment supprimer la commande <span className="font-bold">{title}</span> ?
+                            Cette action est définitive et ne peut pas être annulée.
+                        </p>
+                    </div>
+                    {deleteError && <p className="text-[11px] text-red-600 mt-3">{deleteError}</p>}
+                    <div className="flex items-center justify-end gap-3 mt-6">
+                        <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>Annuler</Button>
+                        <Button variant="danger" onClick={handleDelete} disabled={deleting}>{deleting ? 'Suppression…' : 'Confirmer la suppression'}</Button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }

@@ -90,9 +90,17 @@ export const providerService = {
         });
     },
 
-    async rejectPrestataire(id: number): Promise<void> {
+    async rejectPrestataire(id: number, motif?: string): Promise<void> {
         await apiFetch(`Info_utilisateurs/prestataires/${id}/reject/`, {
             method: 'POST',
+            body: JSON.stringify({ motif: motif ?? '' }),
+        });
+    },
+
+    async suspendPrestataire(id: number, motif?: string): Promise<void> {
+        await apiFetch(`Info_utilisateurs/prestataires/${id}/suspend/`, {
+            method: 'POST',
+            body: JSON.stringify({ motif: motif ?? '' }),
         });
     },
 };

@@ -9,6 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useCategories } from '@/hooks/useCategories';
 import { serviceService } from '@/services/service.service';
 import { providerService } from '@/services/provider.service';
+import { VILLES_COTE_DIVOIRE } from '@/lib/constants/cities';
 import { IconArrowLeft, IconPhoto } from '@tabler/icons-react';
 
 export default function ProviderCreateServicePage() {
@@ -38,6 +39,14 @@ export default function ProviderCreateServicePage() {
         const categoryId = Number(form.category_id) || categories[0]?.id;
         if (!categoryId) {
             setError('Aucune catégorie disponible. Contactez un administrateur.');
+            return;
+        }
+        if (!Number.isFinite(Number(form.price)) || Number(form.price) <= 0) {
+            setError('Le prix doit être un nombre strictement supérieur à 0.');
+            return;
+        }
+        if (!form.city) {
+            setError('Merci de choisir une ville d’intervention.');
             return;
         }
         setSubmitting(true);
@@ -86,11 +95,22 @@ export default function ProviderCreateServicePage() {
                                 </select>
                             )}
                         </div>
-                        <Input label="Prix (FCFA)" type="number" placeholder="15000" value={form.price} onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))} required />
-                        <Input label="Ville d'intervention" placeholder="Ouagadougou" value={form.city} onChange={(e) => setForm(f => ({ ...f, city: e.target.value }))} required />
+                        <Input label="Prix (FCFA)" type="number" min={1} step={1} placeholder="15000" value={form.price} onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))} required />
+                        <div>
+                            <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">Ville d&apos;intervention</label>
+                            <select
+                                value={form.city}
+                                onChange={(e) => setForm(f => ({ ...f, city: e.target.value }))}
+                                required
+                                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-[11px] focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal outline-none"
+                            >
+                                <option value="">Choisir une ville…</option>
+                                {VILLES_COTE_DIVOIRE.map(v => <option key={v} value={v}>{v}</option>)}
+                            </select>
+                        </div>
                         <div>
                             <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">Description (optionnel)</label>
-                            <textarea placeholder="Décrivez votre service…" rows={4} value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-[11px] focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal outline-none resize-none" />
+                            <textarea placeholder="Décrivez votre service…" rows={4} maxLength={2000} value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-[11px] focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal outline-none resize-none" />
                         </div>
                         <div>
                             <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">Photo du service (optionnel)</label>

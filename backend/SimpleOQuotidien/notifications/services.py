@@ -168,7 +168,8 @@ def notifier_acceptation_devis_prestataire(quote):
     if not (hasattr(order, 'assignments') and order.assignments.exists()):
         return
 
-    prestataire_user = order.assignments.last().prestataire.user
+    # Assignment.Meta.ordering = ['-date_creation'] : le plus récent est le premier.
+    prestataire_user = order.assignments.first().prestataire.user
     titre = f'Devis accepté - Commande {order.uuid}'
     message = f'Le client a accepté votre devis de {quote.price} FCFA.'
 

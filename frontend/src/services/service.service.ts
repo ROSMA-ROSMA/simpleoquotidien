@@ -11,7 +11,28 @@ export interface CreateProviderServiceInput {
     image?: File;
 }
 
+export type UpdateProviderServiceInput = Partial<CreateProviderServiceInput>;
+
 export const serviceService = {
+    async getById(id: number): Promise<ApiResponse<ProviderService>> {
+        const raw = await apiFetch<BackendService>(`Commandes/services/${id}/`);
+        return { data: mapServiceFromBackend(raw) };
+    },
+
+    async update(id: number, payload: UpdateProviderServiceInput): Promise<ApiResponse<ProviderService>> {
+        const form = new FormData();
+        if (payload.category_id !== undefined) form.set('category', String(payload.category_id));
+        if (payload.price !== undefined) form.set('price', String(payload.price));
+        if (payload.city !== undefined) form.set('city', payload.city);
+        if (payload.description !== undefined) form.set('description', payload.description ?? '');
+        if (payload.image) form.set('image', payload.image);
+        const raw = await apiFetch<BackendService>(`Commandes/services/${id}/`, {
+            method: 'PATCH',
+            body: form,
+        });
+        return { data: mapServiceFromBackend(raw) };
+    },
+
     async getAll(filters?: { prestataire_id?: number; category_id?: number; city?: string }): Promise<ApiResponse<ProviderService[]>> {
         const params = new URLSearchParams();
         if (filters?.prestataire_id) params.set('prestataire', String(filters.prestataire_id));
