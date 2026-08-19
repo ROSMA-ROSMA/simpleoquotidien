@@ -184,6 +184,7 @@ export interface Booking {
     quote_status?: string;
     quote_amount?: number;
     quote_description?: string;
+    quote_pdf_url?: string;
     history?: BookingHistoryEntry[];
     created_at?: string;
 }

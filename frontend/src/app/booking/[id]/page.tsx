@@ -7,14 +7,15 @@ import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import FeatureBanner from '@/components/ui/FeatureBanner';
 import Modal from '@/components/ui/Modal';
+import { useAuth } from '@/context/AuthContext';
 import { useBooking } from '@/hooks/useOrders';
+import { useProviderProfile } from '@/hooks/useProviderProfile';
 import { orderService } from '@/services/order.service';
 import { providerService } from '@/services/provider.service';
 import { formatPrice, formatDateTime, getBookingTitle } from '@/lib/utils';
-import { BookingStatus, BOOKING_STATUS_LABELS, User } from '@/types';
-import { IconCalendar, IconMapPin, IconUser, IconArrowLeft, IconCreditCard, IconEdit, IconClockPause, IconStar, IconMessage, IconCircleCheck, IconX, IconTrash, IconAlertTriangle } from '@tabler/icons-react';
+import { BookingStatus, BOOKING_STATUS_LABELS, User, UserRole, PaymentStatus } from '@/types';
+import { IconCalendar, IconMapPin, IconUser, IconArrowLeft, IconCreditCard, IconEdit, IconClockPause, IconStar, IconMessage, IconCircleCheck, IconX, IconTrash, IconAlertTriangle, IconCheck } from '@tabler/icons-react';
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -28,7 +29,9 @@ const DELETABLE_STATUSES = [
 export default function BookingDetailPage({ params }: Props) {
     const { id } = use(params);
     const router = useRouter();
+    const { currentUser } = useAuth();
     const { booking, loading, reload } = useBooking(id);
+    const { profile: myProviderProfile } = useProviderProfile();
     const [provider, setProvider] = useState<User | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
     const [contacted, setContacted] = useState(false);
@@ -91,13 +94,22 @@ export default function BookingDetailPage({ params }: Props) {
         }
     };
 
+    const isClient = currentUser?.role === UserRole.CLIENT;
+    const isOwnAssignment = currentUser?.role === UserRole.PROVIDER
+        && !!myProviderProfile
+        && booking.assigned_provider_id === myProviderProfile.id;
+    const isPaid = booking.payment?.status === PaymentStatus.SUCCESS;
+
     const canModify = booking.status === BookingStatus.PENDING || booking.status === BookingStatus.CONFIRMED;
     const canDelete = DELETABLE_STATUSES.includes(booking.status);
     const canRate = booking.status === BookingStatus.COMPLETED && !alreadyRated;
-    const canPay = booking.status === BookingStatus.CONFIRMED;
+    const canPay = booking.status === BookingStatus.CONFIRMED && !isPaid;
     const canContactProvider = !!booking.assigned_provider_id;
-    const canValidateQuote = booking.status === BookingStatus.QUOTE_SENT;
+    // Seul le client valide/refuse le devis reçu — le prestataire qui consulte sa
+    // propre mission ne doit pas voir ces actions (elles ne le concernent pas).
+    const canValidateQuote = booking.status === BookingStatus.QUOTE_SENT && isClient;
     const canMarkCompleted = booking.status === BookingStatus.IN_PROGRESS;
+    const canRespondToAssignment = booking.assignment_status === 'EN_ATTENTE' && isOwnAssignment;
 
     const handleValidateQuote = async () => {
         setActionLoading(true);
@@ -134,6 +146,18 @@ export default function BookingDetailPage({ params }: Props) {
         }
     };
 
+    const handleAcceptAssignment = async () => {
+        if (!booking.assignment_id) return;
+        setActionLoading(true);
+        try {
+            await orderService.accept(booking.assignment_id);
+            router.push(`/booking/${id}/accept`);
+        } catch (e) {
+            alert(e instanceof Error ? e.message : 'Erreur');
+            setActionLoading(false);
+        }
+    };
+
     const handleDelete = async () => {
         setDeleting(true);
         setDeleteError(null);
@@ -159,7 +183,12 @@ export default function BookingDetailPage({ params }: Props) {
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
                             <div>
                                 <h1 className="text-xl sm:text-2xl font-extrabold text-brand-dark mb-2">Réservation #{booking.id}</h1>
-                                <Badge variant={statusVariant()}>{BOOKING_STATUS_LABELS[booking.status]}</Badge>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <Badge variant={statusVariant()}>{BOOKING_STATUS_LABELS[booking.status]}</Badge>
+                                    {isClient && (
+                                        <Badge variant={isPaid ? 'success' : 'neutral'}>{isPaid ? 'Payée' : 'Créée'}</Badge>
+                                    )}
+                                </div>
                             </div>
                             <div className="sm:text-right">
                                 <span className="text-2xl sm:text-3xl font-extrabold text-brand-teal">{formatPrice(booking.total_amount)}</span>
@@ -200,6 +229,11 @@ export default function BookingDetailPage({ params }: Props) {
                                     {booking.quote_description && (
                                         <p className="text-sm text-slate-500 italic mt-2">&ldquo;{booking.quote_description}&rdquo;</p>
                                     )}
+                                    {booking.quote_pdf_url && (
+                                        <a href={booking.quote_pdf_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-teal hover:text-brand-tealDark mt-2">
+                                            Voir le fichier de devis →
+                                        </a>
+                                    )}
                                 </div>
                             )}
                             {contacted && (
@@ -209,14 +243,26 @@ export default function BookingDetailPage({ params }: Props) {
                             )}
                         </div>
 
-                        {canPay && (
-                            <FeatureBanner
-                                title="Paiement en ligne"
-                                message="Le paiement en ligne n'est pas encore connecté au backend. Vous pourrez régler directement le prestataire."
-                            />
+                        {isClient && isPaid && (
+                            <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-3 rounded-xl text-sm mb-6">
+                                <p className="font-bold flex items-center gap-1.5"><IconCircleCheck className="w-4 h-4" /> Commande payée</p>
+                                <p className="text-emerald-800/90 mt-0.5">
+                                    Paiement reçu{booking.payment?.transaction_ref ? ` — référence ${booking.payment.transaction_ref}` : ''}.
+                                </p>
+                            </div>
                         )}
 
                         <div className="flex flex-wrap gap-3">
+                            {canRespondToAssignment && (
+                                <>
+                                    <Button variant="primary" icon={<IconCheck className="w-4 h-4" />} disabled={actionLoading} onClick={handleAcceptAssignment}>
+                                        Accepter la mission
+                                    </Button>
+                                    <Link href={`/booking/${id}/reject`}>
+                                        <Button variant="danger" icon={<IconX className="w-4 h-4" />}>Refuser la mission</Button>
+                                    </Link>
+                                </>
+                            )}
                             {canMarkCompleted && (
                                 <Button variant="primary" icon={<IconCircleCheck className="w-4 h-4" />} disabled={actionLoading} onClick={handleMarkCompleted}>
                                     Marquer comme exécutée

@@ -44,23 +44,25 @@ AUTH_USER_MODEL = 'users.Utilisateur'
 # Application definition
 
 INSTALLED_APPS = [
-    'unfold',                      
-    'unfold.contrib.filters',      
-    'unfold.contrib.forms',    
-        
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
+
+    'cloudinary_storage',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    
+    'cloudinary',
+
     'users',
     'commandes',
     'rest_framework',
     'corsheaders',
     'notifications',
-    
+
     'djoser',
     'rest_framework_simplejwt',
     'drf_spectacular',
@@ -156,7 +158,16 @@ STATICFILES_DIRS = [
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # ✅ utile si Cloudinary ne répond pas
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Le disque de Render est éphémère : tout fichier écrit dans MEDIA_ROOT (photos de
+# service, CNI/justificatifs, PDF de devis, notes vocales) disparaît au prochain
+# déploiement. On bascule donc sur Cloudinary dès que ses identifiants sont fournis
+# (variable CLOUDINARY_URL) ; en local, sans cette variable, on retombe sur le
+# stockage disque classique pour ne rien casser en dev.
+CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
+if CLOUDINARY_URL:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

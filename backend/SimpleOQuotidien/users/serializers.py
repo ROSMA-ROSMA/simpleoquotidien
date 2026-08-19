@@ -3,7 +3,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from djoser.serializers import UserCreatePasswordRetypeSerializer, UserSerializer
 from django.db import transaction
-from .models import Utilisateur, PrestataireProfile, Assignment, Subscription, Notes, RoleChoices
+from .models import Utilisateur, PrestataireProfile, Assignment, Subscription, Notes, Payment, RoleChoices
 from commandes.models import Order
 from djoser.conf import settings as djoser_settings
 # Import de ta classe d'email personnalisée d'activation
@@ -166,6 +166,13 @@ class AssignmentSerializer(serializers.ModelSerializer):
             'status', 'motif_refus', 'date_reponse', 'date_creation',
         ]
         read_only_fields = ['id', 'status', 'motif_refus', 'date_reponse', 'date_creation']
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['id', 'montant', 'statut', 'transaction_id', 'date_creation']
+        read_only_fields = fields
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):

@@ -217,6 +217,11 @@ export default function AgentCommandeDetailPage({ params }: Props) {
                             {booking.quote_description && (
                                 <p className="text-sm text-slate-500 italic border-t border-slate-100 pt-3">&ldquo;{booking.quote_description}&rdquo;</p>
                             )}
+                            {booking.quote_pdf_url && (
+                                <a href={booking.quote_pdf_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-teal hover:text-brand-tealDark mt-3">
+                                    Voir le fichier de devis →
+                                </a>
+                            )}
                         </div>
                     )}
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
@@ -11,6 +11,7 @@ import VoiceRecorder from '@/components/booking/VoiceRecorder';
 import { useAuth } from '@/context/AuthContext';
 import { useCategory } from '@/hooks/useCategories';
 import { orderService } from '@/services/order.service';
+import { serviceService } from '@/services/service.service';
 import { IconArrowLeft, IconCalendar, IconClock, IconMapPin, IconMessage } from '@tabler/icons-react';
 
 interface Props {
@@ -27,6 +28,13 @@ export default function BookCategoryPage({ params }: Props) {
     const [submitting, setSubmitting] = useState(false);
     const [form, setForm] = useState({ date: '', time: '', address: '', message: '', budget: '5000' });
     const [voiceNote, setVoiceNote] = useState<Blob | null>(null);
+    const [hasServices, setHasServices] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        serviceService.getAll({ category_id: categoryId })
+            .then(res => setHasServices(res.data.length > 0))
+            .catch(() => setHasServices(null));
+    }, [categoryId]);
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -39,6 +47,10 @@ export default function BookCategoryPage({ params }: Props) {
             return;
         }
         if (!category) return;
+        if (hasServices === false) {
+            setError('Aucun prestataire ne propose ce service pour le moment dans cette catégorie.');
+            return;
+        }
         if (!form.date || !form.time || !form.address.trim()) {
             setError('Veuillez renseigner la date, l\u2019heure et l\u2019adresse.');
             return;
@@ -99,7 +111,13 @@ export default function BookCategoryPage({ params }: Props) {
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        {hasServices === false && (
+                            <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl mb-6 text-sm">
+                                Aucun prestataire ne propose ce service pour le moment dans cette catégorie. Vous ne pouvez pas encore envoyer de demande ici.
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className={`space-y-5 ${hasServices === false ? 'opacity-50 pointer-events-none' : ''}`}>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <Input label="Date" type="date" min={minDate} value={form.date} onChange={(e) => setForm(f => ({ ...f, date: e.target.value }))} icon={<IconCalendar className="w-5 h-5" />} required />
                                 <Input label="Heure" type="time" value={form.time} onChange={(e) => setForm(f => ({ ...f, time: e.target.value }))} icon={<IconClock className="w-5 h-5" />} required />

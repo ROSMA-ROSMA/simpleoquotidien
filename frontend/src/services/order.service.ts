@@ -172,11 +172,20 @@ export const orderService = {
         });
     },
 
-    async submitQuote(uuid: string, amount: number, description?: string) {
-        await apiFetch<BackendQuote>('Commandes/quotes/', {
-            method: 'POST',
-            body: JSON.stringify({ order: uuid, price: String(amount), description: description ?? '' }),
-        });
+    async submitQuote(uuid: string, amount: number, description?: string, file?: File) {
+        if (file) {
+            const fd = new FormData();
+            fd.append('order', uuid);
+            fd.append('price', String(amount));
+            fd.append('description', description ?? '');
+            fd.append('pdf_file', file);
+            await apiFetch<BackendQuote>('Commandes/quotes/', { method: 'POST', body: fd });
+        } else {
+            await apiFetch<BackendQuote>('Commandes/quotes/', {
+                method: 'POST',
+                body: JSON.stringify({ order: uuid, price: String(amount), description: description ?? '' }),
+            });
+        }
         return orderService.getById(uuid);
     },
 
@@ -228,8 +237,10 @@ export const orderService = {
         await apiFetch(`Commandes/orders/${uuid}/`, { method: 'DELETE' });
     },
 
-    async pay(_uuid: string, _method: PaymentMethod) {
-        throw new ApiError('Paiement en ligne non connecté au backend.', 501);
+    async pay(uuid: string, _method: PaymentMethod) {
+        const raw = await apiFetch<BackendOrder>(`Commandes/orders/${uuid}/pay/`, { method: 'POST' });
+        const assignments = await fetchAssignmentsByOrder();
+        return { data: mapOrderFromBackend(raw, toMapperExtras(assignments.get(raw.uuid))) };
     },
 
     async review(_uuid: string, rating: number, comment?: string, providerId?: number) {

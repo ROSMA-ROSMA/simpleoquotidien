@@ -5,6 +5,7 @@ import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import { useBooking } from '@/hooks/useOrders';
+import { orderService } from '@/services/order.service';
 import { formatPrice, formatDateTime, getBookingTitle } from '@/lib/utils';
 import { PaymentMethod } from '@/types';
 import {
@@ -86,9 +87,10 @@ function StepIndicator({ step }: { step: Step }) {
 
 export default function PaymentInitiatePage({ params }: Props) {
     const { id } = use(params);
-    const { booking, loading } = useBooking(id);
+    const { booking, loading, reload } = useBooking(id);
 
     const [step, setStep] = useState<Step>('form');
+    const [payError, setPayError] = useState('');
     const [method, setMethod] = useState<PaymentMethod | null>(null);
     const [operator, setOperator] = useState<Operator | null>(null);
     const [phone, setPhone] = useState('');
@@ -141,15 +143,20 @@ export default function PaymentInitiatePage({ params }: Props) {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!isValid()) return;
+        if (!isValid() || !method) return;
+        setPayError('');
         setStep('processing');
-        setTimeout(() => {
-            const ref = `TXN-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
-            setTxnRef(ref);
+        try {
+            const res = await orderService.pay(id, method);
+            setTxnRef(res.data.payment?.transaction_ref ?? '');
+            await reload();
             setStep('success');
-        }, 1800);
+        } catch (err) {
+            setPayError(err instanceof Error ? err.message : 'Le paiement a échoué. Veuillez réessayer.');
+            setStep('form');
+        }
     };
 
     const handleCopy = () => {
@@ -393,6 +400,9 @@ export default function PaymentInitiatePage({ params }: Props) {
 
                                 {/* Submit */}
                                 <div className="p-5 sm:p-8">
+                                    {payError && (
+                                        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl mb-4 text-sm">{payError}</div>
+                                    )}
                                     <button
                                         type="submit"
                                         disabled={!isValid()}

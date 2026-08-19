@@ -1,9 +1,14 @@
+import uuid as uuid_lib
+from decimal import Decimal, InvalidOperation
+
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from commandes.models import Category, Order, OrderStatusChoices, Quote, QuoteStatusChoices, Service
@@ -19,7 +24,7 @@ from notifications.services import (
     notifier_validation_devis_agent,
 )
 from drf_spectacular.utils import extend_schema
-from users.models import AssignmentStatusChoices, PrestataireStatusChoices, RoleChoices
+from users.models import AssignmentStatusChoices, Payment, PrestataireStatusChoices, RoleChoices
 
 User = get_user_model()
 
@@ -231,4 +236,47 @@ class OrderViewSet(viewsets.ModelViewSet):
                 ' terminée) et ne peut plus être supprimée.'
             )
         instance.delete()
+
+    @action(detail=True, methods=['post'], url_path='pay')
+    def pay(self, request, uuid=None):
+        """Paiement simulé : aucune passerelle réelle n'est branchée, mais le
+        paiement est bien enregistré côté serveur (montant, référence) — pas
+        seulement affiché côté client. Le statut n'a que deux valeurs utiles
+        pour le client : pas encore de paiement, ou 'PAYEE'."""
+        order = self.get_object()
+        if order.client_id != request.user.id:
+            raise PermissionDenied("Cette commande ne vous appartient pas.")
+
+        existing = getattr(order, 'payment', None)
+        if existing is not None and existing.statut == 'PAYEE':
+            return Response(OrderSerializer(order).data)
+
+        if order.status != OrderStatusChoices.ACCEPTEE:
+            raise PermissionDenied(
+                "Cette commande n'est pas encore prête à être payée (le devis doit"
+                " d'abord être accepté)."
+            )
+
+        quote = getattr(order, 'quote', None)
+        if quote is not None:
+            try:
+                montant = Decimal(quote.price)
+            except (InvalidOperation, TypeError):
+                montant = order.budget
+        else:
+            montant = order.budget
+
+        transaction_id = f"TXN-{uuid_lib.uuid4().hex[:10].upper()}"
+        if existing is not None:
+            existing.montant = montant
+            existing.statut = 'PAYEE'
+            existing.transaction_id = transaction_id
+            existing.save(update_fields=['montant', 'statut', 'transaction_id'])
+        else:
+            Payment.objects.create(
+                order=order, montant=montant, statut='PAYEE',
+                transaction_id=transaction_id,
+            )
+
+        return Response(OrderSerializer(order).data)
 

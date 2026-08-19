@@ -3,21 +3,21 @@
 import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
-import ServiceCard from '@/components/services/ServiceCard';
-import { useAppStore } from '@/store/useAppStore';
+import CategoryCard from '@/components/services/CategoryCard';
+import { useCategories } from '@/hooks/useCategories';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 function SearchContent() {
     const searchParams = useSearchParams();
     const query = searchParams.get('q') || '';
-    const services = useAppStore(s => s.services);
+    const { categories, loading } = useCategories();
 
-    const results = query
-        ? services.filter(s =>
-            s.name.toLowerCase().includes(query.toLowerCase()) ||
-            s.description.toLowerCase().includes(query.toLowerCase()) ||
-            s.category?.name.toLowerCase().includes(query.toLowerCase())
+    const q = query.trim().toLowerCase();
+    const results = q
+        ? categories.filter(c =>
+            c.name.toLowerCase().includes(q) ||
+            c.description.toLowerCase().includes(q)
         )
         : [];
 
@@ -27,21 +27,24 @@ function SearchContent() {
                 <h1 className="text-3xl font-extrabold text-brand-dark mb-2">
                     Résultats pour &ldquo;{query}&rdquo;
                 </h1>
-                <p className="text-slate-500 mb-8">{results.length} résultat{results.length !== 1 ? 's' : ''}</p>
+                <p className="text-slate-500 mb-8">
+                    {loading ? 'Recherche…' : `${results.length} catégorie${results.length !== 1 ? 's' : ''} trouvée${results.length !== 1 ? 's' : ''}`}
+                </p>
 
-                {results.length > 0 ? (
+                {loading ? (
+                    <p className="text-center text-slate-500 py-12">Chargement…</p>
+                ) : results.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {results.map(service => (
-                            <ServiceCard key={service.id} service={service} />
+                        {results.map(category => (
+                            <CategoryCard key={category.id} category={category} />
                         ))}
                     </div>
                 ) : (
                     <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-card">
-                        <p className="text-4xl mb-4">🔍</p>
                         <h3 className="text-lg font-bold text-brand-dark mb-1">Aucun résultat trouvé</h3>
-                        <p className="text-slate-500 text-sm mb-6">Essayez un terme de recherche différent.</p>
+                        <p className="text-slate-500 text-sm mb-6">Essayez un terme de recherche différent (ex. plomberie, ménage, baby-sitting…).</p>
                         <Link href="/services" className="text-brand-teal font-bold hover:text-brand-tealDark">
-                            Explorer les catégories →
+                            Explorer toutes les catégories →
                         </Link>
                     </div>
                 )}

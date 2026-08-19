@@ -10,6 +10,7 @@ import ProviderRating from '@/components/reviews/ProviderRating';
 import { useAuth } from '@/context/AuthContext';
 import { orderService } from '@/services/order.service';
 import { providerService } from '@/services/provider.service';
+import { serviceService } from '@/services/service.service';
 import { reviewService, RatingSummary } from '@/services/review.service';
 import { getInitials, getBookingTitle } from '@/lib/utils';
 import { Booking, Provider } from '@/types';
@@ -34,6 +35,7 @@ export default function AssignationPage({ params }: Props) {
     const [booking, setBooking] = useState<Booking | null>(null);
     const [providers, setProviders] = useState<Provider[]>([]);
     const [ratings, setRatings] = useState<Map<number, RatingSummary>>(new Map());
+    const [categoryProviderIds, setCategoryProviderIds] = useState<Set<number> | null>(null);
     const [loading, setLoading] = useState(true);
     const [assigningId, setAssigningId] = useState<number | null>(null);
 
@@ -42,6 +44,7 @@ export default function AssignationPage({ params }: Props) {
     const [sort, setSort] = useState<SortMode>('rating_desc');
     const [compareIds, setCompareIds] = useState<number[]>([]);
     const [showCompare, setShowCompare] = useState(false);
+    const [showAllCategories, setShowAllCategories] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -55,6 +58,11 @@ export default function AssignationPage({ params }: Props) {
                 setCity(bookingRes.data.intervention_city ?? '');
                 setProviders(providersRes.data);
                 setRatings(ratingsMap);
+                if (bookingRes.data.category_id) {
+                    serviceService.getAll({ category_id: bookingRes.data.category_id })
+                        .then(res => setCategoryProviderIds(new Set(res.data.map(s => s.prestataire_id))))
+                        .catch(() => setCategoryProviderIds(null));
+                }
             } catch {
                 setBooking(null);
             } finally {
@@ -73,6 +81,9 @@ export default function AssignationPage({ params }: Props) {
 
     const filtered = useMemo(() => {
         let list = providers.filter(p => p.verification_status === 'VALIDE');
+        if (!showAllCategories && categoryProviderIds && categoryProviderIds.size > 0) {
+            list = list.filter(p => categoryProviderIds.has(p.id));
+        }
         if (search.trim()) {
             const q = search.toLowerCase();
             list = list.filter(p =>
@@ -89,7 +100,7 @@ export default function AssignationPage({ params }: Props) {
             return ratingOf(b.id).average - ratingOf(a.id).average;
         });
         return list;
-    }, [providers, search, city, sort, ratingOf]);
+    }, [providers, search, city, sort, ratingOf, showAllCategories, categoryProviderIds]);
 
     const compared = useMemo(() => providers.filter(p => compareIds.includes(p.id)), [providers, compareIds]);
 
@@ -138,6 +149,22 @@ export default function AssignationPage({ params }: Props) {
                 <Badge variant="default">Commande #SQ-{booking.id}</Badge>
                 <span className="text-sm text-slate-400">{booking.client ? `${booking.client.first_name} ${booking.client.last_name} · ` : ''}{getBookingTitle(booking)}{booking.intervention_city ? ` · ${booking.intervention_city}` : ''}</span>
             </div>
+
+            {categoryProviderIds !== null && (
+                <div className="flex items-center justify-between flex-wrap gap-3 bg-brand-tealLight/40 border border-brand-teal/20 rounded-2xl px-5 py-3 mb-6 text-sm">
+                    <span className="text-brand-dark">
+                        {categoryProviderIds.size > 0
+                            ? <>Par défaut, seuls les prestataires proposant <strong>{booking.category_name ?? 'cette catégorie'}</strong> sont affichés ({categoryProviderIds.size}).</>
+                            : <>Aucun prestataire n&apos;a encore publié de service dans <strong>{booking.category_name ?? 'cette catégorie'}</strong> — tous les prestataires sont affichés.</>}
+                    </span>
+                    {categoryProviderIds.size > 0 && (
+                        <label className="flex items-center gap-2 font-semibold text-brand-dark cursor-pointer shrink-0">
+                            <input type="checkbox" checked={showAllCategories} onChange={(e) => setShowAllCategories(e.target.checked)} />
+                            Afficher tous les prestataires (hors catégorie)
+                        </label>
+                    )}
+                </div>
+            )}
 
             {showCompare && compared.length > 0 && (
                 <div className="bg-white rounded-2xl shadow-card border border-brand-teal/30 overflow-hidden mb-6">

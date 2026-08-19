@@ -8,6 +8,7 @@ import {
     BackendQuoteStatus,
     BackendService,
     BackendNotification,
+    BackendPayment,
 } from '@/types/backend';
 import {
     User,
@@ -20,6 +21,9 @@ import {
     ProviderService,
     AppNotification,
     NotificationType,
+    Payment,
+    PaymentStatus,
+    PaymentMethod,
 } from '@/types';
 
 const CATEGORY_ICONS = ['home-heart', 'tool', 'wash', 'heart', 'truck-delivery', 'shield', 'pen-tool', 'key'];
@@ -120,6 +124,20 @@ function resolveBookingStatus(order: BackendOrder): BookingStatus {
     return ORDER_STATUS_TO_BOOKING[order.status] ?? BookingStatus.PENDING;
 }
 
+/** Le paiement n'a que 2 statuts utiles côté client : pas encore payé (absent),
+ * ou 'PAYEE' — pas de granularité EN_ATTENTE/ECHOUE exposée côté back pour l'instant. */
+export function mapPaymentFromBackend(p: BackendPayment, orderId: number): Payment {
+    return {
+        id: p.id,
+        booking_id: orderId,
+        amount: parseFloat(p.montant),
+        payment_method: PaymentMethod.MOBILE_MONEY,
+        status: p.statut === 'PAYEE' ? PaymentStatus.SUCCESS : PaymentStatus.PENDING,
+        transaction_ref: p.transaction_id,
+        created_at: p.date_creation,
+    };
+}
+
 export function mapOrderFromBackend(
     order: BackendOrder,
     extras?: {
@@ -147,10 +165,12 @@ export function mapOrderFromBackend(
         quote_id: order.quote?.id,
         quote_status: order.quote?.status,
         quote_description: order.quote?.description ?? undefined,
+        quote_pdf_url: order.quote?.pdf_file ?? undefined,
         assigned_provider_id: extras?.assigned_provider_id,
         assigned_provider: extras?.assigned_provider,
         assignment_id: extras?.assignment_id,
         assignment_status: extras?.assignment_status,
+        payment: order.payment ? mapPaymentFromBackend(order.payment, order.id) : undefined,
         created_at: order.date,
     };
 }

@@ -9,7 +9,7 @@ import Button from '@/components/ui/Button';
 import { useBooking } from '@/hooks/useOrders';
 import { orderService } from '@/services/order.service';
 import { getBookingTitle } from '@/lib/utils';
-import { IconCircleCheck, IconArrowLeft, IconSend } from '@tabler/icons-react';
+import { IconCircleCheck, IconArrowLeft, IconSend, IconFileUpload } from '@tabler/icons-react';
 
 interface Props { params: Promise<{ id: string }>; }
 
@@ -19,6 +19,7 @@ export default function SubmitQuotePage({ params }: Props) {
     const { booking, loading } = useBooking(id);
     const [amount, setAmount] = useState('');
     const [description, setDescription] = useState('');
+    const [file, setFile] = useState<File | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -46,7 +47,7 @@ export default function SubmitQuotePage({ params }: Props) {
         setSubmitting(true);
         setError(null);
         try {
-            await orderService.submitQuote(id, Number(amount), description || undefined);
+            await orderService.submitQuote(id, Number(amount), description || undefined, file ?? undefined);
             router.push('/dashboard/provider/bookings');
         } catch (err) {
             setError(err instanceof Error ? err.message : "Erreur lors de l'envoi du devis");
@@ -95,6 +96,20 @@ export default function SubmitQuotePage({ params }: Props) {
                                     placeholder="Détail des prestations, matériel, délai d'intervention…"
                                     className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal outline-none transition-all resize-none"
                                 />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Fichier de devis (PDF ou autre document, optionnel)</label>
+                                <label className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-sm font-semibold text-slate-500 cursor-pointer hover:border-brand-teal hover:text-brand-teal transition-colors">
+                                    <IconFileUpload className="w-4 h-4" />
+                                    {file ? file.name : 'Joindre un fichier…'}
+                                    <input
+                                        type="file"
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                                        className="hidden"
+                                    />
+                                </label>
                             </div>
 
                             {error && <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">{error}</p>}

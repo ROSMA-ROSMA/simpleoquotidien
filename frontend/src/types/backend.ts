@@ -34,6 +34,14 @@ export type BackendOrderStatus =
 
 export type BackendQuoteStatus = 'ENVOYE' | 'ACCEPTE' | 'REFUSE';
 
+export interface BackendPayment {
+    id: number;
+    montant: string;
+    statut: string;
+    transaction_id: string;
+    date_creation?: string;
+}
+
 export interface BackendQuote {
     id: number;
     status: BackendQuoteStatus;
@@ -58,6 +66,7 @@ export interface BackendOrder {
     client: number;
     client_detail?: BackendUser;
     quote?: BackendQuote | null;
+    payment?: BackendPayment | null;
 }
 
 export interface BackendPrestataire {

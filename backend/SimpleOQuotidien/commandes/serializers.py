@@ -3,7 +3,7 @@ from decimal import Decimal
 from rest_framework import serializers
 from .constants import VILLES_VALIDES
 from .models import Category, Order, Quote, Service
-from users.serializers import UtilisateurSerializer
+from users.serializers import PaymentSerializer, UtilisateurSerializer
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -55,11 +55,13 @@ class OrderSerializer(serializers.ModelSerializer):
     quote = QuoteSerializer(read_only=True)
     category_nom = serializers.CharField(source='category.nom', read_only=True)
     client_detail = UtilisateurSerializer(source='client', read_only=True)
+    payment = PaymentSerializer(read_only=True)
 
     class Meta:
         model = Order
         fields = [
             'id', 'uuid', 'status', 'description', 'localisation', 'date', 'budget',
             'images', 'voice_note', 'category', 'category_nom', 'client', 'client_detail', 'quote',
+            'payment',
         ]
         read_only_fields = ['client']

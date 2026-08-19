@@ -83,9 +83,15 @@ export default function CategoryServicesPage({ params }: Props) {
                     <h1 className="text-4xl font-extrabold text-white mb-3">{category.name}</h1>
                     <p className="text-white/70 text-lg max-w-2xl">{category.description}</p>
                     <div className="mt-8">
-                        <Link href={`/services/category/${category.id}/book`}>
-                            <Button size="lg">Demander une intervention</Button>
-                        </Link>
+                        {servicesLoading ? null : services.length > 0 ? (
+                            <Link href={`/services/category/${category.id}/book`}>
+                                <Button size="lg">Demander une intervention</Button>
+                            </Link>
+                        ) : (
+                            <p className="text-white/80 text-sm bg-white/10 border border-white/20 rounded-xl px-4 py-3 max-w-md">
+                                Aucun prestataire ne propose ce service pour l&apos;instant. Revenez bientôt ou explorez une autre catégorie.
+                            </p>
+                        )}
                     </div>
                 </div>
             </section>
@@ -134,6 +140,9 @@ export default function CategoryServicesPage({ params }: Props) {
                                             )}
                                             <span className="flex items-center gap-1.5"><IconMapPin className="w-3.5 h-3.5" /> {service.city}</span>
                                         </div>
+                                        <Link href={`/service/${service.id}`} className="block mt-3 pt-3 border-t border-slate-50 text-sm font-bold text-brand-teal hover:text-brand-tealDark text-center">
+                                            Voir le détail
+                                        </Link>
                                     </div>
                                 </div>
                                 );
@@ -141,9 +150,9 @@ export default function CategoryServicesPage({ params }: Props) {
                         </div>
                     ) : (
                         <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-card">
-                            <p className="text-4xl mb-4">📭</p>
                             <h3 className="text-lg font-bold text-brand-dark mb-1">Aucun service publié pour l&apos;instant</h3>
-                            <p className="text-slate-500 text-sm">Vous pouvez quand même créer une demande ; un agent vous contactera.</p>
+                            <p className="text-slate-500 text-sm mb-6">Aucun prestataire ne propose ce service pour le moment dans cette catégorie.</p>
+                            <Link href="/services" className="text-brand-teal font-bold hover:text-brand-tealDark">Explorer une autre catégorie →</Link>
                         </div>
                     )}
                 </div>
