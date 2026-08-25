@@ -82,17 +82,13 @@ export default function CategoryServicesPage({ params }: Props) {
                     </Link>
                     <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-3 drop-shadow-sm">{category.name}</h1>
                     <p className="text-white/85 text-base sm:text-lg max-w-2xl leading-relaxed">{category.description}</p>
-                    <div className="mt-7">
-                        {servicesLoading ? null : services.length > 0 ? (
+                    {!servicesLoading && services.length > 0 && (
+                        <div className="mt-7">
                             <Link href={`/services/category/${category.id}/book`}>
                                 <Button size="lg">Demander une intervention</Button>
                             </Link>
-                        ) : (
-                            <p className="text-white/90 text-sm bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-3 max-w-md">
-                                Aucun prestataire ne propose ce service pour l&apos;instant. Revenez bientôt ou explorez une autre catégorie.
-                            </p>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
             </section>
 
