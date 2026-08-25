@@ -235,6 +235,8 @@ export interface Payment {
 export interface Review {
     id: number;
     booking_id: number;
+    /** uuid Order backend — identifiant réel de la commande évaluée. */
+    booking_uuid?: string | null;
     booking?: Booking;
     provider_id?: number;
     provider?: Provider;

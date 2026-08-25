@@ -4,7 +4,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from djoser.serializers import UserCreatePasswordRetypeSerializer, UserSerializer
 from django.db import transaction
 from .models import Utilisateur, PrestataireProfile, Assignment, Subscription, Notes, Payment, RoleChoices
-from commandes.models import Order
+from commandes.models import Order, OrderStatusChoices
 from djoser.conf import settings as djoser_settings
 # Import de ta classe d'email personnalisée d'activation
 from .email import ActivationEmail
@@ -184,8 +184,25 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
 class NotesSerializer(serializers.ModelSerializer):
     author_email = serializers.EmailField(source='author.email', read_only=True)
+    order = serializers.SlugRelatedField(
+        slug_field='uuid', queryset=Order.objects.all(), required=False, allow_null=True,
+    )
 
     class Meta:
         model = Notes
-        fields = ['id', 'etoile', 'commentaire', 'prestataire', 'author', 'author_email', 'date_creation']
+        fields = ['id', 'etoile', 'commentaire', 'prestataire', 'author', 'author_email', 'order', 'date_creation']
         read_only_fields = ['id', 'author', 'date_creation']
+
+    def validate_order(self, order):
+        request = self.context.get('request')
+        if order is not None and request is not None:
+            if order.client_id != request.user.id:
+                raise serializers.ValidationError("Cette commande ne vous appartient pas.")
+            if order.status != OrderStatusChoices.TERMINEE:
+                raise serializers.ValidationError("Cette commande n'est pas encore terminée.")
+            existing = Notes.objects.filter(order=order)
+            if self.instance is not None:
+                existing = existing.exclude(pk=self.instance.pk)
+            if existing.exists():
+                raise serializers.ValidationError("Cette commande a déjà été notée.")
+        return order

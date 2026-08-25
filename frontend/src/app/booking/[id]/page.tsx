@@ -11,6 +11,7 @@ import Modal from '@/components/ui/Modal';
 import { useAuth } from '@/context/AuthContext';
 import { useBooking } from '@/hooks/useOrders';
 import { useProviderProfile } from '@/hooks/useProviderProfile';
+import { useMyReviews } from '@/hooks/useReviews';
 import { orderService } from '@/services/order.service';
 import { providerService } from '@/services/provider.service';
 import { formatPrice, formatDateTime, getBookingTitle } from '@/lib/utils';
@@ -32,19 +33,13 @@ export default function BookingDetailPage({ params }: Props) {
     const { currentUser } = useAuth();
     const { booking, loading, reload } = useBooking(id);
     const { profile: myProviderProfile } = useProviderProfile();
+    const { ratedOrderUuids } = useMyReviews(currentUser?.id);
     const [provider, setProvider] = useState<User | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
     const [contacted, setContacted] = useState(false);
-    const [alreadyRated, setAlreadyRated] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setAlreadyRated(window.localStorage.getItem(`sq_rated_booking_${id}`) === '1');
-        }
-    }, [id]);
 
     useEffect(() => {
         if (!booking?.assigned_provider_id) {
@@ -102,7 +97,7 @@ export default function BookingDetailPage({ params }: Props) {
 
     const canModify = booking.status === BookingStatus.PENDING || booking.status === BookingStatus.CONFIRMED;
     const canDelete = DELETABLE_STATUSES.includes(booking.status);
-    const canRate = booking.status === BookingStatus.COMPLETED && !alreadyRated;
+    const canRate = booking.status === BookingStatus.COMPLETED && !!booking.uuid && !ratedOrderUuids.has(booking.uuid);
     const canPay = booking.status === BookingStatus.CONFIRMED && !isPaid;
     const canContactProvider = !!booking.assigned_provider_id;
     // Seul le client valide/refuse le devis reçu — le prestataire qui consulte sa
@@ -303,7 +298,7 @@ export default function BookingDetailPage({ params }: Props) {
                                     <Button variant="primary" icon={<IconStar className="w-4 h-4" />}>Évaluer</Button>
                                 </Link>
                             )}
-                            {booking.status === BookingStatus.COMPLETED && alreadyRated && (
+                            {booking.status === BookingStatus.COMPLETED && !!booking.uuid && ratedOrderUuids.has(booking.uuid) && (
                                 <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-xl">
                                     <IconCircleCheck className="w-4 h-4" /> Déjà évalué
                                 </span>

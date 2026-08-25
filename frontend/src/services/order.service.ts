@@ -243,10 +243,10 @@ export const orderService = {
         return { data: mapOrderFromBackend(raw, toMapperExtras(assignments.get(raw.uuid))) };
     },
 
-    async review(_uuid: string, rating: number, comment?: string, providerId?: number) {
+    async review(uuid: string, rating: number, comment?: string, providerId?: number) {
         if (!providerId) throw new ApiError('Prestataire inconnu pour cette commande.', 400);
         const { reviewService } = await import('./review.service');
-        await reviewService.create(providerId, rating, comment);
+        await reviewService.create(providerId, rating, uuid, comment);
         return { data: { ok: true } };
     },
 

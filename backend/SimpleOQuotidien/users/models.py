@@ -128,9 +128,17 @@ class Subscription(models.Model):
 class Notes(models.Model):
     # Validation du nombre d'étoiles (entre 1 et 5)
     etoile = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    commentaire = models.TextField()
+    # Le commentaire est optionnel côté client (l'UI n'exige qu'une note en étoiles).
+    commentaire = models.TextField(blank=True)
     prestataire = models.ForeignKey(PrestataireProfile, on_delete=models.CASCADE, related_name='notes')
     author = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='written_notes')
+    # Rattache la note à la commande évaluée : permet de savoir précisément quelles
+    # commandes du client restent à noter, sans dépendre d'un flag stocké côté client
+    # (localStorage). Nullable pour les notes historiques créées avant ce champ.
+    order = models.ForeignKey(
+        'commandes.Order', on_delete=models.CASCADE, related_name='notes',
+        null=True, blank=True, unique=True,
+    )
     date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)
 

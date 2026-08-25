@@ -1,13 +1,15 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import StarRating from '@/components/ui/StarRating';
 import Button from '@/components/ui/Button';
+import { useAuth } from '@/context/AuthContext';
 import { useBooking } from '@/hooks/useOrders';
+import { useMyReviews } from '@/hooks/useReviews';
 import { orderService } from '@/services/order.service';
 import { getBookingTitle } from '@/lib/utils';
 import { IconArrowLeft, IconStar, IconCircleCheck } from '@tabler/icons-react';
@@ -16,27 +18,18 @@ interface Props {
     params: Promise<{ id: string }>;
 }
 
-/** Le modèle Notes (backend) ne rattache une note qu'au prestataire, pas à la commande —
- * on empêche donc côté frontend de noter deux fois la même réservation. */
-function ratedFlagKey(bookingId: string) {
-    return `sq_rated_booking_${bookingId}`;
-}
-
 export default function RateServicePage({ params }: Props) {
     const { id } = use(params);
     const router = useRouter();
+    const { currentUser } = useAuth();
     const { booking, loading } = useBooking(id);
+    const { ratedOrderUuids, loading: reviewsLoading, reload: reloadReviews } = useMyReviews(currentUser?.id);
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
-    const [alreadyRated, setAlreadyRated] = useState(false);
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setAlreadyRated(window.localStorage.getItem(ratedFlagKey(id)) === '1');
-        }
-    }, [id]);
+    const alreadyRated = !!booking?.uuid && ratedOrderUuids.has(booking.uuid);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,7 +38,7 @@ export default function RateServicePage({ params }: Props) {
         setError('');
         try {
             await orderService.review(id, rating, comment.trim() || undefined, booking.assigned_provider_id);
-            window.localStorage.setItem(ratedFlagKey(id), '1');
+            await reloadReviews();
             router.push(`/booking/${id}/rating-success`);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Impossible d\'envoyer l\'avis');
@@ -53,7 +46,7 @@ export default function RateServicePage({ params }: Props) {
         }
     };
 
-    if (loading) {
+    if (loading || reviewsLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-brand-surface">
                 <p className="text-slate-500">Chargement…</p>

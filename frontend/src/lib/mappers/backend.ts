@@ -175,15 +175,18 @@ export function mapOrderFromBackend(
     };
 }
 
-export function mapReviewFromBackend(note: BackendNote, provider?: Provider): Review {
+export function mapReviewFromBackend(note: BackendNote, booking?: Booking): Review {
     return {
         id: note.id,
-        booking_id: 0,
+        booking_id: booking?.id ?? 0,
+        booking_uuid: note.order,
+        booking,
         provider_id: note.prestataire,
-        provider,
+        provider: booking?.assigned_provider,
         rating: note.etoile,
         comment: note.commentaire,
         author_username: note.author_email,
+        created_at: note.date_creation,
     };
 }
 

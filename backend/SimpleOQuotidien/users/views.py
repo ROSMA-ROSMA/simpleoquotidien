@@ -293,7 +293,10 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
 class NotesViewSet(viewsets.ModelViewSet):
     queryset = Notes.objects.select_related('author', 'prestataire').all()
     serializer_class = NotesSerializer
-    permission_classes = [IsAuthenticated]
+    # Lecture publique (les notes/avis s'affichent sur les pages catalogue non
+    # authentifiées côté client) ; création/modification/suppression réservées
+    # aux utilisateurs connectés.
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         # Associe automatiquement l'utilisateur connecté comme auteur de la note

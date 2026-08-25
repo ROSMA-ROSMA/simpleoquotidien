@@ -2,16 +2,19 @@ import Link from 'next/link';
 import { Booking, BookingStatus, BOOKING_STATUS_LABELS } from '@/types';
 import { formatPrice, formatDateTime, getBookingTitle } from '@/lib/utils';
 import Badge from '@/components/ui/Badge';
-import { IconCalendar, IconUser, IconMapPin, IconCreditCard, IconCircleCheck, IconClock, IconMicrophone } from '@tabler/icons-react';
+import { IconCalendar, IconUser, IconMapPin, IconCreditCard, IconCircleCheck, IconClock, IconMicrophone, IconStar } from '@tabler/icons-react';
 
 interface BookingCardProps {
     booking: Booking;
     showPayButton?: boolean;
     showActions?: boolean;
     role?: 'client' | 'provider';
+    /** Uniquement pour les commandes terminées côté client : true si déjà notée, false si à noter.
+     * Absent => pas d'indicateur de notation affiché (statut inconnu ou hors périmètre). */
+    rated?: boolean;
 }
 
-export default function BookingCard({ booking, showPayButton = false, showActions = true, role = 'client' }: BookingCardProps) {
+export default function BookingCard({ booking, showPayButton = false, showActions = true, role = 'client', rated }: BookingCardProps) {
     const statusVariant = () => {
         switch (booking.status) {
             case BookingStatus.CONFIRMED: return 'info' as const;
@@ -95,17 +98,30 @@ export default function BookingCard({ booking, showPayButton = false, showAction
                     )}
 
                     {/* Actions */}
-                    {showActions && (
-                        <div className="flex gap-3 text-xs font-bold">
-                            <Link href={`/booking/${booking.uuid ?? booking.id}`} className="text-slate-500 hover:text-brand-teal transition-colors">
-                                Détails
+                    <div className="flex items-center gap-3 text-xs font-bold">
+                        <Link href={`/booking/${booking.uuid ?? booking.id}`} className="text-slate-500 hover:text-brand-teal transition-colors">
+                            Détails
+                        </Link>
+                        {showActions && (booking.status === BookingStatus.PENDING || booking.status === BookingStatus.CONFIRMED) && (
+                            <Link href={`/booking/${booking.uuid ?? booking.id}`} className="text-slate-400 hover:text-brand-coral transition-colors">
+                                Annuler
                             </Link>
-                            {(booking.status === BookingStatus.PENDING || booking.status === BookingStatus.CONFIRMED) && (
-                                <Link href={`/booking/${booking.uuid ?? booking.id}`} className="text-slate-400 hover:text-brand-coral transition-colors">
-                                    Annuler
-                                </Link>
-                            )}
-                        </div>
+                        )}
+                    </div>
+
+                    {role === 'client' && booking.status === BookingStatus.COMPLETED && rated !== undefined && (
+                        rated ? (
+                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
+                                <IconCircleCheck className="w-3.5 h-3.5" /> Avis laissé
+                            </span>
+                        ) : (
+                            <Link
+                                href={`/booking/${booking.uuid ?? booking.id}/rate`}
+                                className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-teal bg-brand-tealLight px-3 py-1.5 rounded-lg border border-brand-teal/20 hover:bg-brand-teal hover:text-white transition-colors"
+                            >
+                                <IconStar className="w-3.5 h-3.5" /> Noter ce service
+                            </Link>
+                        )
                     )}
                 </div>
             </div>

@@ -106,6 +106,8 @@ export interface BackendNote {
     prestataire: number;
     author: number;
     author_email?: string;
+    /** uuid de la commande évaluée — absent pour les notes historiques créées avant ce champ. */
+    order: string | null;
     date_creation?: string;
 }
 

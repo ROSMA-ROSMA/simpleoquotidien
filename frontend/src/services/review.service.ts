@@ -28,6 +28,13 @@ export const reviewService = {
         return all.filter(n => n.prestataire === prestataireId);
     },
 
+    /** Tous les avis laissés par un client donné — sert à afficher "Mes avis" et à savoir
+     * quelles commandes terminées restent à noter (via note.order). */
+    async getMine(authorId: number): Promise<BackendNote[]> {
+        const all = await reviewService.getAll();
+        return all.filter(n => n.author === authorId);
+    },
+
     async getSummaryForProvider(prestataireId: number): Promise<RatingSummary> {
         return summarize(await reviewService.getByProvider(prestataireId));
     },
@@ -47,11 +54,12 @@ export const reviewService = {
         return result;
     },
 
-    /** Le client note le prestataire qui a réalisé son service (1-5 étoiles + commentaire). */
-    async create(prestataireId: number, etoile: number, commentaire?: string): Promise<BackendNote> {
+    /** Le client note le prestataire qui a réalisé son service (1-5 étoiles + commentaire),
+     * rattaché à la commande évaluée pour empêcher une double notation côté serveur. */
+    async create(prestataireId: number, etoile: number, orderUuid: string, commentaire?: string): Promise<BackendNote> {
         return apiFetch<BackendNote>(NOTES_PATH, {
             method: 'POST',
-            body: JSON.stringify({ etoile, commentaire: commentaire ?? '', prestataire: prestataireId }),
+            body: JSON.stringify({ etoile, commentaire: commentaire ?? '', prestataire: prestataireId, order: orderUuid }),
         });
     },
 

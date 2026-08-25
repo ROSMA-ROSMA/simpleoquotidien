@@ -8,6 +8,7 @@ import StatCard from '@/components/ui/StatCard';
 import EmptyState from '@/components/ui/EmptyState';
 import { useAuth } from '@/context/AuthContext';
 import { useBookings } from '@/hooks/useOrders';
+import { useMyReviews } from '@/hooks/useReviews';
 import { BookingStatus } from '@/types';
 import { getInitials } from '@/lib/utils';
 import { IconCalendar, IconCircleCheck, IconClock, IconSearch, IconUser, IconMessage, IconStar } from '@tabler/icons-react';
@@ -18,6 +19,7 @@ export default function ClientDashboardPage() {
         currentUser ? { client_id: currentUser.id } : undefined,
         { enabled: Boolean(currentUser) },
     );
+    const { ratedOrderUuids } = useMyReviews(currentUser?.id);
 
     if (authLoading || (currentUser && bookingsLoading)) {
         return (
@@ -46,6 +48,8 @@ export default function ClientDashboardPage() {
     const upcoming = myBookings.filter(b => activeStatuses.includes(b.status));
     const completed = myBookings.filter(b => b.status === BookingStatus.COMPLETED || b.status === BookingStatus.CLOSED);
     const totalSpent = completed.reduce((sum, b) => sum + b.total_amount, 0);
+    const isRated = (b: typeof completed[number]) => !!b.uuid && ratedOrderUuids.has(b.uuid);
+    const toRate = completed.filter(b => b.status === BookingStatus.COMPLETED && !isRated(b));
 
     return (
         <div className="min-h-screen bg-brand-surface flex flex-col">
@@ -103,13 +107,38 @@ export default function ClientDashboardPage() {
                                 )}
                             </div>
 
+                            {/* Commandes terminées non notées */}
+                            {toRate.length > 0 && (
+                                <div>
+                                    <h2 className="text-xl font-bold text-brand-dark mb-4 flex items-center gap-2">
+                                        <IconStar className="w-5 h-5 text-amber-400" /> Commandes à noter ({toRate.length})
+                                    </h2>
+                                    <div className="space-y-4">
+                                        {toRate.map(booking => (
+                                            <BookingCard key={booking.id} booking={booking} role="client" rated={false} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* History */}
                             {completed.length > 0 && (
                                 <div>
-                                    <h2 className="text-xl font-bold text-brand-dark mb-4">Historique récent</h2>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h2 className="text-xl font-bold text-brand-dark">Historique récent</h2>
+                                        <Link href="/dashboard/client/avis" className="text-xs font-bold text-brand-teal hover:text-brand-tealDark">
+                                            Mes avis →
+                                        </Link>
+                                    </div>
                                     <div className="space-y-4">
                                         {completed.map(booking => (
-                                            <BookingCard key={booking.id} booking={booking} showActions={false} role="client" />
+                                            <BookingCard
+                                                key={booking.id}
+                                                booking={booking}
+                                                showActions={false}
+                                                role="client"
+                                                rated={booking.status === BookingStatus.COMPLETED ? isRated(booking) : undefined}
+                                            />
                                         ))}
                                     </div>
                                 </div>
