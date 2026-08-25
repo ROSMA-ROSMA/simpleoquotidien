@@ -82,6 +82,14 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# La CSS embarquée par l'API browsable de DRF référence un fichier .map qui
+# n'est pas distribué avec le paquet : sans ce réglage, WhiteNoise fait échouer
+# tout `collectstatic` (et donc le déploiement) dès qu'il tente de réécrire
+# cette référence manquante. En mode non strict il ignore l'entrée introuvable
+# et continue au lieu de lever une exception.
+WHITENOISE_MANIFEST_STRICT = False
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -168,18 +176,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # l'ancien réglage DEFAULT_FILE_STORAGE n'est plus lu du tout par Django 5.x,
 # donc le définir seul ne bascule jamais réellement les uploads vers Cloudinary.
 CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
+_DEFAULT_FILE_STORAGE = (
+    'cloudinary_storage.storage.MediaCloudinaryStorage'
+    if CLOUDINARY_URL else
+    'django.core.files.storage.FileSystemStorage'
+)
+_STATICFILES_STORAGE = 'SimpleOQuotidien.storage.SilentFileMissingCompressedManifestStorage'
 STORAGES = {
-    'default': {
-        'BACKEND': (
-            'cloudinary_storage.storage.MediaCloudinaryStorage'
-            if CLOUDINARY_URL else
-            'django.core.files.storage.FileSystemStorage'
-        ),
-    },
-    'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-    },
+    'default': {'BACKEND': _DEFAULT_FILE_STORAGE},
+    'staticfiles': {'BACKEND': _STATICFILES_STORAGE},
 }
+# django-cloudinary-storage's `collectstatic` command reads these two legacy
+# attributes directly (settings.STATICFILES_STORAGE) instead of STORAGES, and
+# raises AttributeError on Django 5.x if they're absent — kept here in sync
+# with STORAGES purely for that third-party package's sake.
+DEFAULT_FILE_STORAGE = _DEFAULT_FILE_STORAGE
+STATICFILES_STORAGE = _STATICFILES_STORAGE
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
