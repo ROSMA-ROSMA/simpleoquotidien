@@ -24,23 +24,8 @@ export default function CategoryCard({ category }: CategoryCardProps) {
                         </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    {/* Icon overlay */}
-                    <div className="absolute bottom-4 left-4 flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-white border border-white/20">
-                            <span className="text-lg">
-                                {category.icon === 'home-heart' && '🏠'}
-                                {category.icon === 'truck-delivery' && '🚚'}
-                                {category.icon === 'key' && '🔑'}
-                                {category.icon === 'shield' && '🛡️'}
-                                {category.icon === 'pen-tool' && '🎨'}
-                                {category.icon === 'heart' && '💅'}
-                                {category.icon === 'tool' && '🔧'}
-                                {category.icon === 'wash' && '🧹'}
-                            </span>
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-white text-lg leading-tight">{category.name}</h3>
-                        </div>
+                    <div className="absolute bottom-4 left-4">
+                        <h3 className="font-bold text-white text-lg leading-tight">{category.name}</h3>
                     </div>
                 </div>
 
