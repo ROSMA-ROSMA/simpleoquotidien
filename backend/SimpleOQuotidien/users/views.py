@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, mixins
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
@@ -214,10 +214,22 @@ class LogoutView(APIView):
         return Response(status=status.HTTP_205_RESET_CONTENT)
 
 
-class UtilisateurViewSet(viewsets.ReadOnlyModelViewSet):
+class UtilisateurViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    """Lecture ouverte à tout utilisateur authentifié ; suppression réservée
+    aux administrateurs (aucune modification n'est exposée côté admin)."""
     queryset = Utilisateur.objects.all()
     serializer_class = UtilisateurSerializer
     permission_classes = [IsAuthenticated]
+
+    def perform_destroy(self, instance):
+        if self.request.user.role != RoleChoices.ADMIN:
+            raise PermissionDenied("Réservé aux administrateurs.")
+        instance.delete()
 
 
 class PrestataireProfileViewSet(viewsets.ModelViewSet):

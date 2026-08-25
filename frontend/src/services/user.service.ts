@@ -33,4 +33,8 @@ export const userService = {
         );
         return { data: filtered, meta: { total: filtered.length } };
     },
+
+    async remove(id: number): Promise<void> {
+        await apiFetch(`Info_utilisateurs/utilisateurs/${id}/`, { method: 'DELETE' });
+    },
 };

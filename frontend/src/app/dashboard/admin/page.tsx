@@ -86,7 +86,7 @@ function ValidationSection() {
 
     return (
         <div className="animate-in">
-            <h1 className="text-3xl font-extrabold text-brand-dark mb-6">Validations des prestataires</h1>
+            <h1 className="text-2xl font-extrabold text-brand-dark mb-5">Validations des prestataires</h1>
             {loading ? (
                 <div className="bg-white rounded-2xl p-10 text-center shadow-card border border-slate-100">
                     <p className="text-slate-400 text-lg">Chargement…</p>
@@ -96,52 +96,52 @@ function ValidationSection() {
                     <p className="text-slate-400 text-lg">Aucun prestataire pour le moment</p>
                 </div>
             ) : (
-                <div className="space-y-5">
+                <div className="space-y-4">
                     {providers.map(p => (
-                        <div key={p.id} className="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden">
-                            <div className="p-6">
+                        <div key={p.id} className="bg-white rounded-xl shadow-card border border-slate-100 overflow-hidden">
+                            <div className="p-4 sm:p-5">
                                 <div className="flex items-center justify-between gap-3">
-                                    <h3 className="text-xl font-bold text-brand-dark">{p.first_name} {p.last_name}</h3>
+                                    <h3 className="text-base font-bold text-brand-dark">{p.first_name} {p.last_name}</h3>
                                     {statusBadge(p.verification_status)}
                                 </div>
-                                <p className="text-base text-slate-500 mt-1">{p.email}</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5 text-base">
+                                <p className="text-sm text-slate-500 mt-0.5">{p.email}</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 text-sm">
                                     <div>
-                                        <span className="text-slate-400 text-sm font-bold uppercase">Entreprise</span>
+                                        <span className="text-slate-400 text-[11px] font-bold uppercase">Entreprise</span>
                                         <p className="text-slate-700 font-medium">{p.company_name || '—'}</p>
                                     </div>
                                     <div>
-                                        <span className="text-slate-400 text-sm font-bold uppercase">Services</span>
+                                        <span className="text-slate-400 text-[11px] font-bold uppercase">Services</span>
                                         <p className="text-slate-700 font-medium">{p.services || '—'}</p>
                                     </div>
                                     <div>
-                                        <span className="text-slate-400 text-sm font-bold uppercase">Zone</span>
+                                        <span className="text-slate-400 text-[11px] font-bold uppercase">Zone</span>
                                         <p className="text-slate-700 font-medium">{p.zones_couvertes || '—'}</p>
                                     </div>
                                 </div>
-                                <div className="flex gap-4 mt-4 text-sm">
+                                <div className="flex gap-3 mt-3 text-xs">
                                     {p.cni_passeport && (
                                         <a href={p.cni_passeport} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-brand-teal font-semibold hover:underline">
-                                            <IconFileText className="w-4 h-4" /> CNI / Passeport
+                                            <IconFileText className="w-3.5 h-3.5" /> CNI / Passeport
                                         </a>
                                     )}
                                     {p.photo && (
                                         <a href={p.photo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-brand-teal font-semibold hover:underline">
-                                            <IconPhoto className="w-4 h-4" /> Photo
+                                            <IconPhoto className="w-3.5 h-3.5" /> Photo
                                         </a>
                                     )}
                                 </div>
                             </div>
                             {/* Zone d'action dédiée, bien visible et séparée du contenu */}
                             {p.verification_status !== 'REJETE' && p.verification_status !== 'SUSPENDU' && (
-                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 px-4 sm:px-6 py-4 bg-slate-50/70 border-t border-slate-100">
+                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 px-4 sm:px-5 py-3 bg-slate-50/70 border-t border-slate-100">
                                     {p.verification_status === 'EN_ATTENTE' && (
                                         <Button
-                                            size="lg"
+                                            size="sm"
                                             variant="secondary"
                                             fullWidth
                                             className="sm:w-auto !border-red-200 !text-red-500 hover:!bg-red-50 hover:!border-red-300"
-                                            icon={<IconX className="w-5 h-5" />}
+                                            icon={<IconX className="w-4 h-4" />}
                                             onClick={() => { setMotif(''); setRejectTarget(p); }}
                                             disabled={actionLoading === p.id}
                                         >
@@ -150,11 +150,11 @@ function ValidationSection() {
                                     )}
                                     {p.verification_status === 'VALIDE' && (
                                         <Button
-                                            size="lg"
+                                            size="sm"
                                             variant="secondary"
                                             fullWidth
                                             className="sm:w-auto !border-amber-200 !text-amber-600 hover:!bg-amber-50 hover:!border-amber-300"
-                                            icon={<IconAlertTriangle className="w-5 h-5" />}
+                                            icon={<IconAlertTriangle className="w-4 h-4" />}
                                             onClick={() => { setMotif(''); setSuspendTarget(p); }}
                                             disabled={actionLoading === p.id}
                                         >
@@ -163,10 +163,10 @@ function ValidationSection() {
                                     )}
                                     {p.verification_status === 'EN_ATTENTE' && (
                                         <Button
-                                            size="lg"
+                                            size="sm"
                                             fullWidth
                                             className="sm:w-auto"
-                                            icon={<IconCheck className="w-5 h-5" />}
+                                            icon={<IconCheck className="w-4 h-4" />}
                                             onClick={() => handleValidate(p.id)}
                                             disabled={actionLoading === p.id}
                                         >
@@ -177,10 +177,10 @@ function ValidationSection() {
                             )}
                             {/* Prestataire rejeté ou suspendu : seule la réactivation reste possible ici */}
                             {(p.verification_status === 'REJETE' || p.verification_status === 'SUSPENDU') && (
-                                <div className="flex items-center justify-end gap-3 px-4 sm:px-6 py-4 bg-slate-50/70 border-t border-slate-100">
+                                <div className="flex items-center justify-end gap-2 px-4 sm:px-5 py-3 bg-slate-50/70 border-t border-slate-100">
                                     <Button
-                                        size="lg"
-                                        icon={<IconCheck className="w-5 h-5" />}
+                                        size="sm"
+                                        icon={<IconCheck className="w-4 h-4" />}
                                         onClick={() => handleValidate(p.id)}
                                         disabled={actionLoading === p.id}
                                     >
@@ -405,6 +405,9 @@ export default function AdminDashboardPage() {
     const [userRoleFilter, setUserRoleFilter] = useState('');
     const [userStatusFilter, setUserStatusFilter] = useState('');
     const [userActionLoading, setUserActionLoading] = useState<number | null>(null);
+    const [deleteUserTarget, setDeleteUserTarget] = useState<User | null>(null);
+    const [deletingUser, setDeletingUser] = useState(false);
+    const [deleteUserError, setDeleteUserError] = useState<string | null>(null);
 
     // --- Store data (no backend) ---
     const payments = useAppStore(s => s.payments);
@@ -468,6 +471,21 @@ export default function AdminDashboardPage() {
             await loadProviderStatuses();
         } catch (e) { alert(e instanceof Error ? e.message : 'Erreur'); }
         finally { setUserActionLoading(null); }
+    };
+
+    const handleDeleteUser = async () => {
+        if (!deleteUserTarget) return;
+        setDeletingUser(true);
+        setDeleteUserError(null);
+        try {
+            await userService.remove(deleteUserTarget.id);
+            setUsers(prev => prev.filter(u => u.id !== deleteUserTarget.id));
+            setDeleteUserTarget(null);
+        } catch (e) {
+            setDeleteUserError(e instanceof Error ? e.message : 'Erreur lors de la suppression');
+        } finally {
+            setDeletingUser(false);
+        }
     };
 
     if (!currentUser || currentUser.role !== UserRole.ADMIN) {
@@ -602,7 +620,14 @@ export default function AdminDashboardPage() {
                                                         )}
                                                     </td>
                                                     <td className="py-3 px-4 flex gap-2">
-                                                        <Link href={`/admin/users/edit/${u.id}`}><Button variant="ghost" size="sm"><IconEdit className="w-4 h-4" /></Button></Link>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            title="Supprimer cet utilisateur"
+                                                            onClick={() => { setDeleteUserError(null); setDeleteUserTarget(u); }}
+                                                        >
+                                                            <IconTrash className="w-4 h-4 text-red-400" />
+                                                        </Button>
                                                         {providerStatus === 'VALIDE' && (
                                                             <Button variant="ghost" size="sm" title="Suspendre" disabled={userActionLoading === u.id} onClick={() => handleUserProviderAction(u.id, 'suspend')}>
                                                                 <IconAlertTriangle className="w-4 h-4 text-amber-500" />
@@ -765,6 +790,28 @@ export default function AdminDashboardPage() {
                     <ReviewsModerationSection />
                 )}
             </main>
+
+            <Modal open={deleteUserTarget !== null} onClose={() => !deletingUser && setDeleteUserTarget(null)} title="Supprimer cet utilisateur ?">
+                {deleteUserTarget && (
+                    <div>
+                        <div className="flex items-start gap-3 bg-red-50 border border-red-100 rounded-xl p-4">
+                            <IconAlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-slate-700">
+                                Voulez-vous vraiment supprimer{' '}
+                                <span className="font-bold">{deleteUserTarget.first_name} {deleteUserTarget.last_name}</span>{' '}
+                                ({deleteUserTarget.email}) ? Cette action est définitive et ne peut pas être annulée.
+                            </p>
+                        </div>
+                        {deleteUserError && <p className="text-[11px] text-red-600 mt-3">{deleteUserError}</p>}
+                        <div className="flex items-center justify-end gap-3 mt-6">
+                            <Button variant="secondary" onClick={() => setDeleteUserTarget(null)} disabled={deletingUser}>Annuler</Button>
+                            <Button variant="danger" onClick={handleDeleteUser} disabled={deletingUser}>
+                                {deletingUser ? 'Suppression…' : 'Confirmer la suppression'}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 }

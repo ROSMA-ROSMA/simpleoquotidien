@@ -98,8 +98,10 @@ export default function BookingDetailPage({ params }: Props) {
     const canModify = booking.status === BookingStatus.PENDING || booking.status === BookingStatus.CONFIRMED;
     const canDelete = DELETABLE_STATUSES.includes(booking.status);
     const canRate = booking.status === BookingStatus.COMPLETED && !!booking.uuid && !ratedOrderUuids.has(booking.uuid);
-    const canPay = booking.status === BookingStatus.CONFIRMED && !isPaid;
-    const canContactProvider = !!booking.assigned_provider_id;
+    // Payer et contacter le prestataire sont des actions client uniquement — le
+    // prestataire qui valide/démarre sa propre mission ne doit pas les voir.
+    const canPay = isClient && booking.status === BookingStatus.CONFIRMED && !isPaid;
+    const canContactProvider = isClient && !!booking.assigned_provider_id;
     // Seul le client valide/refuse le devis reçu — le prestataire qui consulte sa
     // propre mission ne doit pas voir ces actions (elles ne le concernent pas).
     const canValidateQuote = booking.status === BookingStatus.QUOTE_SENT && isClient;

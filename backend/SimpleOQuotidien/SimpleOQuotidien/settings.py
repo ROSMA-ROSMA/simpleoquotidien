@@ -84,7 +84,6 @@ MIDDLEWARE = [
 ]
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 ROOT_URLCONF = "SimpleOQuotidien.urls"
@@ -165,9 +164,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # déploiement. On bascule donc sur Cloudinary dès que ses identifiants sont fournis
 # (variable CLOUDINARY_URL) ; en local, sans cette variable, on retombe sur le
 # stockage disque classique pour ne rien casser en dev.
+# NB : depuis Django 4.2, le stockage par défaut se configure via STORAGES —
+# l'ancien réglage DEFAULT_FILE_STORAGE n'est plus lu du tout par Django 5.x,
+# donc le définir seul ne bascule jamais réellement les uploads vers Cloudinary.
 CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
-if CLOUDINARY_URL:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STORAGES = {
+    'default': {
+        'BACKEND': (
+            'cloudinary_storage.storage.MediaCloudinaryStorage'
+            if CLOUDINARY_URL else
+            'django.core.files.storage.FileSystemStorage'
+        ),
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

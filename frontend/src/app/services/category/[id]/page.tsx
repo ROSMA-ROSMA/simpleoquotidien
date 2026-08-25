@@ -9,15 +9,12 @@ import ProviderRating from '@/components/reviews/ProviderRating';
 import { useCategory } from '@/hooks/useCategories';
 import { serviceService } from '@/services/service.service';
 import { reviewService, RatingSummary } from '@/services/review.service';
-import { formatPrice } from '@/lib/utils';
 import { ProviderService } from '@/types';
-import { IconArrowLeft, IconMapPin, IconUser, IconBriefcase } from '@tabler/icons-react';
+import { IconArrowLeft, IconBriefcase, IconQuote } from '@tabler/icons-react';
 
 interface Props {
     params: Promise<{ id: string }>;
 }
-
-type SortMode = 'rating_desc' | 'price_asc' | 'price_desc';
 
 export default function CategoryServicesPage({ params }: Props) {
     const { id } = use(params);
@@ -26,7 +23,6 @@ export default function CategoryServicesPage({ params }: Props) {
     const [services, setServices] = useState<ProviderService[]>([]);
     const [servicesLoading, setServicesLoading] = useState(true);
     const [ratings, setRatings] = useState<Map<number, RatingSummary>>(new Map());
-    const [sort, setSort] = useState<SortMode>('rating_desc');
 
     useEffect(() => {
         serviceService.getAll({ category_id: categoryId })
@@ -38,18 +34,12 @@ export default function CategoryServicesPage({ params }: Props) {
             .catch(() => setRatings(new Map()));
     }, [categoryId]);
 
-    // Les prestataires les mieux notés apparaissent en premier par défaut : la note
-    // client a ainsi un impact direct sur le matching / le choix du client.
+    // Les prestataires les mieux notés apparaissent en premier : la note client
+    // a ainsi un impact direct sur la mise en avant, sans jamais afficher qui ils sont.
     const sortedServices = useMemo(() => {
         const ratingOf = (s: ProviderService) => ratings.get(s.prestataire_id)?.average ?? 0;
-        const list = [...services];
-        list.sort((a, b) => {
-            if (sort === 'price_asc') return a.price - b.price;
-            if (sort === 'price_desc') return b.price - a.price;
-            return ratingOf(b) - ratingOf(a);
-        });
-        return list;
-    }, [services, ratings, sort]);
+        return [...services].sort((a, b) => ratingOf(b) - ratingOf(a));
+    }, [services, ratings]);
 
     if (loading) {
         return (
@@ -74,21 +64,31 @@ export default function CategoryServicesPage({ params }: Props) {
         <div className="min-h-screen bg-brand-surface flex flex-col">
             <LandingNavbar />
 
-            <section className="pt-28 pb-12 relative overflow-hidden bg-brand-teal">
+            {/* Hero — image de la catégorie chargée par l'admin en fond, avec nom + description */}
+            <section className="relative pt-28 pb-16 sm:pb-20 overflow-hidden bg-brand-dark">
+                {category.image ? (
+                    <img
+                        src={category.image}
+                        alt={category.name}
+                        className="absolute inset-0 w-full h-full object-cover"
+                    />
+                ) : null}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/30" />
+
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <Link href="/services" className="inline-flex items-center gap-2 text-white/80 hover:text-white font-medium mb-6 transition-colors">
+                    <Link href="/services" className="inline-flex items-center gap-2 text-white/80 hover:text-white text-sm font-medium mb-5 transition-colors">
                         <IconArrowLeft className="w-4 h-4" />
                         Toutes les catégories
                     </Link>
-                    <h1 className="text-4xl font-extrabold text-white mb-3">{category.name}</h1>
-                    <p className="text-white/70 text-lg max-w-2xl">{category.description}</p>
-                    <div className="mt-8">
+                    <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-3 drop-shadow-sm">{category.name}</h1>
+                    <p className="text-white/85 text-base sm:text-lg max-w-2xl leading-relaxed">{category.description}</p>
+                    <div className="mt-7">
                         {servicesLoading ? null : services.length > 0 ? (
                             <Link href={`/services/category/${category.id}/book`}>
                                 <Button size="lg">Demander une intervention</Button>
                             </Link>
                         ) : (
-                            <p className="text-white/80 text-sm bg-white/10 border border-white/20 rounded-xl px-4 py-3 max-w-md">
+                            <p className="text-white/90 text-sm bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-3 max-w-md">
                                 Aucun prestataire ne propose ce service pour l&apos;instant. Revenez bientôt ou explorez une autre catégorie.
                             </p>
                         )}
@@ -96,55 +96,48 @@ export default function CategoryServicesPage({ params }: Props) {
                 </div>
             </section>
 
-            <section className="py-12 flex-1">
+            <section className="py-12 sm:py-16 flex-1">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                        <h2 className="text-lg font-bold text-brand-dark">Services disponibles dans cette catégorie</h2>
-                        {services.length > 1 && (
-                            <select
-                                value={sort}
-                                onChange={(e) => setSort(e.target.value as SortMode)}
-                                className="px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-brand-teal"
-                            >
-                                <option value="rating_desc">Mieux notés</option>
-                                <option value="price_asc">Prix croissant</option>
-                                <option value="price_desc">Prix décroissant</option>
-                            </select>
-                        )}
+                    <div className="text-center mb-10">
+                        <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-dark mb-2">Nos services {category.name.toLowerCase()}</h2>
+                        <p className="text-slate-500 max-w-xl mx-auto">Découvrez les prestations proposées par nos partenaires, avec leurs propres mots.</p>
                     </div>
 
                     {servicesLoading ? (
                         <p className="text-center text-slate-500 py-12">Chargement des services…</p>
                     ) : sortedServices.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
                             {sortedServices.map(service => {
                                 const rating = ratings.get(service.prestataire_id);
                                 return (
-                                <div key={service.id} className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
-                                    {service.image ? (
-                                        <img src={service.image} alt={category.name} className="w-full h-40 object-cover" />
-                                    ) : (
-                                        <div className="w-full h-40 bg-brand-tealLight flex items-center justify-center">
-                                            <IconBriefcase className="w-8 h-8 text-brand-teal/50" />
-                                        </div>
-                                    )}
-                                    <div className="p-6">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <p className="text-xl font-extrabold text-brand-teal">{formatPrice(service.price)} FCFA</p>
-                                            <ProviderRating average={rating?.average ?? 0} count={rating?.count ?? 0} showCount={false} />
-                                        </div>
-                                        {service.description && <p className="text-sm text-slate-500 mb-3 line-clamp-2">{service.description}</p>}
-                                        <div className="flex items-center justify-between text-sm text-slate-500">
-                                            {service.prestataire_name && (
-                                                <span className="flex items-center gap-1.5"><IconUser className="w-3.5 h-3.5" /> {service.prestataire_name}</span>
+                                    <article
+                                        key={service.id}
+                                        className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden hover:shadow-card-hover transition-shadow duration-300"
+                                    >
+                                        {service.image ? (
+                                            <img src={service.image} alt={category.name} className="w-full h-48 object-cover" />
+                                        ) : (
+                                            <div className="w-full h-48 bg-gradient-to-br from-brand-tealLight to-brand-mint/20 flex items-center justify-center">
+                                                <IconBriefcase className="w-9 h-9 text-brand-teal/50" />
+                                            </div>
+                                        )}
+                                        <div className="p-6">
+                                            <div className="flex items-center justify-between gap-2 mb-3">
+                                                <h3 className="font-bold text-brand-dark text-lg leading-tight">{category.name}</h3>
+                                                {(rating?.count ?? 0) > 0 && (
+                                                    <ProviderRating average={rating?.average ?? 0} count={rating?.count ?? 0} showCount={false} />
+                                                )}
+                                            </div>
+                                            {service.description ? (
+                                                <div className="flex gap-2 text-sm text-slate-500 italic leading-relaxed">
+                                                    <IconQuote className="w-4 h-4 text-brand-teal/40 flex-shrink-0 mt-0.5" />
+                                                    <p className="line-clamp-4">{service.description}</p>
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm text-slate-400 italic">Aucune description fournie par le prestataire.</p>
                                             )}
-                                            <span className="flex items-center gap-1.5"><IconMapPin className="w-3.5 h-3.5" /> {service.city}</span>
                                         </div>
-                                        <Link href={`/service/${service.id}`} className="block mt-3 pt-3 border-t border-slate-50 text-sm font-bold text-brand-teal hover:text-brand-tealDark text-center">
-                                            Voir le détail
-                                        </Link>
-                                    </div>
-                                </div>
+                                    </article>
                                 );
                             })}
                         </div>
