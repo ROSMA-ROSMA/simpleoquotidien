@@ -112,7 +112,7 @@ export default function AgentLayout({ title, subtitle, children }: { title: stri
                         <div className="text-base font-bold text-brand-dark truncate">{currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Agent'}</div>
                         <div className="text-sm text-slate-400 truncate">Agent{currentUser?.intervention_city ? ` · ${currentUser.intervention_city}` : ''}</div>
                     </div>
-                    <button onClick={logout} title="Déconnexion" className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors shrink-0">
+                    <button onClick={logout} title="Se déconnecter" className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors shrink-0">
                         <IconLogout className="w-4 h-4" />
                     </button>
                 </div>

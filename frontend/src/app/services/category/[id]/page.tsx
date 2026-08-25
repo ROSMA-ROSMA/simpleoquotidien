@@ -65,7 +65,7 @@ export default function CategoryServicesPage({ params }: Props) {
             <LandingNavbar />
 
             {/* Hero — image de la catégorie chargée par l'admin en fond, avec nom + description */}
-            <section className="relative pt-28 pb-16 sm:pb-20 overflow-hidden bg-brand-dark">
+            <section className="relative pt-32 pb-24 sm:pt-40 sm:pb-32 overflow-hidden bg-brand-dark">
                 {category.image ? (
                     <img
                         src={category.image}
@@ -80,8 +80,8 @@ export default function CategoryServicesPage({ params }: Props) {
                         <IconArrowLeft className="w-4 h-4" />
                         Toutes les catégories
                     </Link>
-                    <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-3 drop-shadow-sm">{category.name}</h1>
-                    <p className="text-white/85 text-base sm:text-lg max-w-2xl leading-relaxed">{category.description}</p>
+                    <h1 className="text-4xl sm:text-6xl font-extrabold text-white mb-4 drop-shadow-sm">{category.name}</h1>
+                    <p className="text-white/85 text-lg sm:text-xl max-w-2xl leading-relaxed">{category.description}</p>
                     {!servicesLoading && services.length > 0 && (
                         <div className="mt-7">
                             <Link href={`/services/category/${category.id}/book`}>

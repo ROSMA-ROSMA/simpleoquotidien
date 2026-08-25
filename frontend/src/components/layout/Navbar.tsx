@@ -151,7 +151,7 @@ export default function Navbar({ activeTab }: NavbarProps) {
                                 onClick={logout}
                                 className="text-brand-coral font-medium text-base flex items-center gap-2 hover:text-brand-coralHover"
                             >
-                                Déconnexion <IconLogout className="w-4 h-4" />
+                                Se déconnecter <IconLogout className="w-4 h-4" />
                             </button>
                         </div>
                     </div>
