@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
@@ -134,32 +136,56 @@ def envoyer_notification_devis_client(request, quote):
         order=order,
     )
 
-    context = {
-        'destinataire': client,
-        'order': order,
-        'quote': quote,
-        'accept_url': accept_url,
-        'refuse_url': refuse_url,
-        'order_detail_url': order_detail_url,
-    }
+    # La notification in-app est ce que le client voit réellement dans son
+    # espace ; l'e-mail n'est qu'un canal complémentaire. Un souci d'e-mail
+    # (SMTP indisponible sur Render, pièce jointe, etc.) ne doit donc pas faire
+    # échouer l'envoi du devis côté prestataire (déjà bien enregistré en base
+    # à ce stade) avec une 500 — on journalise et on continue.
+    try:
+        context = {
+            'destinataire': client,
+            'order': order,
+            'quote': quote,
+            'accept_url': accept_url,
+            'refuse_url': refuse_url,
+            'order_detail_url': order_detail_url,
+        }
 
-    html_content = render_to_string('email/quote_notification.html', context)
+        html_content = render_to_string('email/quote_notification.html', context)
 
-    msg = EmailMultiAlternatives(
-        subject=f'Nouveau devis pour votre commande {order.uuid}',
-        body=f'Bonjour, vous avez reçu un devis de {quote.price} FCFA.',
-        from_email=getattr(
-            settings, 'DEFAULT_FROM_EMAIL', 'kamta.mariane1@icloud.com'
-        ),
-        to=[client.email],
-    )
-    msg.attach_alternative(html_content, 'text/html')
+        msg = EmailMultiAlternatives(
+            subject=f'Nouveau devis pour votre commande {order.uuid}',
+            body=f'Bonjour, vous avez reçu un devis de {quote.price} FCFA.',
+            from_email=getattr(
+                settings, 'DEFAULT_FROM_EMAIL', 'kamta.mariane1@icloud.com'
+            ),
+            to=[client.email],
+        )
+        msg.attach_alternative(html_content, 'text/html')
 
-    # Pièce jointe PDF si elle existe
-    if hasattr(quote, 'pdf_file') and quote.pdf_file:
-        msg.attach_file(quote.pdf_file.path)
+        # Pièce jointe PDF si elle existe. `.path` n'est pas utilisable ici :
+        # cette méthode suppose un fichier sur disque local et lève
+        # NotImplementedError sur le storage Cloudinary utilisé en production.
+        # On passe donc par l'API fichier de Django (open/read), qui
+        # fonctionne avec n'importe quel storage.
+        if hasattr(quote, 'pdf_file') and quote.pdf_file:
+            quote.pdf_file.open('rb')
+            try:
+                msg.attach(
+                    os.path.basename(quote.pdf_file.name),
+                    quote.pdf_file.read(),
+                    'application/pdf',
+                )
+            finally:
+                quote.pdf_file.close()
 
-    msg.send(fail_silently=False)
+        msg.send(fail_silently=False)
+    except Exception:
+        import logging
+        logging.getLogger(__name__).warning(
+            f"Échec envoi e-mail de notification de devis pour la commande {order.uuid}",
+            exc_info=True,
+        )
 
 
 def notifier_acceptation_devis_prestataire(quote):
