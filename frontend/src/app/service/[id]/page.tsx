@@ -5,6 +5,7 @@ import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
+import { useAuth } from '@/context/AuthContext';
 import { serviceService } from '@/services/service.service';
 import { formatPrice } from '@/lib/utils';
 import { ProviderService } from '@/types';
@@ -17,6 +18,7 @@ interface Props {
 export default function ServiceDetailPage({ params }: Props) {
     const { id } = use(params);
     const serviceId = parseInt(id, 10);
+    const { isAuthenticated } = useAuth();
     const [service, setService] = useState<ProviderService | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -82,7 +84,7 @@ export default function ServiceDetailPage({ params }: Props) {
                             )}
                             {/* Le client ne choisit pas ce prestataire précis : il ouvre une demande sur la
                                 catégorie, et c'est un agent qui assigne le prestataire le plus adapté. */}
-                            <Link href={`/services/category/${service.category_id}/book`}>
+                            <Link href={isAuthenticated ? `/services/category/${service.category_id}/book` : `/login?redirect=/services/category/${service.category_id}/book`}>
                                 <Button fullWidth size="lg">Demander une intervention dans cette catégorie</Button>
                             </Link>
                         </div>

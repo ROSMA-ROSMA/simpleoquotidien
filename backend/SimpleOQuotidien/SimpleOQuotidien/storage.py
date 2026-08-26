@@ -1,4 +1,25 @@
+import os
+
+from django.core.files.storage import FileSystemStorage
 from whitenoise.storage import CompressedManifestStaticFilesStorage
+
+
+def get_raw_media_storage():
+    """Stockage pour les fichiers non-image (PDF, notes vocales) uploadés sur Cloudinary.
+
+    Le storage par défaut (`MediaCloudinaryStorage`, utilisé par les `STORAGES['default']`)
+    force `resource_type='image'` pour tous les uploads. Cloudinary restreint par défaut la
+    delivery des PDF/ZIP via ce resource_type pour raisons de sécurité, ce qui renvoie une
+    404 sur les documents (CNI/justificatif prestataire, PDF de devis) même correctement
+    uploadés — alors que les vraies images (photos de service, de catégorie...) s'affichent
+    sans problème. Le resource_type 'raw' n'a pas cette restriction et convient aussi bien
+    aux PDF qu'aux notes vocales. Callable (plutôt qu'instance figée au chargement du
+    module) pour rester cohérent avec le choix Cloudinary/disque local fait dynamiquement
+    dans `settings.STORAGES`."""
+    if os.environ.get('CLOUDINARY_URL'):
+        from cloudinary_storage.storage import RawMediaCloudinaryStorage
+        return RawMediaCloudinaryStorage()
+    return FileSystemStorage()
 
 
 class SilentFileMissingCompressedManifestStorage(CompressedManifestStaticFilesStorage):

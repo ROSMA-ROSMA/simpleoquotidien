@@ -22,7 +22,7 @@ export default function BookCategoryPage({ params }: Props) {
     const { id } = use(params);
     const router = useRouter();
     const categoryId = parseInt(id, 10);
-    const { currentUser } = useAuth();
+    const { currentUser, loading: authLoading } = useAuth();
     const { category, loading } = useCategory(categoryId);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
@@ -35,6 +35,14 @@ export default function BookCategoryPage({ params }: Props) {
             .then(res => setHasServices(res.data.length > 0))
             .catch(() => setHasServices(null));
     }, [categoryId]);
+
+    // L'utilisateur doit se connecter avant de pouvoir faire une demande — accès direct
+    // à l'URL sans passer par un bouton déjà protégé (ou lien partagé) inclus.
+    useEffect(() => {
+        if (!authLoading && !currentUser) {
+            router.replace(`/login?redirect=/services/category/${categoryId}/book`);
+        }
+    }, [authLoading, currentUser, categoryId, router]);
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -73,7 +81,7 @@ export default function BookCategoryPage({ params }: Props) {
         }
     };
 
-    if (loading) {
+    if (loading || authLoading || !currentUser) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-brand-surface">
                 <p className="text-slate-500">Chargement…</p>

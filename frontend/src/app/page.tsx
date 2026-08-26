@@ -7,6 +7,7 @@ import Footer from '@/components/layout/Footer';
 import RealServiceCard from '@/components/services/RealServiceCard';
 import EmptyState from '@/components/ui/EmptyState';
 import { useAppStore } from '@/store/useAppStore';
+import { useAuth } from '@/context/AuthContext';
 import { useCategories } from '@/hooks/useCategories';
 import { serviceService } from '@/services/service.service';
 import { ProviderService } from '@/types';
@@ -15,7 +16,11 @@ import { IconArrowRight, IconShieldCheck, IconClock, IconStar, IconSearch, IconS
 export default function HomePage() {
   const { categories: allCategories } = useCategories();
   const reviews = useAppStore(s => s.reviews);
+  const { isAuthenticated } = useAuth();
   const categories = allCategories.slice(0, 8);
+  // Un visiteur non connecté doit d'abord se connecter avant de pouvoir démarrer
+  // une demande — sinon il atterrit sur la page des catégories sans y être invité.
+  const bookingEntryHref = isAuthenticated ? '/services' : '/login?redirect=/services';
 
   const [featuredServices, setFeaturedServices] = useState<ProviderService[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
@@ -46,8 +51,8 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-brand-dark leading-tight mb-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-              Vos services au quotidien,{' '}
-              <span className="gradient-text">simplifiés.</span>
+              Votre quotidien,{' '}
+              <span className="gradient-text">en toute simplicité.</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-600 mb-10 max-w-xl leading-relaxed animate-fade-up" style={{ animationDelay: '0.2s' }}>
@@ -56,7 +61,7 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row items-start gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
               <Link
-                href="/services"
+                href={bookingEntryHref}
                 className="group inline-flex items-center justify-center gap-3 px-10 py-5 bg-brand-coral text-white rounded-full text-lg font-extrabold hover:bg-brand-coralHover transition-all shadow-xl shadow-brand-coral/30 hover:shadow-brand-coral/40 hover:-translate-y-0.5"
               >
                 <IconSearch className="w-6 h-6" />

@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import { ProviderService } from '@/types';
-import { formatPrice } from '@/lib/utils';
-import { IconMapPin, IconUser } from '@tabler/icons-react';
+import { IconMapPin } from '@tabler/icons-react';
 
 interface RealServiceCardProps {
     service: ProviderService;
 }
 
-/** Carte pour un service réel (backend), à ne pas confondre avec ServiceCard (données mock). */
+/** Carte pour un service réel (backend), à ne pas confondre avec ServiceCard (données mock).
+ * Il n'existe pas de nom de service dédié en base : le nom de la catégorie en tient lieu.
+ * Ni le prix ni le nom de l'entreprise du prestataire ne sont affichés ici (vitrine
+ * générale des services populaires, pas une fiche prestataire). */
 export default function RealServiceCard({ service }: RealServiceCardProps) {
     return (
         <Link href={`/services/category/${service.category_id}`} className="group block">
@@ -24,9 +26,6 @@ export default function RealServiceCard({ service }: RealServiceCardProps) {
                             <span className="text-4xl">🔧</span>
                         </div>
                     )}
-                    <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-md">
-                        <span className="text-sm font-extrabold text-brand-teal">{formatPrice(service.price)} FCFA</span>
-                    </div>
                 </div>
 
                 <div className="p-5">
@@ -37,17 +36,9 @@ export default function RealServiceCard({ service }: RealServiceCardProps) {
                         <p className="text-sm text-slate-500 line-clamp-2 mb-3">{service.description}</p>
                     )}
 
-                    <div className="flex items-center justify-between">
-                        {service.prestataire_name && (
-                            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                <IconUser className="w-3.5 h-3.5" />
-                                <span>{service.prestataire_name}</span>
-                            </div>
-                        )}
-                        <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                            <IconMapPin className="w-3.5 h-3.5" />
-                            <span>{service.city}</span>
-                        </div>
+                    <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                        <IconMapPin className="w-3.5 h-3.5" />
+                        <span>{service.city}</span>
                     </div>
                 </div>
             </article>

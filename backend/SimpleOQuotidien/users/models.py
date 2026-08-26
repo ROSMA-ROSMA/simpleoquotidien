@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from SimpleOQuotidien.storage import get_raw_media_storage
+
 
 # --- ÉNUMÉRATIONS (CHOICES) ---
 
@@ -59,8 +61,8 @@ class PrestataireProfile(models.Model):
         blank=True, null=True,
         help_text="Motif du rejet ou de la suspension, conservé pour traçabilité."
     )
-    cni_passeport = models.FileField(upload_to='Prestataire/cni/')
-    justificatif = models.FileField(upload_to='Prestataire/justificatifs/')
+    cni_passeport = models.FileField(upload_to='Prestataire/cni/', storage=get_raw_media_storage)
+    justificatif = models.FileField(upload_to='Prestataire/justificatifs/', storage=get_raw_media_storage)
     photo = models.FileField(upload_to='Prestataire/photos/')
     date_creation = models.DateTimeField(auto_now_add=True)
     date_modification = models.DateTimeField(auto_now=True)

@@ -6,6 +6,7 @@ import LandingNavbar from '@/components/layout/LandingNavbar';
 import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
 import ProviderRating from '@/components/reviews/ProviderRating';
+import { useAuth } from '@/context/AuthContext';
 import { useCategory } from '@/hooks/useCategories';
 import { serviceService } from '@/services/service.service';
 import { reviewService, RatingSummary } from '@/services/review.service';
@@ -19,6 +20,7 @@ interface Props {
 export default function CategoryServicesPage({ params }: Props) {
     const { id } = use(params);
     const categoryId = parseInt(id, 10);
+    const { isAuthenticated } = useAuth();
     const { category, loading, error } = useCategory(categoryId);
     const [services, setServices] = useState<ProviderService[]>([]);
     const [servicesLoading, setServicesLoading] = useState(true);
@@ -84,7 +86,7 @@ export default function CategoryServicesPage({ params }: Props) {
                     <p className="text-white/85 text-lg sm:text-xl max-w-2xl leading-relaxed">{category.description}</p>
                     {!servicesLoading && services.length > 0 && (
                         <div className="mt-7">
-                            <Link href={`/services/category/${category.id}/book`}>
+                            <Link href={isAuthenticated ? `/services/category/${category.id}/book` : `/login?redirect=/services/category/${category.id}/book`}>
                                 <Button size="lg">Demander une intervention</Button>
                             </Link>
                         </div>
