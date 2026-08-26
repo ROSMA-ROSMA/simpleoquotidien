@@ -105,7 +105,9 @@ export default function BookingDetailPage({ params }: Props) {
     // Seul le client valide/refuse le devis reçu — le prestataire qui consulte sa
     // propre mission ne doit pas voir ces actions (elles ne le concernent pas).
     const canValidateQuote = booking.status === BookingStatus.QUOTE_SENT && isClient;
-    const canMarkCompleted = booking.status === BookingStatus.IN_PROGRESS;
+    // Seul le prestataire assigné termine sa propre intervention — le client ne
+    // doit pas pouvoir marquer sa commande comme exécutée à sa place.
+    const canMarkCompleted = booking.status === BookingStatus.IN_PROGRESS && isOwnAssignment;
     const canRespondToAssignment = booking.assignment_status === 'EN_ATTENTE' && isOwnAssignment;
 
     const handleValidateQuote = async () => {

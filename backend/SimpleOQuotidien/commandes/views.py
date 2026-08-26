@@ -210,6 +210,14 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     lookup_field = 'uuid'
     
+    # Transitions de statut qu'un prestataire peut déclencher lui-même sur sa
+    # propre mission (démarrer, puis terminer) ; toute autre valeur (dont les
+    # statuts de réassignation/annulation) reste réservée à l'agent/admin.
+    PRESTATAIRE_ALLOWED_TRANSITIONS = {
+        OrderStatusChoices.ACCEPTEE: OrderStatusChoices.EN_COURS,
+        OrderStatusChoices.EN_COURS: OrderStatusChoices.TERMINEE,
+    }
+
     def perform_create(self, serializer):
         serializer.save(client=self.request.user)
 
@@ -218,6 +226,38 @@ class OrderViewSet(viewsets.ModelViewSet):
         if user.role == 'CLIENT':
             return Order.objects.filter(client=user)
         return Order.objects.all()
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        user = self.request.user
+        new_status = serializer.validated_data.get('status')
+
+        if new_status is not None and new_status != instance.status:
+            if user.role == RoleChoices.CLIENT:
+                raise PermissionDenied(
+                    "Le statut d'une commande ne se modifie pas directement : "
+                    'passez par la validation du devis, le paiement ou'
+                    " l'annulation."
+                )
+            if user.role == RoleChoices.PRESTATAIRE:
+                profile = getattr(user, 'prestataire_profile', None)
+                is_assigned = profile is not None and instance.assignments.filter(
+                    prestataire=profile, status=AssignmentStatusChoices.ACCEPTEE
+                ).exists()
+                if not is_assigned:
+                    raise PermissionDenied(
+                        'Vous ne pouvez modifier que les commandes qui vous sont'
+                        ' assignées.'
+                    )
+                allowed_next = self.PRESTATAIRE_ALLOWED_TRANSITIONS.get(instance.status)
+                if new_status != allowed_next:
+                    raise PermissionDenied(
+                        'Transition de statut non autorisée depuis'
+                        f' {instance.status}.'
+                    )
+            # AGENT / ADMIN gardent la main libre (réassignation, clôture...).
+
+        serializer.save()
 
     # Statuts pour lesquels une commande n'est pas (encore) engagée avec un
     # prestataire : le client peut encore l'annuler/la supprimer lui-même.

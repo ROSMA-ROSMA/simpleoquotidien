@@ -119,8 +119,13 @@ export const BOOKING_STATUS_TO_ORDER: Partial<Record<BookingStatus, BackendOrder
 };
 
 function resolveBookingStatus(order: BackendOrder): BookingStatus {
+    // 'ENVOYE' n'a pas d'équivalent dans Order.status (le devis est en attente
+    // de décision côté client) — dans tous les autres cas, order.status est déjà
+    // tenu à jour par le backend au fil du cycle de vie (devis accepté → en
+    // cours → terminée) et doit rester la seule source de vérité : le figer sur
+    // CONFIRMED dès l'acceptation du devis masquait tout ce qui se passait après
+    // (démarrage et fin d'intervention invisibles pour prestataire/agent/admin).
     if (order.quote?.status === 'ENVOYE') return BookingStatus.QUOTE_SENT;
-    if (order.quote?.status === 'ACCEPTE') return BookingStatus.CONFIRMED;
     return ORDER_STATUS_TO_BOOKING[order.status] ?? BookingStatus.PENDING;
 }
 
