@@ -16,16 +16,19 @@ function summarize(notes: BackendNote[]): RatingSummary {
 
 export const reviewService = {
     /** Toutes les notes (1-5 + commentaire) laissées par les clients — utilisé pour la
-     * modération admin et pour calculer la note moyenne de chaque prestataire côté frontend
-     * (le backend n'expose pas de filtre par prestataire, donc on filtre ici). */
+     * modération admin et pour calculer la note moyenne de chaque prestataire côté frontend. */
     async getAll(): Promise<BackendNote[]> {
         const raw = await apiFetch<BackendNote[] | { results: BackendNote[] }>(NOTES_PATH);
         return unwrapList(raw);
     },
 
+    /** Tous les avis d'un prestataire donné — filtré côté backend (?prestataire=<id>),
+     * utilisé sur les fiches détail agent/admin d'un prestataire. */
     async getByProvider(prestataireId: number): Promise<BackendNote[]> {
-        const all = await reviewService.getAll();
-        return all.filter(n => n.prestataire === prestataireId);
+        const raw = await apiFetch<BackendNote[] | { results: BackendNote[] }>(
+            `${NOTES_PATH}?prestataire=${prestataireId}`,
+        );
+        return unwrapList(raw);
     },
 
     /** Tous les avis laissés par un client donné — sert à afficher "Mes avis" et à savoir

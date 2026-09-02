@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0; padding: 20px; }
+        .card { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .header { background-color: #2563eb; color: #ffffff; padding: 24px; text-align: center; }
+        .content { padding: 30px; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .info-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        .info-table td.label { font-weight: bold; color: #64748b; width: 35%; }
+        .btn-action { display: inline-block; background-color: #2563eb; color: #ffffff; padding: 12px 24px; border-radius: 6px; font-weight: bold; text-decoration: none; margin-top: 15px; }
+        .footer { text-align: center; font-size: 12px; color: #94a3b8; padding: 20px; background: #fafafa; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <h2 style="margin: 0;">Nouvelle Mission Assignée !</h2>
+        </div>
+        <div class="content">
+            <p>Bonjour <strong>{{ prestataire.company_name|default:prestataire.user.first_name }}</strong>,</p>
+            <p>Une nouvelle demande d'intervention vous a été attribuée par notre équipe.</p>
+
+            <table class="info-table">
+                <tr>
+                    <td class="label">Commande :</td>
+                    <td>{{ order.uuid }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Client :</td>
+                    <td>{{ order.client.get_full_name|default:order.client.email }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Localisation :</td>
+                    <td><strong>{{ order.localisation }}</strong></td>
+                </tr>
+                <tr>
+                    <td class="label">Description :</td>
+                    <td>{{ order.description|default:"Aucune précision supplémentaire." }}</td>
+                </tr>
+            </table>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <p style="margin: 0 0 10px 0; color: #475569;">Merci d'analyser la demande et d'émettre votre devis au plus vite :</p>
+                <a href="{{ provider_dashboard_url }}" class="btn-action">Soumettre un devis</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p style="margin: 0;">SimpleOQuotidien - Espace Prestataires</p>
+        </div>
+    </div>
+</body>
+</html>
