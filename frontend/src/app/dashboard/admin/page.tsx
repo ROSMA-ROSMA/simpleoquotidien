@@ -101,7 +101,9 @@ function ValidationSection() {
                         <div key={p.id} className="bg-white rounded-xl shadow-card border border-slate-100 overflow-hidden">
                             <div className="p-4 sm:p-5">
                                 <div className="flex items-center justify-between gap-3">
-                                    <h3 className="text-base font-bold text-brand-dark">{p.first_name} {p.last_name}</h3>
+                                    <Link href={`/admin/prestataire/${p.id}`} className="text-base font-bold text-brand-dark hover:text-brand-teal transition-colors">
+                                        {p.first_name} {p.last_name}
+                                    </Link>
                                     {statusBadge(p.verification_status)}
                                 </div>
                                 <p className="text-sm text-slate-500 mt-0.5">{p.email}</p>
@@ -620,6 +622,13 @@ export default function AdminDashboardPage() {
                                                         )}
                                                     </td>
                                                     <td className="py-3 px-4 flex gap-2">
+                                                        {u.role === UserRole.PROVIDER && providerIdByUserId[u.id] && (
+                                                            <Link href={`/admin/prestataire/${providerIdByUserId[u.id]}`}>
+                                                                <Button variant="ghost" size="sm" title="Voir le profil, les avis et les services">
+                                                                    <IconEye className="w-4 h-4 text-slate-500" />
+                                                                </Button>
+                                                            </Link>
+                                                        )}
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"
