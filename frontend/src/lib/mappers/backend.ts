@@ -9,6 +9,7 @@ import {
     BackendService,
     BackendNotification,
     BackendPayment,
+    BackendSubscription,
 } from '@/types/backend';
 import {
     User,
@@ -24,6 +25,7 @@ import {
     Payment,
     PaymentStatus,
     PaymentMethod,
+    Subscription,
 } from '@/types';
 
 const CATEGORY_ICONS = ['home-heart', 'tool', 'wash', 'heart', 'truck-delivery', 'shield', 'pen-tool', 'key'];
@@ -211,6 +213,17 @@ export function mapServiceFromBackend(s: BackendService): ProviderService {
         description: s.description,
         image: s.image ?? undefined,
         created_at: s.date_creation,
+    };
+}
+
+export function mapSubscriptionFromBackend(s: BackendSubscription): Subscription {
+    return {
+        id: s.id,
+        prestataire_id: s.prestataire,
+        plan: s.plan,
+        statut: s.statut,
+        mode_payment: s.mode_payment,
+        date_creation: s.date_creation,
     };
 }
 

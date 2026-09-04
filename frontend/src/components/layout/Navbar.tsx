@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useProviderProfile } from '@/hooks/useProviderProfile';
-import { IconMenu2, IconX, IconSearch, IconCalendar, IconGrid3x3, IconLogout, IconBellRinging, IconStar } from '@tabler/icons-react';
+import { IconMenu2, IconX, IconSearch, IconCalendar, IconGrid3x3, IconLogout, IconBellRinging, IconStar, IconCrown } from '@tabler/icons-react';
 
 interface NavbarProps {
     activeTab?: string;
@@ -33,6 +33,7 @@ export default function Navbar({ activeTab }: NavbarProps) {
         { href: '/dashboard/provider/bookings', label: 'Réservations', icon: IconCalendar, id: 'bookings' },
         { href: '/dashboard/provider/services', label: 'Services', icon: IconSearch, id: 'services' },
         { href: '/dashboard/provider/notifications', label: 'Notifications', icon: IconBellRinging, id: 'notifications' },
+        { href: '/dashboard/provider/abonnement', label: 'Abonnement', icon: IconCrown, id: 'abonnement' },
     ];
 
     const links = isClient ? clientLinks : isProvider ? providerLinks : [];
