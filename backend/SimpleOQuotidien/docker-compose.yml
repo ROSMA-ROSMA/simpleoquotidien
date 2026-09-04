@@ -4,7 +4,7 @@ services:
     container_name: simpleoquotidien-redis
     ports:
       - "6380:6379"
-    volumes:
+    cdvolumes:
       - simpleoquotidien-redis-data:/data
     restart: unless-stopped
 
