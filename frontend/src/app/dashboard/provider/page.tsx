@@ -11,16 +11,19 @@ import { useAuth } from '@/context/AuthContext';
 import { useBookings } from '@/hooks/useOrders';
 import { providerService } from '@/services/provider.service';
 import { serviceService } from '@/services/service.service';
-import { BookingStatus, Provider, ProviderService } from '@/types';
+import { subscriptionService } from '@/services/subscription.service';
+import { getPlan } from '@/lib/plans';
+import { BookingStatus, Provider, ProviderService, Subscription } from '@/types';
 import { formatPrice, getInitials } from '@/lib/utils';
 import { useEffect, useState } from 'react';
-import { IconCurrencyDollar, IconCalendar, IconCircleCheck, IconClock, IconPlus, IconBriefcase, IconShieldCheck, IconMessage, IconAlertTriangle, IconHourglass, IconMapPin } from '@tabler/icons-react';
+import { IconCurrencyDollar, IconCalendar, IconCircleCheck, IconClock, IconPlus, IconBriefcase, IconShieldCheck, IconMessage, IconAlertTriangle, IconHourglass, IconMapPin, IconCrown } from '@tabler/icons-react';
 
 export default function ProviderDashboardPage() {
     const { currentUser } = useAuth();
     const [profile, setProfile] = useState<Provider | null>(null);
     const [profileLoaded, setProfileLoaded] = useState(false);
     const [services, setServices] = useState<ProviderService[]>([]);
+    const [subscription, setSubscription] = useState<Subscription | null>(null);
 
     useEffect(() => {
         if (!currentUser) return;
@@ -35,6 +38,13 @@ export default function ProviderDashboardPage() {
         serviceService.getAll({ prestataire_id: profile.id })
             .then(res => setServices(res.data))
             .catch(() => setServices([]));
+    }, [profile]);
+
+    useEffect(() => {
+        if (!profile) { setSubscription(null); return; }
+        subscriptionService.getCurrentForProvider(profile.id)
+            .then(setSubscription)
+            .catch(() => setSubscription(null));
     }, [profile]);
 
     const { bookings, loading } = useBookings(
@@ -190,6 +200,21 @@ export default function ProviderDashboardPage() {
                         </div>
 
                         <div className="space-y-6">
+                            <div className="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="font-bold text-brand-dark flex items-center gap-2">
+                                        <IconCrown className="w-4 h-4 text-brand-teal" /> Mon abonnement
+                                    </h3>
+                                </div>
+                                <p className="text-[11px] text-slate-400 mb-1">Plan actuel</p>
+                                <p className="font-extrabold text-brand-dark text-sm mb-4">
+                                    {subscription && subscription.statut === 'ACTIF' ? getPlan(subscription.plan)?.name ?? 'Gratuit — Découverte' : 'Gratuit — Découverte'}
+                                </p>
+                                <Link href="/dashboard/provider/abonnement">
+                                    <Button variant="outline" size="sm" fullWidth>Voir les plans</Button>
+                                </Link>
+                            </div>
+
                             <div className="bg-white rounded-2xl p-6 shadow-card border border-slate-100">
                                 <h3 className="font-bold text-brand-dark mb-4">Actions rapides</h3>
                                 <div className="space-y-3">

@@ -148,3 +148,16 @@ export interface JwtPair {
     access: string;
     refresh: string;
 }
+
+/** `statut` est un CharField libre côté backend — ces valeurs sont celles utilisées par le frontend. */
+export type BackendSubscriptionStatus = 'ACTIF' | 'EN_ATTENTE' | 'EXPIRE' | 'ANNULE';
+
+export interface BackendSubscription {
+    id: number;
+    /** Index numérique du plan — voir PLAN_INDEX dans lib/plans.ts pour le mapping. */
+    plan: number;
+    statut: string;
+    mode_payment: string;
+    prestataire: number;
+    date_creation?: string;
+}

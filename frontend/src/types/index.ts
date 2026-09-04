@@ -113,6 +113,15 @@ export interface Provider {
     photo?: string;
 }
 
+export interface Subscription {
+    id: number;
+    prestataire_id: number;
+    plan: number;
+    statut: string;
+    mode_payment: string;
+    date_creation?: string;
+}
+
 export interface Category {
     id: number;
     name: string;
